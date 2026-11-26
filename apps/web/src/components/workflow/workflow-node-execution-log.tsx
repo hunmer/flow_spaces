@@ -468,7 +468,7 @@ export function WorkflowNodeExecutionLog({
                 id={allTabValue}
                 className="flex-none"
               >
-                {t('templatesDialog.all')}
+                {t('templates.all')}
               </Tab>
             )}
             {batchSteps.map((step, index) => (

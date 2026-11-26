@@ -2,7 +2,7 @@
   "page": {
     "title": "Workflows",
     "subtitle": "Manage Workflow templates",
-    "templates": "Templates",
+    "storeMode": "Store Mode",
     "import": "Import",
     "plugins": "Plugins",
     "create": "New Workflow",
@@ -115,8 +115,7 @@
     "updated": "Updated {count} plugin(s)",
     "updateCancelled": "Cancelled {count} pending update(s)"
   },
-  "templatesDialog": {
-    "title": "Workflow Templates",
+  "templates": {
     "description": "Select a template to quickly create a workflow",
     "all": "All",
     "searchPlaceholder": "Search workflow templates...",

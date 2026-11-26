@@ -1,19 +1,23 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import type { WorkflowTemplate, WorkflowNode } from '@flow-spaces/shared';
 import { useWorkflowStore } from '@/stores/workflow';
 import { Button } from '@/components/ui/button';
-import { Plus, Plug, FileText, CheckSquare, Download, Trash2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Chip } from '@/components/base/badges/chip';
+import { Plus, Plug, CheckSquare, Download, Trash2, Search, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { WorkflowTemplatesDialog } from '@/components/workflows/workflow-templates-dialog';
 import { WorkflowPluginsDialog } from '@/components/workflow/workflow-plugins-dialog';
 import { WorkflowListDialog } from '@/components/workflow/workflow-list-dialog';
 import { WorkflowInfoDialog } from '@/components/workflow/workflow-info-dialog';
 import { WorkflowCard } from '@/components/workflows/workflow-card';
+import { WorkflowTemplateCard, type WorkflowIndexItem } from '@/components/workflows/workflow-template-card';
 import { WorkflowFilterToolbar, useWorkflowFilters } from '@/components/workflows/workflow-filters';
 import type { WorkflowTemplatePreset } from '@/components/workflows/workflow-templates';
+import { fetchStoreIndex } from '@/lib/agent-store';
 import { sdk } from '@/lib/sdk';
 import { workflowApi } from '@/lib/workflow-api';
 import { buildWorkflowPrompt } from '@/lib/workflow-prompt';
@@ -26,7 +30,13 @@ export function WorkflowsPage() {
   const t = useTranslations('workflows');
   const router = useRouter();
   const { workflows, loadWorkflows, deleteWorkflow, duplicateWorkflow, upsertWorkflow } = useWorkflowStore();
-  const [templatesOpen, setTemplatesOpen] = useState(false);
+  // 商店模式：开启后主列表切换为模板列表（复用工作流卡片栅格）
+  const [storeMode, setStoreMode] = useState(false);
+  const [templates, setTemplates] = useState<WorkflowIndexItem[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [templateSearch, setTemplateSearch] = useState('');
+  const [templateCategory, setTemplateCategory] = useState('');
+  const [importingTemplateId, setImportingTemplateId] = useState<string | null>(null);
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [listDialogOpen, setListDialogOpen] = useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
@@ -47,6 +57,18 @@ export function WorkflowsPage() {
       setAllPlugins(list.map(p => ({ id: p.id, name: p.name, iconPath: p.iconPath })));
     }).catch(() => {});
   }, []);
+
+  // 商店模式开启时拉取模板索引（与原模板弹窗一致：每次开启都刷新）
+  useEffect(() => {
+    if (!storeMode) return;
+    let cancelled = false;
+    setTemplatesLoading(true);
+    fetchStoreIndex<WorkflowIndexItem>('workflows/index.json')
+      .then((index) => { if (!cancelled) setTemplates(index); })
+      .catch(() => { if (!cancelled) setTemplates([]); })
+      .finally(() => { if (!cancelled) setTemplatesLoading(false); });
+    return () => { cancelled = true; };
+  }, [storeMode]);
 
   const handleEdit = useCallback((wf: WorkflowTemplate) => {
     setEditingWorkflow(wf);
@@ -152,6 +174,41 @@ export function WorkflowsPage() {
     [loadWorkflows],
   );
 
+  // 从商店导入模板：拉取模板 JSON 后走 handleImportTemplate 落库，导入完成退出商店模式
+  const handleImportStoreTemplate = useCallback(
+    async (item: WorkflowIndexItem) => {
+      setImportingTemplateId(item.id);
+      try {
+        const base = localStorage.getItem('flow-spaces:store-api-base') || '';
+        const url = base
+          ? `${base.replace(/\/+$/, '')}/workflows/${item.filename}`
+          : `/agents-store/workflows/${item.filename}`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const template: WorkflowTemplatePreset = await res.json();
+        await handleImportTemplate(template.data);
+        setStoreMode(false);
+      } finally {
+        setImportingTemplateId(null);
+      }
+    },
+    [handleImportTemplate],
+  );
+
+  const templateCategories = useMemo(
+    () => Array.from(new Set(templates.map((tpl) => tpl.category).filter(Boolean))),
+    [templates],
+  );
+
+  const filteredTemplates = useMemo(() => templates.filter((tpl) => {
+    if (templateCategory && tpl.category !== templateCategory) return false;
+    if (templateSearch) {
+      const q = templateSearch.toLowerCase();
+      if (!tpl.name.toLowerCase().includes(q) && !tpl.description.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }), [templates, templateCategory, templateSearch]);
+
   const handleRecordOpen = useCallback((wf: WorkflowTemplate) => {
     // 进入工作流时通知后端记录打开时间（fire-and-forget）
     workflowApi.recordOpen(wf.id).then(updated => upsertWorkflow(updated)).catch(() => {});
@@ -231,19 +288,21 @@ export function WorkflowsPage() {
         <div>
           <h2 className="text-lg font-semibold">{t('page.title')}</h2>
           <p className="text-sm text-muted-foreground">
-            {t('page.subtitle')}
+            {storeMode ? t('templates.description') : t('page.subtitle')}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant={selectionMode ? 'default' : 'outline'}
-            onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
-          >
-            <CheckSquare className="h-4 w-4 mr-1" /> {t('page.selectMode')}
-          </Button>
-          <Button variant="outline" onClick={() => setTemplatesOpen(true)}>
-            <FileText className="h-4 w-4 mr-1" /> {t('page.templates')}
-          </Button>
+        <div className="flex items-center gap-2">
+          {!storeMode && (
+            <Button
+              variant={selectionMode ? 'default' : 'outline'}
+              onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
+            >
+              <CheckSquare className="h-4 w-4 mr-1" /> {t('page.selectMode')}
+            </Button>
+          )}
+          <Switch checked={storeMode} onCheckedChange={(checked) => setStoreMode(checked)}>
+            {t('page.storeMode')}
+          </Switch>
           <Button variant="outline" onClick={() => setPluginsOpen(true)}>
             <Plug className="h-4 w-4 mr-1" /> {t('page.plugins')}
           </Button>
@@ -254,10 +313,69 @@ export function WorkflowsPage() {
       </div>
 
       <div className="hidden md:flex items-center gap-2 mb-4">
-        <WorkflowFilterToolbar state={filters} />
+        {storeMode ? (
+          <>
+            <div className="relative flex-1 min-w-[140px] max-w-xs">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder={t('templates.searchPlaceholder')}
+                value={templateSearch}
+                onChange={(e) => setTemplateSearch(e.target.value)}
+                className="pl-8 h-8 text-sm"
+              />
+            </div>
+            <Button variant="outline" onClick={handleImport}>
+              <Upload className="h-4 w-4 mr-1" /> {t('page.import')}
+            </Button>
+          </>
+        ) : (
+          <WorkflowFilterToolbar state={filters} />
+        )}
       </div>
 
-      {workflows.length === 0 ? (
+      {storeMode && templateCategories.length > 0 && (
+        <div className="hidden md:flex items-center gap-1.5 flex-wrap mb-4">
+          <Chip
+            variant="caption"
+            color={!templateCategory ? 'cyan' : 'neutral'}
+            className="cursor-pointer"
+            onClick={() => setTemplateCategory('')}
+          >
+            {t('templates.all')}
+          </Chip>
+          {templateCategories.map((cat) => (
+            <Chip
+              key={cat}
+              variant="caption"
+              color={templateCategory === cat ? 'cyan' : 'neutral'}
+              className="cursor-pointer"
+              onClick={() => setTemplateCategory(templateCategory === cat ? '' : cat)}
+            >
+              {cat}
+            </Chip>
+          ))}
+        </div>
+      )}
+
+      {storeMode ? (
+        templatesLoading ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">{t('templates.loading')}</div>
+        ) : filteredTemplates.length === 0 ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">{t('templates.empty')}</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTemplates.map((item) => (
+              <WorkflowTemplateCard
+                key={item.id}
+                template={item}
+                importing={importingTemplateId === item.id}
+                disabled={importingTemplateId !== null}
+                onImport={handleImportStoreTemplate}
+              />
+            ))}
+          </div>
+        )
+      ) : workflows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
           <p className="text-sm mb-2">{t('page.empty')}</p>
           <Button variant="outline" onClick={handleListCreate}>
@@ -283,13 +401,6 @@ export function WorkflowsPage() {
           ))}
         </div>
       )}
-
-      <WorkflowTemplatesDialog
-        open={templatesOpen}
-        onOpenChange={setTemplatesOpen}
-        onImport={handleImportTemplate}
-        onImportLocal={handleImport}
-      />
 
       <WorkflowPluginsDialog
         open={pluginsOpen}

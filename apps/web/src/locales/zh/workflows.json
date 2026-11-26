@@ -2,7 +2,7 @@
   "page": {
     "title": "工作流",
     "subtitle": "管理 Workflow 模板",
-    "templates": "模版",
+    "storeMode": "商店模式",
     "import": "导入",
     "plugins": "插件管理",
     "create": "新建工作流",
@@ -115,8 +115,7 @@
     "updated": "已更新 {count} 个插件",
     "updateCancelled": "已取消 {count} 个等待更新的插件"
   },
-  "templatesDialog": {
-    "title": "工作流模板",
+  "templates": {
     "description": "选择一个模板快速创建工作流",
     "all": "全部",
     "searchPlaceholder": "搜索工作流模板...",
