@@ -226,6 +226,8 @@ export default defineConfig(({ command }) => {
       "/ws": { target: SERVER_TARGET, changeOrigin: true, ws: true },
       "/public": { target: SERVER_TARGET, changeOrigin: true },
       "/static": { target: SERVER_TARGET, changeOrigin: true },
+      // 本地模板商店静态路由（serve packages/templates；workflows/plugins/mini-app 已拆分走仓库路由）
+      "/agents-store": { target: SERVER_TARGET, changeOrigin: true },
     },
   },
   };

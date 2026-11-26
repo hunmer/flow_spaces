@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { type AgentConfig } from "@flow-spaces/shared";
 import { sdk } from "@/lib/sdk";
 import { useAgentStore } from "@/stores/agent";
-import { fetchStoreIndex } from "@/lib/agent-store";
+import { fetchStoreIndex, resolveStoreUrl } from "@/lib/agent-store";
 import {
   type AgentPreset,
   type AgentRole,
@@ -256,11 +256,7 @@ export function useAgentDialogData({
     if (importingIds.has(storeAgent.id)) return;
     setImportingIds((prev) => new Set(prev).add(storeAgent.id));
     try {
-      const base = (() => {
-        const stored = localStorage.getItem("flow-spaces:store-api-base");
-        return stored ? stored.replace(/\/+$/, "") : "/agents-store";
-      })();
-      const res = await fetch(`${base}/agents/${storeAgent.path}.md`);
+      const res = await fetch(resolveStoreUrl(`agents/${storeAgent.path}.md`));
       if (!res.ok) throw new Error("fetch failed");
       const content = await res.text();
       const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);

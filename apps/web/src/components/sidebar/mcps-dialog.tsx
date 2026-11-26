@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { sdk } from '@/lib/sdk';
-import { fetchStoreIndex, getStoreApiBase } from '@/lib/agent-store';
+import { fetchStoreIndex, resolveStoreUrl } from '@/lib/agent-store';
 import {
   Dialog,
   DialogContent,
@@ -257,10 +257,8 @@ export function McpsDialog({ open, onOpenChange, standalone, selectable, selecte
     if (importedStoreIds.has(storeItem.name) || importingIds.has(storeItem.id)) return;
     setImportingIds((prev) => new Set(prev).add(storeItem.id));
     try {
-      const base = getStoreApiBase();
-      const contentUrl = base
-        ? `${base.replace(/\/+$/, '')}/mcps/${storeItem.filename}`
-        : `/agents-store/mcps/${storeItem.filename}`;
+      // 统一走 resolveStoreUrl（默认路由主仓库 templates raw，自定义镜像保留原结构）
+      const contentUrl = resolveStoreUrl(`mcps/${storeItem.filename}`);
       const contentRes = await fetch(contentUrl);
       if (!contentRes.ok) return;
       const jsonText = await contentRes.text();

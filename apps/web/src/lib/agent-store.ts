@@ -13,9 +13,26 @@ const REPO_ROUTES: Array<[prefix: string, repoBase: string]> = [
   ['mini-app/', 'https://gh-proxy.org/https://github.com/hunmer/flow-spaces-mini-apps/raw/refs/heads/main/'],
 ];
 
+// 旧版本（agent_spaces 时代）会把同源代理地址 http://localhost:PORT/agents-store 存进
+// store base；拆仓后本地 /agents-store 已不含 workflows/plugins/mini-app（需仓库路由），
+// 该形态一律视为陈旧值：读取时自动清除，回落默认路由。
+const LEGACY_LOCAL_BASE_SUFFIX = '/agents-store';
+
+/** 读取自定义 base；旧同源 /agents-store 形态自动清除并返回 null */
+function getValidCustomBase(): string | null {
+  if (typeof window === 'undefined') return null;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return null;
+  if (stored.replace(/\/+$/, '').endsWith(LEGACY_LOCAL_BASE_SUFFIX)) {
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
+  return stored;
+}
+
 export function getStoreApiBase(): string {
   if (typeof window === 'undefined') return '';
-  return localStorage.getItem(STORAGE_KEY) || DEFAULT_BASE;
+  return getValidCustomBase() || DEFAULT_BASE;
 }
 
 export function setStoreApiBase(url: string) {
@@ -28,17 +45,17 @@ export function resolveStoreUrl(path: string): string {
   const cleanPath = path.replace(/^\/+/, '');
   if (typeof window === 'undefined') return `/agents-store/${cleanPath}`;
 
-  const customBase = localStorage.getItem(STORAGE_KEY);
+  const customBase = getValidCustomBase();
   if (!customBase) {
     // 默认 GitHub 商店：三类拆分内容按前缀路由到独立仓库
     const route = REPO_ROUTES.find(([prefix]) => cleanPath.startsWith(prefix));
     if (route) return route[1] + cleanPath.slice(route[0].length);
+    // agents / mcps / skills 等留在主仓库 packages/templates
+    return DEFAULT_BASE + cleanPath;
   }
 
   // 自定义镜像 base：保持与 packages/templates 一致的相对结构
-  const base = getStoreApiBase();
-  if (base) return `${base.replace(/\/+$/, '')}/${cleanPath}`;
-  return new URL(`/agents-store/${cleanPath}`, window.location.origin).toString();
+  return `${customBase.replace(/\/+$/, '')}/${cleanPath}`;
 }
 
 export async function fetchStoreIndex<T>(path: string): Promise<T[]> {

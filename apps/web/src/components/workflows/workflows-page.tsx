@@ -17,7 +17,7 @@ import { WorkflowCard } from '@/components/workflows/workflow-card';
 import { WorkflowTemplateCard, type WorkflowIndexItem } from '@/components/workflows/workflow-template-card';
 import { WorkflowFilterToolbar, useWorkflowFilters } from '@/components/workflows/workflow-filters';
 import type { WorkflowTemplatePreset } from '@/components/workflows/workflow-templates';
-import { fetchStoreIndex } from '@/lib/agent-store';
+import { fetchStoreIndex, resolveStoreUrl } from '@/lib/agent-store';
 import { sdk } from '@/lib/sdk';
 import { workflowApi } from '@/lib/workflow-api';
 import { buildWorkflowPrompt } from '@/lib/workflow-prompt';
@@ -179,12 +179,10 @@ export function WorkflowsPage() {
     async (item: WorkflowIndexItem) => {
       setImportingTemplateId(item.id);
       try {
-        const base = localStorage.getItem('flow-spaces:store-api-base') || '';
-        const url = base
-          ? `${base.replace(/\/+$/, '')}/workflows/${item.filename}`
-          : `/agents-store/workflows/${item.filename}`;
+        // 统一走 resolveStoreUrl（默认路由到 flow-spaces-workflows 仓库 raw）
+        const url = resolveStoreUrl(`workflows/${item.filename}`);
         const res = await fetch(url);
-        if (!res.ok) return;
+        if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
         const template: WorkflowTemplatePreset = await res.json();
         await handleImportTemplate(template.data);
         setStoreMode(false);
