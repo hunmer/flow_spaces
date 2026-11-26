@@ -121,8 +121,8 @@
     "searchPlaceholder": "搜索工作流模板...",
     "loading": "加载中...",
     "empty": "暂无模板",
-    "agentCount": "{count} 个 Agent",
-    "import": "导入"
+    "import": "导入",
+    "update": "更新"
   },
   "defaultWorkflow": {
     "name": "新工作流",

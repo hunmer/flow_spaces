@@ -132,7 +132,7 @@ export function WorkflowsPage() {
   }, [loadWorkflows]);
 
   const handleImportTemplate = useCallback(
-    async (templateData: WorkflowTemplatePreset['data']) => {
+    async (templateData: WorkflowTemplatePreset['data'], targetWorkflowId?: string) => {
       const { name, description, nodes, edges, agents } = templateData;
       const idMap: Record<string, string> = {};
 
@@ -168,13 +168,36 @@ export function WorkflowsPage() {
         },
       }));
 
-      await sdk.workflow.create({ name, description, nodes: remappedNodes as unknown as WorkflowNode[], edges });
+      // 已安装（更新）：覆盖同名工作流的节点/边/描述；未安装（导入）：新建工作流
+      if (targetWorkflowId) {
+        await workflowApi.update(targetWorkflowId, {
+          name,
+          description,
+          nodes: remappedNodes as unknown as WorkflowNode[],
+          edges,
+        });
+      } else {
+        await sdk.workflow.create({ name, description, nodes: remappedNodes as unknown as WorkflowNode[], edges });
+      }
       loadWorkflows();
     },
     [loadWorkflows],
   );
 
-  // 从商店导入模板：拉取模板 JSON 后走 handleImportTemplate 落库，导入完成退出商店模式
+  // 已安装模板探测：按模板名匹配本地工作流（导入时工作流名 = 模板 data.name），
+  // 同名多条时取 updatedAt 最新的；命中则卡片显示「更新」
+  const installedWorkflowIds = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const tpl of templates) {
+      const match = workflows
+        .filter((wf) => wf.name === tpl.name)
+        .sort((a, b) => b.updatedAt - a.updatedAt)[0];
+      if (match) map.set(tpl.id, match.id);
+    }
+    return map;
+  }, [templates, workflows]);
+
+  // 从商店导入/更新模板：拉取模板 JSON 后落库（已安装走更新分支），完成后退出商店模式
   const handleImportStoreTemplate = useCallback(
     async (item: WorkflowIndexItem) => {
       setImportingTemplateId(item.id);
@@ -184,13 +207,13 @@ export function WorkflowsPage() {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
         const template: WorkflowTemplatePreset = await res.json();
-        await handleImportTemplate(template.data);
+        await handleImportTemplate(template.data, installedWorkflowIds.get(item.id));
         setStoreMode(false);
       } finally {
         setImportingTemplateId(null);
       }
     },
-    [handleImportTemplate],
+    [handleImportTemplate, installedWorkflowIds],
   );
 
   const templateCategories = useMemo(
@@ -366,6 +389,7 @@ export function WorkflowsPage() {
               <WorkflowTemplateCard
                 key={item.id}
                 template={item}
+                installed={installedWorkflowIds.has(item.id)}
                 importing={importingTemplateId === item.id}
                 disabled={importingTemplateId !== null}
                 onImport={handleImportStoreTemplate}

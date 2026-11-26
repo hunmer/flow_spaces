@@ -7,15 +7,25 @@ import type { MiniAppProject } from '@flow-spaces/sdk';
 import { sdk } from '@/lib/sdk';
 import { pluginApi } from '@/lib/workflow-plugin-api';
 import { Button } from '@/components/ui/button';
-import { Search, Plus, Upload, FileQuestion, Store, CheckSquare } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Upload, FileQuestion, Globe, Download, CheckSquare } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
-import { MiniAppStoreDialog } from './mini-apps-store-dialog';
+import { MiniAppDetail } from './mini-apps-store-detail';
+import { MiniAppStoreCard, type MiniAppIndexItem } from './mini-apps-store-card';
 import { MiniAppListDialog } from './mini-apps-list-dialog';
 import {
   MiniAppFilterToolbar,
   useMiniAppFilters,
 } from './mini-apps-filters';
+import {
+  fetchStoreIndex,
+  resolveStoreUrl,
+  parseGithubRepoUrl,
+  githubRepoRawUrl,
+  githubAppManifestUrl,
+} from '@/lib/agent-store';
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -37,12 +47,23 @@ function MiniAppListPage() {
   const t = useTranslations('mini-apps');
   const [projects, setProjects] = useState<MiniAppProject[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
-  const [storeOpen, setStoreOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [allPlugins, setAllPlugins] = useState<{ id: string; name: string; iconPath?: string }[]>([]);
   // 多选 Dialog 状态
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerSelectedIds, setPickerSelectedIds] = useState<string[]>([]);
+
+  // 商店模式：开启后复用列表卡片网格展示商店索引
+  const [storeMode, setStoreMode] = useState(false);
+  const [storeTemplates, setStoreTemplates] = useState<MiniAppIndexItem[]>([]);
+  const [storeLoading, setStoreLoading] = useState(false);
+  const [storeImportingId, setStoreImportingId] = useState<string | null>(null);
+  // 当前查看详情的商店条目；null = 列表视图，非 null = 详情视图
+  const [selectedStoreItem, setSelectedStoreItem] = useState<MiniAppIndexItem | null>(null);
+  // 从 GitHub 地址安装独立 mini-app 仓库
+  const [githubUrl, setGithubUrl] = useState('');
+  const [githubImporting, setGithubImporting] = useState(false);
+  const [githubError, setGithubError] = useState<string | null>(null);
 
   const filters = useMiniAppFilters({ projects, persistKey: 'miniapp-filter' });
 
@@ -59,12 +80,50 @@ function MiniAppListPage() {
     loadProjects();
   }, [loadProjects]);
 
+  // 商店模式开启时拉取索引（每次开启都刷新）
+  useEffect(() => {
+    if (!storeMode) return;
+    let cancelled = false;
+    setStoreLoading(true);
+    fetchStoreIndex<MiniAppIndexItem>('mini-app/index.json')
+      .then((index) => {
+        if (!cancelled) setStoreTemplates(index);
+      })
+      .catch(() => {
+        /* ignore */
+      })
+      .finally(() => {
+        if (!cancelled) setStoreLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [storeMode]);
+
   // 加载插件清单（供卡片展示已启用插件图标）—— 整页只请求一次
   useEffect(() => {
     pluginApi.list().then((list) => {
       setAllPlugins(list.map(p => ({ id: p.id, name: p.name, iconPath: p.iconPath })));
     }).catch(() => {});
   }, []);
+
+  // 已安装项目：id -> version（版本号字符串）。用于判断「已导入 / 有更新」
+  const installedMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const p of projects) map[p.id] = p.version;
+    return map;
+  }, [projects]);
+
+  // 三态：未安装 / 有更新（商店 version ≠ 已安装 version）/ 已导入（已安装且版本一致）
+  const getInstallStatus = useCallback(
+    (item: MiniAppIndexItem) => {
+      const installedVersion = installedMap[item.id];
+      if (!installedVersion) return 'not-installed' as const;
+      if (item.version && item.version !== installedVersion) return 'updatable' as const;
+      return 'installed' as const;
+    },
+    [installedMap],
+  );
 
   const handleDelete = useCallback(async (id: string) => {
     await sdk.miniApp.delete_(id);
@@ -94,6 +153,96 @@ function MiniAppListPage() {
     input.click();
   }, [loadProjects]);
 
+  // 商店安装（增量）：server 按文件级 md5 清单对比本地，仅下载缺失/变化的文件。
+  // 安装后刷新本地列表与三态按钮，保持商店模式便于连续安装。
+  const handleInstallStoreItem = async (item: MiniAppIndexItem) => {
+    setStoreImportingId(item.id);
+    try {
+      const baseUrl = resolveStoreUrl(`mini-app/${item.id}`);
+      await sdk.miniApp.installFromStore({
+        id: item.id,
+        baseUrl,
+        manifest: {
+          name: item.name,
+          type: item.type === 'html' ? 'html' : 'react',
+          description: item.description,
+          version: item.version,
+          tags: item.tags,
+          icon: item.icon,
+        },
+        files: item.files ?? [],
+        storeUrl: baseUrl,
+        storeChecksum: item.md5,
+      });
+      await loadProjects();
+    } finally {
+      setStoreImportingId(null);
+    }
+  };
+
+  // 从 GitHub 仓库地址安装：拉取仓库根 app.json（元数据 + 文件级 md5 清单），server 增量安装
+  const handleInstallGithub = async () => {
+    const repoInfo = parseGithubRepoUrl(githubUrl);
+    if (!repoInfo) {
+      setGithubError(t('store.githubInvalid'));
+      return;
+    }
+    setGithubImporting(true);
+    setGithubError(null);
+    try {
+      const manifestUrl = githubAppManifestUrl(repoInfo.owner, repoInfo.repo);
+      const res = await fetch(manifestUrl);
+      if (!res.ok) throw new Error(`fetch app.json failed: ${res.status}`);
+      const app = (await res.json()) as {
+        id?: string;
+        name?: string;
+        type?: 'react' | 'html';
+        description?: string;
+        version?: string;
+        tags?: string[];
+        icon?: string;
+        enabledPlugins?: string[];
+        mainFile?: string;
+        md5?: string;
+        files?: Array<{ path: string; md5: string }>;
+      };
+      if (!Array.isArray(app.files) || !app.files.length) {
+        throw new Error('app.json has no file list');
+      }
+
+      // id 用仓库名；清单 path 相对仓库根 raw 地址
+      await sdk.miniApp.installFromStore({
+        id: repoInfo.repo,
+        baseUrl: githubRepoRawUrl(repoInfo.owner, repoInfo.repo),
+        manifest: {
+          name: app.name,
+          type: app.type,
+          description: app.description,
+          version: app.version,
+          tags: app.tags,
+          icon: app.icon,
+          enabledPlugins: app.enabledPlugins,
+          mainFile: app.mainFile,
+        },
+        files: app.files,
+        storeUrl: manifestUrl,
+        storeChecksum: app.md5,
+      });
+
+      setGithubUrl('');
+      await loadProjects();
+    } catch {
+      setGithubError(t('store.githubFailed'));
+    } finally {
+      setGithubImporting(false);
+    }
+  };
+
+  const toggleStoreMode = (checked: boolean) => {
+    setStoreMode(checked);
+    if (!checked) setSelectedStoreItem(null);
+  };
+
   // 多选 Dialog 确认回调：返回选中的完整项目数据
   const handlePickerConfirm = useCallback((selected: MiniAppProject[]) => {
     setPickerOpen(false);
@@ -116,18 +265,19 @@ function MiniAppListPage() {
         <div>
           <h2 className="text-lg font-semibold">{t('page.title')}</h2>
           <p className="text-sm text-muted-foreground">
-            {t('page.subtitle')}
+            {storeMode ? t('store.description') : t('page.subtitle')}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={openPicker}>
-            <CheckSquare className="h-4 w-4 mr-2" />
-            {t('page.select')}
-          </Button>
-          <Button variant="outline" onClick={() => setStoreOpen(true)}>
-            <Store className="h-4 w-4 mr-2" />
-            {t('page.store')}
-          </Button>
+        <div className="flex gap-2 items-center">
+          {!storeMode && (
+            <Button variant="outline" onClick={openPicker}>
+              <CheckSquare className="h-4 w-4 mr-2" />
+              {t('page.select')}
+            </Button>
+          )}
+          <Switch checked={storeMode} onCheckedChange={toggleStoreMode}>
+            {t('page.storeMode')}
+          </Switch>
           <Button variant="outline" onClick={handleImport}>
             <Upload className="h-4 w-4 mr-2" />
             {t('page.importZip')}
@@ -143,17 +293,18 @@ function MiniAppListPage() {
       <div className="md:hidden mb-4">
         <h2 className="text-lg font-semibold">{t('page.title')}</h2>
         <p className="text-sm text-muted-foreground mb-3">
-          {t('page.subtitle')}
+          {storeMode ? t('store.description') : t('page.subtitle')}
         </p>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={openPicker}>
-            <CheckSquare className="h-4 w-4 mr-2" />
-            {t('page.select')}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setStoreOpen(true)}>
-            <Store className="h-4 w-4 mr-2" />
-            {t('page.store')}
-          </Button>
+        <div className="flex gap-2 flex-wrap items-center">
+          {!storeMode && (
+            <Button variant="outline" size="sm" onClick={openPicker}>
+              <CheckSquare className="h-4 w-4 mr-2" />
+              {t('page.select')}
+            </Button>
+          )}
+          <Switch checked={storeMode} onCheckedChange={toggleStoreMode}>
+            {t('page.storeMode')}
+          </Switch>
           <Button variant="outline" size="sm" onClick={handleImport}>
             <Upload className="h-4 w-4 mr-2" />
             {t('page.importZip')}
@@ -165,11 +316,78 @@ function MiniAppListPage() {
         </div>
       </div>
 
-      {/* Filters toolbar (search / type / sort / tags) */}
-      <MiniAppFilterToolbar state={filters} className="mb-4" />
+      {/* Filters toolbar (search / type / sort / tags) — 商店模式下替换为 GitHub 安装行 */}
+      {storeMode ? (
+        <>
+          <div className="flex items-center gap-2 mb-3">
+            <Globe className="size-4 shrink-0 text-muted-foreground" />
+            <Input
+              value={githubUrl}
+              onChange={(e) => {
+                setGithubUrl(e.target.value);
+                setGithubError(null);
+              }}
+              placeholder={t('store.githubPlaceholder')}
+              className="h-8 flex-1 text-xs"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !githubImporting && githubUrl.trim()) {
+                  e.preventDefault();
+                  handleInstallGithub();
+                }
+              }}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 shrink-0"
+              disabled={githubImporting || !githubUrl.trim()}
+              onClick={handleInstallGithub}
+            >
+              {githubImporting ? (
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                <>
+                  <Download className="size-3.5 mr-1" />
+                  {t('store.githubInstall')}
+                </>
+              )}
+            </Button>
+          </div>
+          {githubError && <p className="text-xs text-destructive mb-4">{githubError}</p>}
+        </>
+      ) : (
+        <MiniAppFilterToolbar state={filters} className="mb-4" />
+      )}
 
       {/* Content */}
-      {loading ? (
+      {storeMode ? (
+        selectedStoreItem ? (
+          <MiniAppDetail item={selectedStoreItem} onBack={() => setSelectedStoreItem(null)} />
+        ) : storeLoading ? (
+          <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+            {t('store.loading')}
+          </div>
+        ) : storeTemplates.length === 0 ? (
+          <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground">
+            <FileQuestion className="h-10 w-10 mb-3" />
+            <p className="text-sm">{t('store.empty')}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 flex-1 content-start">
+            {storeTemplates.map((item) => (
+              <MiniAppStoreCard
+                key={item.id}
+                item={item}
+                status={getInstallStatus(item)}
+                importing={storeImportingId === item.id}
+                disabled={storeImportingId !== null}
+                onInstall={handleInstallStoreItem}
+                onOpenDetail={(it) => setSelectedStoreItem(it)}
+              />
+            ))}
+          </div>
+        )
+      ) : loading ? (
         <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
           {t('page.loading')}
         </div>
@@ -203,7 +421,6 @@ function MiniAppListPage() {
       )}
 
       <MiniAppCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
-      <MiniAppStoreDialog open={storeOpen} onOpenChange={setStoreOpen} onImported={loadProjects} />
       <MiniAppListDialog
         open={pickerOpen}
         projects={projects}

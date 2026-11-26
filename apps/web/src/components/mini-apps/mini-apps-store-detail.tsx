@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { resolveStoreUrl } from '@/lib/agent-store';
 import { AgentIcon } from '@/components/common/agent-icon';
 import { Markdown } from '@/components/ui/markdown';
-import type { MiniAppIndexItem } from './mini-apps-store-dialog';
+import type { MiniAppIndexItem } from './mini-apps-store-card';
 
 function formatLocalDate(iso?: string): string {
   if (!iso) return '';

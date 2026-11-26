@@ -2,7 +2,7 @@
   "page": {
     "title": "Mini Apps",
     "subtitle": "Create and manage mini apps — lightweight interactive apps for your workflows.",
-    "store": "Store",
+    "storeMode": "Store Mode",
     "importZip": "Import ZIP",
     "create": "New",
     "searchPlaceholder": "Search pages...",
@@ -62,7 +62,6 @@
     "devicesHint": "Adds a device-frame switcher to the preview toolbar. Leave empty to hide."
   },
   "store": {
-    "title": "Template Store",
     "description": "Download Workflow UI templates from the store and import them with one click.",
     "loading": "Loading...",
     "empty": "No templates available",

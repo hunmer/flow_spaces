@@ -121,8 +121,8 @@
     "searchPlaceholder": "Search workflow templates...",
     "loading": "Loading...",
     "empty": "No templates",
-    "agentCount": "{count} Agents",
-    "import": "Import"
+    "import": "Import",
+    "update": "Update"
   },
   "defaultWorkflow": {
     "name": "New Workflow",
