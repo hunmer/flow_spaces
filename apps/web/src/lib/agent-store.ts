@@ -3,7 +3,7 @@
 const STORAGE_KEY = 'flow-spaces:store-api-base';
 
 const DEFAULT_BASE =
-  'https://gh-proxy.org/https://github.com/hunmer/flow-spaces/raw/refs/heads/main/packages/templates/';
+  'https://gh-proxy.org/https://github.com/hunmer/flow_spaces/raw/refs/heads/master/packages/templates/';
 
 // plugins / workflows / mini-app 内容已从主仓库 templates 拆分到独立商店仓库：
 // 索引里的 path / iconUrl / zipUrl 均带分类前缀，路由时剥掉前缀拼到对应仓库根。
