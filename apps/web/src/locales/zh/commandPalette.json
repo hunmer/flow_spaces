@@ -1,0 +1,43 @@
+{
+  "title": "命令面板",
+  "description": "搜索并执行命令",
+  "placeholder": "输入命令或搜索...",
+  "empty": "未找到匹配结果",
+  "emptyAskAbout": "按 Enter 向 AI 询问：{query}",
+  "noResults": "无搜索结果",
+  "typeKeyword": "输入关键词搜索...",
+  "trigger": "搜索",
+  "groups": {
+    "view": "视图",
+    "navigation": "导航",
+    "workflows": "工作流",
+    "miniApps": "小应用",
+    "actions": "操作",
+    "settings": "设置",
+    "registered": "命令"
+  },
+  "nav": {
+    "home": "首页",
+    "workflows": "工作流",
+    "miniApps": "小应用"
+  },
+  "actions": {
+    "newWorkflow": "新建工作流",
+    "toggleDark": "切换深色模式",
+    "toggleLanguage": "切换语言"
+  },
+  "footer": {
+    "navigate": "选择",
+    "open": "打开",
+    "close": "关闭",
+    "ask": "询问 AI",
+    "generating": "生成中",
+    "youAsked": "你问了：{query}"
+  },
+  "ai": {
+    "backToSearch": "返回搜索",
+    "placeholder": "向 AI 提问...",
+    "initialHint": "向 AI 提问任何关于 Flow Spaces 的问题",
+    "error": "生成失败，请重试"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Login to your account",
+  "subtitle": "Enter your password to continue",
+  "secretKey": "Password",
+  "secretPlaceholder": "Password (leave empty if not set)",
+  "verifying": "Verifying...",
+  "login": "Login",
+  "loginFailed": "Login failed",
+  "networkError": "Network error",
+  "manageServers": "Manage Servers"
+}

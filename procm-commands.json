@@ -1,0 +1,10 @@
+{
+  "commands": {
+    "dev": { "script": "pnpm", "args": ["--filter", "@flow-spaces/web", "dev"], "desc": "Vite web dev server (apps/web)" },
+    "dev:server": { "script": "pnpm", "args": ["--filter", "@flow-spaces/server", "dev"], "desc": "Server watch mode (tsx watch src/app.ts)" },
+    "build": { "script": "pnpm", "args": ["build"], "desc": "Build packages then web app" },
+    "build:packages": { "script": "pnpm", "args": ["build:packages"], "desc": "Build @flow-spaces/shared and @flow-spaces/sdk" },
+    "preview": { "script": "pnpm", "args": ["preview"], "desc": "Preview built web app" },
+    "typecheck": { "script": "pnpm", "args": ["typecheck"], "desc": "TypeScript check for web app" }
+  }
+}

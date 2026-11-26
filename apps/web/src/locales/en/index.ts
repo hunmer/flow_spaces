@@ -1,0 +1,75 @@
+import agent from './agent.json';
+import agentCommands from './agentCommands.json';
+import chat from './chat.json';
+import commandPalette from './commandPalette.json';
+import commands from './commands.json';
+import common from './common.json';
+import composer from './composer.json';
+import database from './database.json';
+import editor from './editor.json';
+import flexLayout from './flexLayout.json';
+import folderPicker from './folderPicker.json';
+import git from './git.json';
+import home from './home.json';
+import importNs from './import.json';
+import issue from './issue.json';
+import knowledgeBase from './knowledgeBase.json';
+import login from './login.json';
+import mcps from './mcps.json';
+import models from './models.json';
+import outputStyles from './outputStyles.json';
+import projectSettings from './projectSettings.json';
+import prompts from './prompts.json';
+import providers from './providers.json';
+import settings from './settings.json';
+import shortcuts from './shortcuts.json';
+import sidebar from './sidebar.json';
+import skills from './skills.json';
+import skillsPackages from './skillsPackages.json';
+import sqlite from './sqlite.json';
+import terminal from './terminal.json';
+import tools from './tools.json';
+import workspace from './workspace.json';
+import workspaces from './workspaces.json';
+import workflows from './workflows.json';
+import miniApp from './mini-apps.json';
+
+const messages = {
+  agent,
+  agentCommands,
+  chat,
+  commandPalette,
+  commands,
+  common,
+  composer,
+  database,
+  editor,
+  flexLayout,
+  folderPicker,
+  git,
+  home,
+  import: importNs,
+  issue,
+  knowledgeBase,
+  login,
+  mcps,
+  models,
+  outputStyles,
+  projectSettings,
+  prompts,
+  providers,
+  settings,
+  shortcuts,
+  sidebar,
+  skills,
+  skillsPackages,
+  sqlite,
+  terminal,
+  tools,
+  workspace,
+  workspaces,
+  workflows,
+  'mini-apps': miniApp,
+};
+
+export default messages;

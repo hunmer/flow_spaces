@@ -1,0 +1,25 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+apps/web/public/monaco/vs/bicep-DF5aW17k.js
+# flow-spaces-data 内容已拆分到独立仓库（商店内容源），整目录不入库：
+# plugins   -> https://github.com/hunmer/flow-spaces-plugins
+# workflows -> https://github.com/hunmer/flow-spaces-workflows
+# mini-apps -> https://github.com/hunmer/flow-spaces-mini-apps
+packages/server/flow-spaces-data/plugins/
+packages/server/flow-spaces-data/workflows/
+packages/server/flow-spaces-data/mini-apps/
+
+# server 运行日志不入库
+packages/logs/
+.review/
+
+# 迁移验收过程产物（冒烟脚本/缓存）；截图在 docs/boardui-migration/ 单独入库
+.acl-recovery/
+.npm-cache/
+
+# TS 增量构建缓存
+*.tsbuildinfo
+packages/server/public/uploads/*
+packages/server/flow-spaces-data/llm/providers.json

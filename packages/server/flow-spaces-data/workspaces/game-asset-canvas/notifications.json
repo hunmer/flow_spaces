@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "a9c31c0d-113e-403c-8456-e92928d0580f",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:30:08.260Z"
+  },
+  {
+    "id": "1afcbecf-e155-4e7c-b44f-4da361e813ff",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:31:58.308Z"
+  },
+  {
+    "id": "807aa381-4cfb-42bb-a89f-4785204e8c7d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:36:13.195Z"
+  },
+  {
+    "id": "e3fadd73-290e-4e2e-b679-8566ef7db9ba",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:38:17.004Z"
+  },
+  {
+    "id": "b1e4d3cd-fd01-41e3-a5ed-e9fbbe61d39d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:38:39.910Z"
+  },
+  {
+    "id": "b9b1afe8-fb0c-44db-8e8e-4bdda0d36db3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:38:50.423Z"
+  },
+  {
+    "id": "209a4296-b2de-44fb-a7ce-37c2700b7461",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:39:33.380Z"
+  },
+  {
+    "id": "c20f060e-a52d-4647-9b5e-8f00b80c1989",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:40:37.073Z"
+  },
+  {
+    "id": "0c449fc7-0a04-4f4f-98f7-fca09d209486",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:40:48.951Z"
+  },
+  {
+    "id": "a754bd0a-297a-428f-82d3-dd4114474a6c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:40:56.510Z"
+  },
+  {
+    "id": "13747a83-0852-42a6-8d69-5c7984f83037",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:41:31.200Z"
+  },
+  {
+    "id": "5fb23671-f46e-43e1-8f6a-0a124ddbfa22",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T02:42:51.442Z"
+  },
+  {
+    "id": "7c8ab6fb-1e1c-4c56-80ad-66da1842eb83",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "GIF 拆帧处理完成，产出 36 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T03:30:20.032Z"
+  },
+  {
+    "id": "793285d7-577f-4ef3-8fdf-1a06166572f0",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "生成配音生成了 1 个音频",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T03:58:27.823Z"
+  },
+  {
+    "id": "9ea0bb66-2b56-44c8-be6c-6a5f499f5675",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "建筑素材生成完成，产出 4 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T04:21:31.671Z"
+  },
+  {
+    "id": "ab9f8d96-6403-42c2-9d6d-c4ccb8121cac",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "建筑素材生成完成，产出 4 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T04:22:09.653Z"
+  },
+  {
+    "id": "b72c31f6-0850-422b-96fe-ca7b76e42a4f",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "建筑素材生成完成，产出 4 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-19T04:22:14.537Z"
+  },
+  {
+    "id": "4b07766e-2dfe-4bac-8bf6-95e1ac260ca3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T04:02:00.295Z"
+  },
+  {
+    "id": "3f333093-21f0-40bc-9c80-b1e900ef8d5e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T04:02:11.734Z"
+  },
+  {
+    "id": "a706f955-02dc-4778-8331-4fa93e279093",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T05:37:48.008Z"
+  },
+  {
+    "id": "15f25be4-1f88-4a2b-8101-ba8f252dedc2",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T08:29:47.017Z"
+  },
+  {
+    "id": "ea1372d6-04d2-4458-acc2-52213e039283",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T09:33:59.193Z"
+  },
+  {
+    "id": "16beda50-f631-491c-909d-1f343072ef3b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T09:38:54.278Z"
+  },
+  {
+    "id": "05fb4141-6e51-4475-8df8-bbd934a085a5",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T12:12:17.896Z"
+  },
+  {
+    "id": "b370eef1-c88d-406d-971f-a14a5043dba2",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "反推完成",
+    "description": "已反推 1 张图的提示词",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T12:37:32.227Z"
+  },
+  {
+    "id": "1612b4db-182b-4d32-b80f-5aee3af16361",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "反推完成",
+    "description": "已反推 1 张图的提示词",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T12:39:41.698Z"
+  },
+  {
+    "id": "7f66c2b1-1efc-4d2a-aa46-7de5bd9bd2ba",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "反推完成",
+    "description": "已反推 1 张图的提示词",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T12:49:27.153Z"
+  },
+  {
+    "id": "76d6e944-5f29-4bb5-a4d7-9fcb4e329c94",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-20T12:51:08.115Z"
+  },
+  {
+    "id": "e5c466d0-8d64-4030-8ae8-8ad697f942df",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "反推完成",
+    "description": "已反推 1 张图的提示词",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:22:15.379Z"
+  },
+  {
+    "id": "970510cb-8c73-458a-a363-2c9471243c7f",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:30:57.784Z"
+  },
+  {
+    "id": "4d0cd797-5fc9-4ba7-9ec1-91b0689db6ff",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:31:12.795Z"
+  },
+  {
+    "id": "a0377afa-7bb3-4fc5-ad6f-a12218badf87",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:31:25.278Z"
+  },
+  {
+    "id": "ee50b503-0822-4c79-8be7-4a0ab6ca4aa6",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:32:01.120Z"
+  },
+  {
+    "id": "1943092b-37f6-4437-a6b5-b61d625c20b1",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T02:32:25.107Z"
+  },
+  {
+    "id": "1a4373ad-5c61-47e1-9ffd-522443db8285",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T03:36:22.863Z"
+  },
+  {
+    "id": "0370c2f2-47c3-452d-a8bb-295870dc08e1",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T04:21:03.364Z"
+  },
+  {
+    "id": "27983b30-e938-4162-90e4-2d3d8fd2d23e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T05:14:18.305Z"
+  },
+  {
+    "id": "3a13b602-9885-4223-9133-39a065388c50",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "编辑图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T06:13:31.888Z"
+  },
+  {
+    "id": "8e5cb8ed-fa9a-4f29-8743-c33c657e7393",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "GIF 拆帧处理完成，产出 35 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T10:39:38.049Z"
+  },
+  {
+    "id": "cc0717fe-3220-4da8-90f1-1f7e6cf7535d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-21T10:40:15.821Z"
+  },
+  {
+    "id": "72f74574-6587-4631-85a6-54309eb47d37",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "裁切图片处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T01:25:35.079Z"
+  },
+  {
+    "id": "503a90ff-39c5-44bc-b62f-b45d9e4f3b84",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "GIF 合成处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T01:45:02.243Z"
+  },
+  {
+    "id": "b8d0afcb-9f8a-4ba1-87d3-b8b801b9c5d6",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T03:48:34.344Z"
+  },
+  {
+    "id": "06210e02-b68d-4de4-ab15-37b4ea1cca90",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T03:48:52.313Z"
+  },
+  {
+    "id": "6efb5059-0ac4-4da3-8a93-1c46188e26fa",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T03:50:37.777Z"
+  },
+  {
+    "id": "560ca140-a680-41de-b87a-3821f42c61e3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T07:23:16.491Z"
+  },
+  {
+    "id": "b3c64caf-ad25-4aa8-a6db-8195cd880395",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T07:26:34.090Z"
+  },
+  {
+    "id": "d463ca6c-2768-4908-894d-39501699ec1c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T07:28:14.999Z"
+  },
+  {
+    "id": "fe21a5db-b9c4-42e4-b532-554c24034143",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "生成视频生成了 1 个视频",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T10:22:14.373Z"
+  },
+  {
+    "id": "d2cc5437-eedd-45f8-a4bc-0faf970b2af0",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:50:18.749Z"
+  },
+  {
+    "id": "ea499482-7b00-4427-8070-cf05a259bb1a",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:50:37.015Z"
+  },
+  {
+    "id": "50eabd4a-7b70-4bdf-b0f2-02954e68735b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:50:51.499Z"
+  },
+  {
+    "id": "7044a550-06e2-49fa-ab41-4385e478e578",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:50:53.283Z"
+  },
+  {
+    "id": "28e2ea88-02d5-483b-8c04-c66600445de3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:50:55.270Z"
+  },
+  {
+    "id": "3eec29d8-a505-4e14-8e94-1c511e85010b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:17.544Z"
+  },
+  {
+    "id": "79ef895e-df8e-4ed3-9e0c-24d94af5f3a6",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:19.861Z"
+  },
+  {
+    "id": "fe1709f9-d1ff-4ab4-90d5-cb353b12aa6a",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:31.310Z"
+  },
+  {
+    "id": "77addcc2-5dfd-4e35-8bdf-d68c2466190c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:33.508Z"
+  },
+  {
+    "id": "f3116b47-bd4f-4ca9-9fe9-82839efc1051",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:41.453Z"
+  },
+  {
+    "id": "c2f41d54-a2c7-4a9b-9ca6-ea94f5d29389",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:51:52.588Z"
+  },
+  {
+    "id": "21ac5661-7dd6-42b5-abe3-c566a89affa3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:52:05.999Z"
+  },
+  {
+    "id": "b7ebcd6e-2fa5-43cc-88da-0983bfd41dc4",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T11:52:07.594Z"
+  },
+  {
+    "id": "941364ed-0933-42f6-b0b5-d24c9d3a1377",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:03:37.978Z"
+  },
+  {
+    "id": "1e6ab97a-29d9-4745-919c-b2014c7d34ec",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:03:53.128Z"
+  },
+  {
+    "id": "442649b7-b434-4e60-8338-adea7e5a4eb6",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:04:03.335Z"
+  },
+  {
+    "id": "af744469-e03d-434c-9d87-1eb4a8fbf26c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:04:31.738Z"
+  },
+  {
+    "id": "9a4f19be-c3df-4348-8626-42411a9ab690",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:04:56.879Z"
+  },
+  {
+    "id": "286a9f35-104e-4b27-ad7c-b3890c93bbc7",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:05:01.796Z"
+  },
+  {
+    "id": "d7a943fb-5f36-48f8-a3cf-72f71d6569b4",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:05:15.951Z"
+  },
+  {
+    "id": "667c2f44-f576-4940-8f00-96b565c29e9d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:25:21.249Z"
+  },
+  {
+    "id": "3b6ba950-714f-471b-a721-43cdff4140dc",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:37:11.442Z"
+  },
+  {
+    "id": "6e1d9284-0fca-4e56-b73e-e31be486f3d6",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:37:15.074Z"
+  },
+  {
+    "id": "8a0264e8-0a8d-4e2f-8125-b4494eec74aa",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:40:05.782Z"
+  },
+  {
+    "id": "502c5961-37fe-4d26-a0bf-5c39170fc8ef",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:40:07.544Z"
+  },
+  {
+    "id": "bc348235-04ac-49d9-9ee2-00c19bc3b467",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:40:12.864Z"
+  },
+  {
+    "id": "e9dd6268-136b-4121-b89b-75a9023e7d24",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-23T12:49:24.051Z"
+  },
+  {
+    "id": "31c8f41d-489c-40cb-94dc-3934b27681f5",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:21:20.344Z"
+  },
+  {
+    "id": "d41f9b1e-cc26-46b2-b40e-6f568269b2e5",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:21:31.551Z"
+  },
+  {
+    "id": "58e9180b-5ba2-4f79-8ed4-474d3ea7723e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:21:40.635Z"
+  },
+  {
+    "id": "b3b47ba7-116a-49d7-b6ce-14ebb75465ac",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:21:45.786Z"
+  },
+  {
+    "id": "18800a67-7052-47e3-9434-d9ad54c9c8fc",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:21:54.330Z"
+  },
+  {
+    "id": "4f55b42c-5d8d-4a2e-bea1-402f98ed4aea",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:22:00.538Z"
+  },
+  {
+    "id": "ec60c4f4-0e9a-40ea-82e9-453e23c1ea05",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:22:33.647Z"
+  },
+  {
+    "id": "58716d0e-f927-4409-af99-1a67afef7083",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:22:40.188Z"
+  },
+  {
+    "id": "7e49eb8e-502e-47f5-94df-c25db3d9413d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:34:03.173Z"
+  },
+  {
+    "id": "26f495b9-96f3-4441-a697-a10d7945d8c7",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:34:16.827Z"
+  },
+  {
+    "id": "4d54c567-22da-4cc7-9b44-73ad2b362e78",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:34:49.587Z"
+  },
+  {
+    "id": "21bf8b96-f784-4486-9acf-475083507ddf",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:34:55.954Z"
+  },
+  {
+    "id": "194bac0a-2a1d-4457-a4ab-4be8c1316678",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:35:02.460Z"
+  },
+  {
+    "id": "84689440-dc09-4bbb-bcb1-c8ca5fcd46d8",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:35:24.385Z"
+  },
+  {
+    "id": "dd1a848e-b468-4f98-bbd5-e0c7b479f42b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:50:59.399Z"
+  },
+  {
+    "id": "8e8beb03-268c-4e62-8aea-f9b5c1c2a5c4",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T02:56:42.859Z"
+  },
+  {
+    "id": "fb771a63-8739-4c93-8681-f98e460c1517",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:53:18.485Z"
+  },
+  {
+    "id": "c3162635-f73a-4adb-8f4c-3bc3806e8e1c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:53:28.427Z"
+  },
+  {
+    "id": "95272ff1-1a38-40ae-b7b0-e9c3093464bf",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:53:34.780Z"
+  },
+  {
+    "id": "bb0b5c94-a502-446d-b5fe-ef14fe711257",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:53:39.922Z"
+  },
+  {
+    "id": "d66698c2-22f7-4c7e-a79e-8f7c9b275dac",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:54:00.133Z"
+  },
+  {
+    "id": "1378ae0c-aad5-4a3b-ba61-381d946864fd",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T03:54:03.703Z"
+  },
+  {
+    "id": "aa63cb0b-645d-482a-b555-b095d0c21f76",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:30.822Z"
+  },
+  {
+    "id": "56b1aa70-7a4d-48f0-b31d-2d9ce839aa5e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:32.768Z"
+  },
+  {
+    "id": "4541aaf7-798a-4553-8067-fed9e0e574da",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:37.269Z"
+  },
+  {
+    "id": "57be336b-ff3e-423d-8b6e-d12f3e09c5ee",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:42.773Z"
+  },
+  {
+    "id": "e93a6928-4644-4541-98ce-bc84fc437523",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:47.436Z"
+  },
+  {
+    "id": "0c9b0656-5bcc-4e45-822c-e3edec4bafa9",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:52.677Z"
+  },
+  {
+    "id": "b2c0975e-5018-4a19-90f4-935e0ca7aad8",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:56:57.857Z"
+  },
+  {
+    "id": "e3d76c83-3454-4ff3-a420-769bac76db6b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:57:01.447Z"
+  },
+  {
+    "id": "bf7ffece-fdcf-4646-b209-1df9647515ed",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:57:07.054Z"
+  },
+  {
+    "id": "aa18ee79-45c5-4847-bb1f-df0381c138e3",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:57:14.093Z"
+  },
+  {
+    "id": "c120ae16-62f8-42b0-981c-27567e6bd644",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "像素画降采样处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-24T07:57:20.304Z"
+  },
+  {
+    "id": "e26a74af-097d-43bd-be71-dc2dd82b0c8d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T05:39:13.075Z"
+  },
+  {
+    "id": "9896bb43-de0f-4ea8-a7be-21b7506606cb",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T06:01:11.017Z"
+  },
+  {
+    "id": "d5903e4c-4874-4a41-b160-643a782b10bd",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:10:09.539Z"
+  },
+  {
+    "id": "a09ba064-d6b4-43ed-bcf6-c92a98206e3f",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:11:32.736Z"
+  },
+  {
+    "id": "65f3c632-fb1c-4305-b2a6-633f1d14f5a8",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:13:00.796Z"
+  },
+  {
+    "id": "6dbb3a96-a226-4fcb-a229-ffb901c54b79",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:15:07.843Z"
+  },
+  {
+    "id": "390e684a-03d6-421a-8ab8-c3a21ffb1e3e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:20:51.571Z"
+  },
+  {
+    "id": "ef9a3229-a42e-4be3-bc81-f70500ce6d35",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:35:01.837Z"
+  },
+  {
+    "id": "fea48280-7184-4908-8fa3-a6704691e64b",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T07:47:40.227Z"
+  },
+  {
+    "id": "7ab0fd4e-f327-4fdb-864e-727ea678a14a",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T08:04:09.691Z"
+  },
+  {
+    "id": "c55af856-b7e5-41b3-812b-60ab2d5c1df0",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T08:08:13.944Z"
+  },
+  {
+    "id": "8ce3fbeb-cf4f-4ee2-a561-7e2ac196b0ef",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T08:42:22.946Z"
+  },
+  {
+    "id": "197c9afe-36ff-4b16-91a7-63acf43403e4",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T08:59:43.073Z"
+  },
+  {
+    "id": "9556788e-8c0e-4ff0-b475-f44d9892cc21",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T09:02:08.989Z"
+  },
+  {
+    "id": "ca62111b-dccd-42bd-9d44-d5b3e359c084",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T10:34:19.504Z"
+  },
+  {
+    "id": "e1e65fa0-9ea9-44ec-a5c6-b4f549c41430",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T10:36:04.928Z"
+  },
+  {
+    "id": "e0e1f836-b646-41ed-b521-11c61941e5a7",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T10:37:11.757Z"
+  },
+  {
+    "id": "38f9bf8e-d240-470f-a9f2-1fb0913ff37c",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "文字生成图片产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T12:13:38.888Z"
+  },
+  {
+    "id": "a29950f6-f268-4876-8b6b-79aa1fe516f8",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T12:14:34.897Z"
+  },
+  {
+    "id": "a570d9dd-6cf3-4c48-92a1-145ec7637515",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "生成完成",
+    "description": "图生图产出了 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-25T12:15:29.876Z"
+  },
+  {
+    "id": "2668a13e-5d39-40bf-923a-f86f4d3d301d",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T02:59:12.536Z"
+  },
+  {
+    "id": "180e70b1-7aeb-4658-95df-f4b46b4ec1bd",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "网格拼接处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T02:59:37.794Z"
+  },
+  {
+    "id": "87113996-424e-48b8-9f7c-0e47686fd04e",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "裁切图片处理完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T11:25:54.856Z"
+  },
+  {
+    "id": "44ef5c7c-49cb-41ab-9be6-aab50bd0901f",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "提取深度图完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T12:12:27.397Z"
+  },
+  {
+    "id": "5748569a-acd1-4594-8a73-6796f9c6e076",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "提取深度图完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T12:40:35.162Z"
+  },
+  {
+    "id": "e0fd4ed7-e2e8-43d6-9dde-4934374e3771",
+    "workspaceId": "game-asset-canvas",
+    "type": "mini_app",
+    "title": "处理完成",
+    "description": "压缩图片完成，产出 1 张图",
+    "data": {},
+    "read": false,
+    "createdAt": "2026-11-26T12:45:09.942Z"
+  }
+]

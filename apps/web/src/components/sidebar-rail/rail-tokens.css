@@ -1,0 +1,105 @@
+/**
+ * Scoped uiarc design tokens — subset of E:\ui-templates\src\uiarc\tokens.css
+ * values (sidebar-rail / metrics-dashboard 共用), scoped to the
+ * `.fs-rail-tokens` class instead of `:root`.
+ *
+ * Why scoped: the app's globals.css already defines `--background/--foreground/
+ * --accent/--border/--success` on `:root` with shadcn semantics; defining the uiarc
+ * set globally would override the whole app theme. Elements that opt into the
+ * uiarc look (sidebar rail/sheet/topbar, body-portal tooltips, the /home
+ * metrics dashboard card) each carry this class, so tokens never leak into
+ * other routed app content.
+ *
+ * Dark mode: app ThemeProvider toggles the `dark` class on <html>; the template
+ * used `data-theme="dark"` — both selectors are honored below.
+ */
+
+.fs-rail-tokens {
+  /* neutral scale (subset used by tokens below) */
+  --neutral-0: oklch(100% 0 0);
+  --neutral-2: oklch(97.8% 0 0);
+  --neutral-7: oklch(59% 0 0);
+  --neutral-8: oklch(46% 0 0);
+  --neutral-11: oklch(15% 0 0);
+
+  --background: var(--neutral-0);
+  --surface: var(--neutral-0);
+  --surface-raised: var(--neutral-0);
+  --surface-muted: var(--neutral-2);
+  --foreground: var(--neutral-11);
+  --text-secondary: var(--neutral-8);
+  --text-muted: var(--neutral-7);
+  --border: oklch(93.5% 0 0);
+  --border-subtle: oklch(96.5% 0 0);
+  --border-strong: oklch(82% 0 0);
+  --accent: oklch(33% 0 0);
+  --accent-strong: oklch(24% 0 0);
+  --accent-foreground: var(--background);
+  --success: oklch(50% 0.12 162);
+  --danger: oklch(53% 0.18 10);
+
+  /* checkbox/switch glyphs (metrics-dashboard Compare) */
+  --control-on: oklch(23% 0 0);
+  --control-glyph: oklch(100% 0 0);
+
+  --shadow-raised: 0 6px 18px oklch(0% 0 0 / 0.065), 0 1px 3px oklch(0% 0 0 / 0.035);
+  --shadow-floating: 0 20px 48px oklch(0% 0 0 / 0.105), 0 3px 10px oklch(0% 0 0 / 0.045);
+
+  --radius-control: 1.125rem;
+  --radius-pill: 9999px;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  /* metrics-dashboard card scale */
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+
+  /* map uiarc fonts onto the app font stack */
+  --font-body: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+  --font-display: var(--font-body);
+  --tracking-body: -0.01em;
+  --leading-body: 1.4;
+
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+
+  --duration-instant: 0.12s;
+  --duration-fast: 0.16s;
+  --duration-standard: 0.24s;
+  --duration-considered: 0.48s;
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root.dark .fs-rail-tokens,
+:root[data-theme="dark"] .fs-rail-tokens {
+  --neutral-0: oklch(100% 0 0);
+  --neutral-2: oklch(26% 0 0);
+  --neutral-7: oklch(64% 0 0);
+  --neutral-8: oklch(77% 0 0);
+  --neutral-11: oklch(96% 0 0);
+
+  --background: oklch(19% 0 0);
+  --surface: oklch(21.5% 0 0);
+  --surface-raised: oklch(24% 0 0);
+  --surface-muted: oklch(26% 0 0);
+  --foreground: oklch(96% 0 0);
+  --text-secondary: oklch(77% 0 0);
+  --text-muted: oklch(64% 0 0);
+  --border: oklch(29% 0 0);
+  --border-subtle: oklch(25% 0 0);
+  --border-strong: oklch(40% 0 0);
+  --accent: oklch(80% 0 0);
+  --accent-strong: oklch(91% 0 0);
+  --accent-foreground: var(--background);
+  --success: oklch(79% 0.14 162);
+  --danger: oklch(71% 0.155 8);
+
+  --control-on: oklch(93% 0 0);
+  --control-glyph: oklch(19% 0 0);
+
+  --shadow-raised: 0 8px 22px oklch(0% 0 0 / 0.22);
+  --shadow-floating: 0 22px 55px oklch(0% 0 0 / 0.34);
+}

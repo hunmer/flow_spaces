@@ -1,0 +1,43 @@
+{
+  "title": "Command Palette",
+  "description": "Search and run commands",
+  "placeholder": "Type a command or search...",
+  "empty": "No results found.",
+  "emptyAskAbout": "Press Enter to ask AI about: {query}",
+  "noResults": "No search results",
+  "typeKeyword": "Type a keyword to search...",
+  "trigger": "Search",
+  "groups": {
+    "view": "View",
+    "navigation": "Navigation",
+    "workflows": "Workflows",
+    "miniApps": "Mini Apps",
+    "actions": "Actions",
+    "settings": "Settings",
+    "registered": "Commands"
+  },
+  "nav": {
+    "home": "Home",
+    "workflows": "Workflows",
+    "miniApps": "Mini Apps"
+  },
+  "actions": {
+    "newWorkflow": "New workflow",
+    "toggleDark": "Toggle dark mode",
+    "toggleLanguage": "Toggle language"
+  },
+  "footer": {
+    "navigate": "Navigate",
+    "open": "Open",
+    "close": "Close",
+    "ask": "Ask AI",
+    "generating": "Generating",
+    "youAsked": "You asked: {query}"
+  },
+  "ai": {
+    "backToSearch": "Back to search",
+    "placeholder": "Ask AI anything...",
+    "initialHint": "Ask AI anything about Flow Spaces",
+    "error": "Something went wrong. Please retry."
+  }
+}

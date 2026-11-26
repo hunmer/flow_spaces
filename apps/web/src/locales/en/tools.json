@@ -1,0 +1,99 @@
+{
+  "title": "Tools",
+  "search": "Search tools...",
+  "empty": "No tools found",
+  "filterAll": "All",
+  "detailTitle": "Tool Details",
+  "enabledCount": "{count}/{total} tools enabled",
+  "selectTools": "Select Tools",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+  "filterByAgent": "Filter by Agent",
+  "selected": "Selected",
+  "available": "Available",
+  "clear": "Clear",
+  "boundTo": "Bound to",
+  "categories": {
+    "channel": "Channel",
+    "files": "Files",
+    "workflow": "Workflow"
+  },
+  "items": {
+    "CreateCurrentChannelIssue": {
+      "label": "Create Current Issue",
+      "description": "Create and bind an issue for the current channel."
+    },
+    "ViewCurrentChannelIssue": {
+      "label": "View Current Issue",
+      "description": "View the issue and comments bound to the current channel."
+    },
+    "AddCurrentChannelComment": {
+      "label": "Add Current Comment",
+      "description": "Add a comment to the issue bound to the current channel."
+    },
+    "ListWorkspaceFiles": {
+      "label": "List Workspace Files",
+      "description": "List files and directories in the current workspace filesystem."
+    },
+    "SearchWorkspaceFiles": {
+      "label": "Search Workspace Files",
+      "description": "Search workspace file paths and UTF-8 text file content."
+    },
+    "ReadWorkspaceFile": {
+      "label": "Read Workspace File",
+      "description": "Read a UTF-8 text file from the current workspace filesystem."
+    },
+    "WriteWorkspaceFile": {
+      "label": "Write Workspace File",
+      "description": "Write UTF-8 text content to a workspace file."
+    },
+    "DeleteWorkspacePath": {
+      "label": "Delete Workspace Path",
+      "description": "Delete a workspace file or directory recursively."
+    },
+    "MoveWorkspacePath": {
+      "label": "Move Workspace Path",
+      "description": "Move or rename a workspace file or directory."
+    },
+    "list_available_agent_capabilities": {
+      "label": "List Available Agent Capabilities",
+      "description": "List all available MCP servers, skills, and built-in tools in the current environment."
+    },
+    "list_agent_capabilities": {
+      "label": "List Agent Capabilities",
+      "description": "List available agent presets and their configured MCPs, skills, and tools."
+    },
+    "list_workflows": {
+      "label": "List Workflows",
+      "description": "List saved workflows and their start node input fields."
+    },
+    "search_workflow": {
+      "label": "Search Workflow",
+      "description": "Search saved workflows by name or description."
+    },
+    "execute_workflow_sync": {
+      "label": "Execute Workflow Sync",
+      "description": "Start a workflow and wait for completion, pause, error, or timeout."
+    },
+    "execute_workflow_async": {
+      "label": "Execute Workflow Async",
+      "description": "Start a workflow and return its execution ID immediately."
+    },
+    "get_workflow_result": {
+      "label": "Get Workflow Result",
+      "description": "Read a workflow execution result by execution ID."
+    },
+    "get_workflow_latest_result": {
+      "label": "Get Latest Workflow Result",
+      "description": "Read the latest execution result for a workflow."
+    },
+    "get_bound_workflow_plugin_tool": {
+      "label": "Get Bound Workflow Plugin Tool",
+      "description": "Query workflow plugin tools that are explicitly bound to the current agent."
+    },
+    "execute_bound_workflow_plugin_tool": {
+      "label": "Execute Bound Workflow Plugin Tool",
+      "description": "Execute a workflow plugin tool that is explicitly bound to the current agent."
+    }
+  }
+}

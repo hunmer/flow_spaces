@@ -1,0 +1,11 @@
+{
+  "name": "@flow-spaces/agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate-index": "node generate-index.mjs",
+    "build": "node generate-index.mjs",
+    "serve": "http-server . -p 3101 --cors -c-1"
+  }
+}

@@ -1,0 +1,16 @@
+/**
+ * SPA 专用入口样式（T8 高度链修复，业务文件零改动）。
+ *
+ * 原 Next 应用没有 #root 容器（body 下直接渲染布局），SPA 多了 #root 这一层。
+ * html/body 已有 h-[var(--app-content-height)]（index.html），
+ * 但 #root 无高度样式时 `h-full` 链条在此断裂（ReactFlow 画布塌陷到内容高）。
+ *
+ * 高度语义对齐原仓库：
+ *   - ViewportInsets 组件（components/layout/viewport-insets.tsx，运行时挂载）
+ *     在桌面端把 --app-content-height 设为视口高度（visualViewport 计算），
+ *     并处理移动端键盘/inset；
+ *   - styles/globals.css 的 `--app-content-height: 100dvh` 是加载早期的 fallback。
+ */
+#root {
+  height: var(--app-content-height, 100dvh);
+}
