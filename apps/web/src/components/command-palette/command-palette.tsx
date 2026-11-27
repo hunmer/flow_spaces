@@ -389,7 +389,7 @@ export function CommandPalette() {
               <CommandEmpty>
                 {searchQuery.trim() ? t('emptyAskAbout', { query: searchQuery.trim() }) : t('empty')}
               </CommandEmpty>
-              <CommandList className="h-72 max-h-72">
+              <CommandList className="h-72 max-h-72 not-empty:scroll-py-3 not-empty:p-3">
                 {(group) => {
                   const g = group as PaletteGroup;
                   return (
@@ -402,6 +402,7 @@ export function CommandPalette() {
                           return (
                             <CommandItem
                               key={paletteItem.value}
+                              className="gap-x-3"
                               onClick={(event) => {
                                 event.preventDefault();
                                 run(paletteItem);

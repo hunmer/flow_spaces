@@ -98,6 +98,17 @@
   border-top: 1px solid var(--border-subtle);
 }
 
+/* 折叠态：两枚图标按钮从并排改为单列垂直展示 */
+.sidebar[data-collapsed] .iconRow {
+  flex-direction: column;
+  height: auto;
+}
+
+.sidebar[data-collapsed] .localeToggle {
+  flex: none;
+  height: 40px;
+}
+
 .localeToggle {
   display: flex;
   flex: 1;
