@@ -18,6 +18,33 @@ async function waitForServer(url, timeoutMs = 30000) {
   return false;
 }
 
+const DEV_ORIGIN = new URL(DEV_URL).origin;
+
+// window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
+// 外部链接交给系统浏览器。子窗口递归应用同一规则。
+function applyWindowOpenHandler(w) {
+  w.webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      if (new URL(url).origin === DEV_ORIGIN) {
+        return {
+          action: "allow",
+          overrideBrowserWindowConfiguration: {
+            webPreferences: {
+              preload: path.join(__dirname, "preload.mjs"),
+              contextIsolation: true,
+              nodeIntegration: false,
+            },
+          },
+        };
+      }
+    } catch { /* 非法 URL，走外部浏览器 */ }
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+  // 新窗口里的 window.open 也应用同一规则
+  w.webContents.on("did-create-window", (child) => applyWindowOpenHandler(child));
+}
+
 async function createWindow() {
   const win = new BrowserWindow({
     width: 1440,
@@ -29,11 +56,7 @@ async function createWindow() {
     },
   });
 
-  // 外部链接交给系统浏览器打开
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: "deny" };
-  });
+  applyWindowOpenHandler(win);
 
   const up = await waitForServer(DEV_URL);
   if (up) {
