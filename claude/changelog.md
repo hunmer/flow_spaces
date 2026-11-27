@@ -1,3 +1,8 @@
+## 2026-11-27 — 文件图标集精简 + 功能图谱重建
+
+- `apps/web/public/icons/` 870→20（vscode 文件图标集全量精简为 20 种基础类型图标，`file-icon.tsx` 映射同步）。
+- feature_map 重建：33 功能节点 / 1626 文件 / 100% 覆盖（ghost 0 / vendored 0 / unmapped 0）；tracked 2730→1628。
+
 ## 2026-11-27 — A 套 workspace 瘦身 + SDK 裁剪（0 消费全砍）
 
 - **A 套 workspace 瘦身**（agent-spaces 遗留概念）：`routes/workspace.ts` 169→10 行（仅 GET list，POST /clone 随消费方消亡连带删 `adapters/git.ts`+simple-git）；`workspace-store` 删 3 孤儿函数；`types/workspace.ts` Workspace 删 8 死字段+5 死类型；web 删 chat-input-info-bar miniAppTools 段、editor-panel workspace 绑定；sdk workspace 模块 73→20 行
