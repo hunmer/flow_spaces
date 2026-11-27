@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { PlusIcon, RotateCcwIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   defaultStoreSources,
   fetchStoreSourcesConfig,
@@ -30,7 +31,7 @@ const CATEGORY_TITLE_KEYS: Record<StoreCategory, string> = {
 };
 
 function newSource(): StoreSource {
-  return { id: crypto.randomUUID(), name: '', url: '' };
+  return { id: crypto.randomUUID(), name: '', url: '', default: false };
 }
 
 /** 行内校验：每行 URL 必填（http(s) 或 / 开头的相对路径）。 */
@@ -84,15 +85,34 @@ export function StoreSourcesPanel() {
   };
 
   const addSource = (category: StoreCategory) => {
-    setConfig((prev) => ({ ...prev, [category]: [...prev[category], newSource()] }));
+    setConfig((prev) => {
+      // 空类别的第一个源自动成为默认（radio 必须有选中项）
+      const source = prev[category].length === 0 ? { ...newSource(), default: true } : newSource();
+      return { ...prev, [category]: [...prev[category], source] };
+    });
     setDirty(true);
     setSaved(false);
   };
 
   const removeSource = (category: StoreCategory, id: string) => {
+    setConfig((prev) => {
+      const remaining = prev[category].filter((source) => source.id !== id);
+      // 删掉默认源后，剩余列表第一个补为默认
+      const removed = prev[category].find((source) => source.id === id);
+      if (removed?.default && remaining.length > 0 && !remaining.some((s) => s.default)) {
+        remaining[0] = { ...remaining[0], default: true };
+      }
+      return { ...prev, [category]: remaining };
+    });
+    setDirty(true);
+    setSaved(false);
+  };
+
+  /** radio 选中默认源：同类别仅该源 default=true。 */
+  const setDefaultSource = (category: StoreCategory, id: string) => {
     setConfig((prev) => ({
       ...prev,
-      [category]: prev[category].filter((source) => source.id !== id),
+      [category]: prev[category].map((source) => ({ ...source, default: source.id === id })),
     }));
     setDirty(true);
     setSaved(false);
@@ -150,35 +170,46 @@ export function StoreSourcesPanel() {
             </span>
           </h3>
           <div className="flex flex-col gap-2">
-            {config[category].map((source, index) => (
-              <div key={source.id} className="flex items-center gap-2">
-                <Input
-                  className="w-28 shrink-0"
-                  value={source.name}
-                  placeholder={t('storeSourceName')}
-                  aria-label={`${t(CATEGORY_TITLE_KEYS[category])} #${index + 1} ${t('storeSourceName')}`}
-                  onChange={(event) => updateSource(category, source.id, { name: event.target.value })}
-                />
-                <Input
-                  className="min-w-0 flex-1"
-                  value={source.url}
-                  placeholder={t('storeSourceUrl')}
-                  aria-label={`${t(CATEGORY_TITLE_KEYS[category])} #${index + 1} ${t('storeSourceUrl')}`}
-                  spellCheck={false}
-                  onChange={(event) => updateSource(category, source.id, { url: event.target.value })}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon-sm"
-                  aria-label={t('storeSourceDelete')}
-                  disabled={saving}
-                  onClick={() => removeSource(category, source.id)}
-                >
-                  <Trash2Icon aria-hidden="true" />
-                </Button>
-              </div>
-            ))}
+            <RadioGroup
+              value={config[category].find((source) => source.default === true)?.id}
+              onValueChange={(id) => setDefaultSource(category, id)}
+              className="contents"
+              aria-label={`${t(CATEGORY_TITLE_KEYS[category])} ${t('storeSourceDefault')}`}
+            >
+              {config[category].map((source, index) => (
+                <div key={source.id} className="flex items-center gap-2">
+                  <RadioGroupItem
+                    value={source.id}
+                    aria-label={`${t(CATEGORY_TITLE_KEYS[category])} #${index + 1} ${t('storeSourceDefault')}`}
+                  />
+                  <Input
+                    className="w-28 shrink-0"
+                    value={source.name}
+                    placeholder={t('storeSourceName')}
+                    aria-label={`${t(CATEGORY_TITLE_KEYS[category])} #${index + 1} ${t('storeSourceName')}`}
+                    onChange={(event) => updateSource(category, source.id, { name: event.target.value })}
+                  />
+                  <Input
+                    className="min-w-0 flex-1"
+                    value={source.url}
+                    placeholder={t('storeSourceUrl')}
+                    aria-label={`${t(CATEGORY_TITLE_KEYS[category])} #${index + 1} ${t('storeSourceUrl')}`}
+                    spellCheck={false}
+                    onChange={(event) => updateSource(category, source.id, { url: event.target.value })}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label={t('storeSourceDelete')}
+                    disabled={saving}
+                    onClick={() => removeSource(category, source.id)}
+                  >
+                    <Trash2Icon aria-hidden="true" />
+                  </Button>
+                </div>
+              ))}
+            </RadioGroup>
             {config[category].length === 0 && (
               <p className="text-xs text-muted-foreground">{t('storeSourceEmpty')}</p>
             )}

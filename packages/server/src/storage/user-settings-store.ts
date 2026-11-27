@@ -6,6 +6,8 @@ export interface StoreSourceEntry {
   id: string;
   name: string;
   url: string;
+  /** 该类别默认源（拉取时优先尝试）；归一后每类非空列表恰有一个默认。 */
+  default?: boolean;
 }
 
 export type StoreSourcesConfig = Record<'plugins' | 'workflows' | 'mini-app', StoreSourceEntry[]>;

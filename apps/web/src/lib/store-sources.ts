@@ -5,12 +5,12 @@
  * 源地址管理。用户可在 设置 → 商店源 中增删改，持久化到后端
  * `GET/PUT /api/user/store-sources`（user-settings.json 的 storeSources 字段）。
  *
- * 默认每类两个源：GitHub（gh-proxy raw 拉独立商店仓库）+ 本地服务端口
- * （`/agents-store` 静态路由）。未保存过配置（sources = null）时回落默认。
+ * 默认每类两个源：GitHub（gh-proxy raw 拉独立商店仓库）+ 本地镜像端口
+ * （商店仓库 `npm run serve` 启动 http-server：plugins 8091 / workflows
+ * 8092 / mini-app 8093）。未保存过配置（sources = null）时回落默认。
  */
 
 import { fetchWithAuth } from './auth';
-import { getActiveServerUrl } from './server';
 
 /** 三类商店类别（与索引 path 前缀一致）。 */
 export const STORE_CATEGORIES = ['plugins', 'workflows', 'mini-app'] as const;
@@ -20,6 +20,8 @@ export interface StoreSource {
   id: string;
   name: string;
   url: string;
+  /** 该类别的默认源（拉取时优先尝试）；归一后每类非空列表恰有一个默认。 */
+  default?: boolean;
 }
 
 export type StoreSourcesConfig = Record<StoreCategory, StoreSource[]>;
@@ -55,13 +57,27 @@ function trimBase(url: string): string {
   return url.trim().replace(/\/+$/, '');
 }
 
-/** 默认源：GitHub + 本地服务端口（跟随当前激活 server 地址）。 */
+/** 各类别本地镜像源端口（商店仓库 package.json `serve` 脚本，http-server 监听 0.0.0.0）。 */
+const LOCAL_SOURCE_PORT: Record<StoreCategory, string> = {
+  plugins: '8091',
+  workflows: '8092',
+  'mini-app': '8093',
+};
+
+/** 本地镜像源地址：跟随当前访问主机名（局域网他机访问也指向对应主机）。 */
+function localSourceBase(category: StoreCategory): string {
+  const hostname =
+    typeof window !== 'undefined' && window.location.hostname
+      ? window.location.hostname
+      : '127.0.0.1';
+  return `http://${hostname}:${LOCAL_SOURCE_PORT[category]}`;
+}
+
+/** 默认源：GitHub（默认勾选）+ 本地镜像端口（商店仓库 `npm run serve`）。 */
 export function defaultStoreSources(): StoreSourcesConfig {
-  const serverBase = trimBase(getActiveServerUrl() ?? '');
-  const localBase = serverBase ? `${serverBase}/agents-store` : '/agents-store';
   const build = (category: StoreCategory): StoreSource[] => [
-    { id: `github-${category}`, name: 'GitHub', url: GITHUB_REPO_BASE[category] },
-    { id: `local-${category}`, name: 'Local', url: localBase },
+    { id: `github-${category}`, name: 'GitHub', url: GITHUB_REPO_BASE[category], default: true },
+    { id: `local-${category}`, name: 'Local', url: localSourceBase(category), default: false },
   ];
   return {
     plugins: build('plugins'),
@@ -78,7 +94,30 @@ let cachedConfig: StoreSourcesConfig | null = null;
 let configLoaded = false;
 let loadingPromise: Promise<void> | null = null;
 
-/** 宽松归一：过滤非法条目，补齐缺失类别（后端已强校验，这里只做兜底）。 */
+/**
+ * 归一默认源标记：多个 default=true 只保留第一个；非空列表全部未标记时
+ * 补第一个为默认。保证每类非空列表恰有一个默认源（radio 语义）。
+ */
+function normalizeDefaultFlags(entries: StoreSource[]): StoreSource[] {
+  if (entries.length === 0) return entries;
+  let seenDefault = false;
+  const marked = entries.map((entry) => {
+    const isDefault = entry.default === true && !seenDefault;
+    if (isDefault) seenDefault = true;
+    return entry.default === isDefault ? entry : { ...entry, default: isDefault };
+  });
+  if (seenDefault) return marked;
+  return [{ ...marked[0], default: true }, ...marked.slice(1)];
+}
+
+/** 排序：默认源排最前，其余保持原顺序（故障转移时默认源优先尝试）。 */
+export function orderedSources(sources: StoreSource[]): StoreSource[] {
+  const index = sources.findIndex((source) => source.default === true);
+  if (index <= 0) return sources;
+  return [sources[index], ...sources.slice(0, index), ...sources.slice(index + 1)];
+}
+
+/** 宽松归一：过滤非法条目，补齐缺失类别，归一默认源标记（后端已强校验，这里只做兜底）。 */
 export function normalizeStoreSources(value: unknown): StoreSourcesConfig | null {
   if (value == null || typeof value !== 'object') return null;
   const raw = value as Record<string, unknown>;
@@ -92,10 +131,11 @@ export function normalizeStoreSources(value: unknown): StoreSourcesConfig | null
         id: typeof item.id === 'string' && item.id ? item.id : `src-${category}-${index}`,
         name: typeof item.name === 'string' ? item.name : '',
         url: typeof item.url === 'string' ? item.url.trim() : '',
+        default: item.default === true,
       }))
       .filter((item) => item.url !== '');
-    result[category] = entries;
-    if (entries.length > 0) anyValid = true;
+    result[category] = normalizeDefaultFlags(entries);
+    if (result[category].length > 0) anyValid = true;
   }
   return anyValid ? result : null;
 }
@@ -122,7 +162,7 @@ export function ensureStoreSourcesLoaded(): Promise<void> {
   return loadingPromise;
 }
 
-/** 当前生效配置（同步）：用户配置优先，空类别回落该类默认，未加载用默认。 */
+/** 当前生效配置（同步）：用户配置优先，空类别回落该类默认，未加载用默认；列表已按默认源排前。 */
 export function getEffectiveStoreSources(): StoreSourcesConfig {
   const user = cachedConfig;
   const defaults = defaultStoreSources();
@@ -130,7 +170,7 @@ export function getEffectiveStoreSources(): StoreSourcesConfig {
   const merged = {} as StoreSourcesConfig;
   for (const category of STORE_CATEGORIES) {
     const list = user[category];
-    merged[category] = list && list.length > 0 ? list : defaults[category];
+    merged[category] = list && list.length > 0 ? orderedSources(list) : defaults[category];
   }
   return merged;
 }
@@ -152,7 +192,7 @@ export function rememberActiveSourceBase(category: StoreCategory, base: string):
   activeSourceBases.set(category, base);
 }
 
-/** 类别当前应使用的源 base：记忆中可用源优先，否则列表第一个。 */
+/** 类别当前应使用的源 base：记忆中可用源优先，否则默认源（排序列表第一位）。 */
 export function resolveActiveSourceBase(category: StoreCategory): string {
   const sources = getEffectiveStoreSources()[category];
   if (sources.length === 0) return trimBase(GITHUB_REPO_BASE[category]);

@@ -21,6 +21,7 @@ const localStorageStub = {
 const { fetchStoreIndex, resolveStoreUrl } = await import('./agent-store');
 const {
   defaultStoreSources,
+  getEffectiveStoreSources,
   matchStoreCategory,
   updateStoreSourcesCache,
 } = await import('./store-sources');
@@ -42,13 +43,14 @@ test.after(() => {
   delete (globalThis as Record<string, unknown>).localStorage;
 });
 
-test('默认源：每类两个地址（GitHub + 本地端口）', () => {
+test('默认源：每类两个地址（GitHub + 本地镜像端口）', () => {
   const defaults = defaultStoreSources();
+  const localPorts = { plugins: '8091', workflows: '8092', 'mini-app': '8093' } as const;
   for (const category of ['plugins', 'workflows', 'mini-app'] as const) {
     const urls = defaults[category].map((source) => source.url);
     assert.equal(urls.length, 2, `${category} 默认应有两个源`);
     assert.match(urls[0] ?? '', /^https:\/\/gh-proxy\.org\/https:\/\/github\.com\//, `${category} 第一个源应为 GitHub`);
-    assert.equal(urls[1], 'http://127.0.0.1:3110/agents-store', `${category} 第二个源应为本地端口地址`);
+    assert.equal(urls[1], `http://127.0.0.1:${localPorts[category]}`, `${category} 第二个源应为本地镜像端口`);
   }
 });
 
@@ -100,6 +102,72 @@ test('用户某类源为空 → 回落该类默认源；重置后回落默认 Gi
     resolveStoreUrl('plugins/index.json'),
     'https://gh-proxy.org/https://github.com/hunmer/flow-spaces-plugins/raw/refs/heads/main/index.json',
   );
+});
+
+test('默认源排序：radio 标记的默认源优先尝试，其余保持顺序故障转移', async () => {
+  updateStoreSourcesCache({
+    plugins: [
+      { id: 'mirror', name: 'Mirror', url: 'https://mirror.example/plugins/', default: false },
+      { id: 'bad', name: 'Bad', url: 'https://bad.example/plugins', default: true },
+    ],
+    workflows: [],
+    'mini-app': [],
+  });
+  calls.length = 0;
+
+  const items = await fetchStoreIndex<{ id: string }>('plugins/index.json');
+  assert.deepEqual(items, [{ id: 'plugin-a', name: 'Plugin A' }]);
+  // 默认源 bad 排最前先试，失败后落到 mirror
+  assert.deepEqual(calls, [
+    'https://bad.example/plugins/index.json',
+    'https://mirror.example/plugins/index.json',
+  ]);
+
+  // 无记忆时散件解析也走默认源（bad）而非列表第一位（mirror）
+  calls.length = 0;
+  updateStoreSourcesCache({
+    plugins: [
+      { id: 'mirror', name: 'Mirror', url: 'https://mirror.example/plugins/' },
+      { id: 'bad', name: 'Bad', url: 'https://bad.example/plugins', default: true },
+    ],
+    workflows: [],
+    'mini-app': [],
+  });
+  assert.equal(
+    resolveStoreUrl('plugins/plugin-a/icon.png'),
+    'https://bad.example/plugins/plugin-a/icon.png',
+  );
+});
+
+test('默认源归一：多个 default 只留第一个；全部未标记时第一个补默认', () => {
+  updateStoreSourcesCache({
+    plugins: [
+      { id: 'a', name: 'A', url: 'https://a.example/plugins', default: true },
+      { id: 'b', name: 'B', url: 'https://b.example/plugins', default: true },
+      { id: 'c', name: 'C', url: 'https://c.example/plugins', default: true },
+    ],
+    workflows: [],
+    'mini-app': [],
+  });
+  let effective = getEffectiveStoreSources().plugins;
+  assert.deepEqual(effective.map((s) => s.id), ['a', 'b', 'c']);
+  assert.deepEqual(effective.map((s) => s.default), [true, false, false]);
+
+  updateStoreSourcesCache({
+    plugins: [
+      { id: 'a', name: 'A', url: 'https://a.example/plugins' },
+      { id: 'b', name: 'B', url: 'https://b.example/plugins' },
+    ],
+    workflows: [],
+    'mini-app': [],
+  });
+  effective = getEffectiveStoreSources().plugins;
+  assert.deepEqual(effective.map((s) => s.id), ['a', 'b']);
+  assert.deepEqual(effective.map((s) => s.default), [true, false]);
+
+  // 默认配置：GitHub 为默认源
+  assert.equal(defaultStoreSources().plugins[0].default, true);
+  assert.equal(defaultStoreSources().plugins[1].default, false);
 });
 
 test('非三类内容（agents/mcps/skills）走主仓库默认 base', () => {

@@ -311,7 +311,12 @@ function sanitizeStoreSources(input: unknown): { sources: StoreSourcesConfig | n
       if (item === null || typeof item !== 'object' || Array.isArray(item)) {
         return { error: `sources.${category} items must be objects` };
       }
-      const { id, name, url } = item as { id?: unknown; name?: unknown; url?: unknown };
+      const { id, name, url, default: isDefault } = item as {
+        id?: unknown;
+        name?: unknown;
+        url?: unknown;
+        default?: unknown;
+      };
       if (typeof url !== 'string' || !url.trim()) return { error: 'source url is required' };
       const cleanUrl = url.trim();
       // 允许绝对 http(s) 地址与同源相对路径（/agents-store 等）
@@ -320,7 +325,18 @@ function sanitizeStoreSources(input: unknown): { sources: StoreSourcesConfig | n
       }
       const cleanId = typeof id === 'string' && id.trim() ? id.trim() : randomUUID();
       const cleanName = typeof name === 'string' ? name.trim().slice(0, 64) : '';
-      sources[category].push({ id: cleanId, name: cleanName, url: cleanUrl });
+      sources[category].push({ id: cleanId, name: cleanName, url: cleanUrl, default: isDefault === true });
+    }
+    // 归一默认源：多个 default=true 只留第一个；非空且全部未标记时第一个补默认
+    const entries = sources[category];
+    if (entries.length > 0) {
+      let hasDefault = false;
+      for (const entry of entries) {
+        const isDefault = entry.default === true && !hasDefault;
+        if (isDefault) hasDefault = true;
+        entry.default = isDefault;
+      }
+      if (!hasDefault) entries[0]!.default = true;
     }
   }
   return { sources };

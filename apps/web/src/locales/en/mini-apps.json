@@ -4,6 +4,8 @@
     "subtitle": "Create and manage mini apps — lightweight interactive apps for your workflows.",
     "storeTab": "Store",
     "importZip": "Import ZIP",
+    "import": "Import",
+    "importGithub": "Import from GitHub",
     "create": "New",
     "searchPlaceholder": "Search pages...",
     "loading": "Loading...",
@@ -85,7 +87,10 @@
     "githubPlaceholder": "https://github.com/owner/repo (app.json manifest at repo root)",
     "githubInstall": "Install",
     "githubInvalid": "Invalid GitHub repository URL",
-    "githubFailed": "Install failed: make sure app.json (manifest + md5 file list) exists at repo root"
+    "githubFailed": "Install failed: make sure app.json (manifest + md5 file list) exists at repo root",
+    "githubDialogDesc": "Enter a GitHub repository URL to install a standalone mini-app. The repo root must contain app.json (metadata + md5 file manifest); files download incrementally.",
+    "githubLabel": "Repository URL",
+    "githubCancel": "Cancel"
   },
   "detail": {
     "loading": "Loading...",
