@@ -300,22 +300,10 @@ export function CommonEditorPanel({
 
   useEffect(() => { loadTreeRef.current = loadTree; }, [loadTree]);
   useEffect(() => { loadDirectoryRef.current = loadDirectory; }, [loadDirectory]);
-  useEffect(() => {
-    setShowHiddenFiles(workspace?.editorSettings?.showHiddenFiles ?? true);
-  }, [workspace?.id, workspace?.editorSettings?.showHiddenFiles]);
 
   const updateShowHiddenFiles = useCallback((showHidden: boolean) => {
     setShowHiddenFiles(showHidden);
-    if (!workspaceId || !workspace) return;
-    sdk.workspace.update(workspaceId, {
-      editorSettings: {
-        ...workspace.editorSettings,
-        showHiddenFiles: showHidden,
-      },
-    }).then(upsertWorkspace).catch(() => {
-      toast.error(t('saveSettingsFailed'));
-    });
-  }, [t, upsertWorkspace, workspace, workspaceId]);
+  }, []);
 
   // 有搜索词时走后端全局搜索，否则清空
   useEffect(() => {

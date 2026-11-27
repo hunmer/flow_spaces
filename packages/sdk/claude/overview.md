@@ -2,13 +2,15 @@
 
 ## 架构
 
-`createSDK(config)` → `SDK` 对象，包含 24 个 API 模块。
+`createSDK(config)` → `SDK` 对象，包含 17 个 API 模块（2026-11-27 死代码清理后）。
 
 每个模块通过 `createXxxApi(http: HttpClient)` 工厂函数创建，接收统一的 HTTP 客户端。
 
-## API 模块列表（24 个）
+## API 模块列表（17 个）
 
-account, agent, agent-commands, agent-store, auth, avatar, channel, chat, editor, external-import, font, inspector, knowledge-base, llm, mcps, mini-apps, notification, search, skills, sqlite, tools, workflow, workflow-plugin, workspace
+agent, agent-commands, auth, channel, chat, editor, external-import, knowledge-base, llm, mcps, mini-apps, search, skills, sqlite, workflow, workflow-plugin, workspace
+
+（2026-11-27 删 account/agent-store/avatar/font/inspector/notification/tools 7 个 0 消费模块及 46 个 0 消费方法；sdk 仅服务本仓前端，未消费不保留）
 
 ## 使用方式
 

@@ -1,3 +1,11 @@
+## 2026-11-27 — A 套 workspace 瘦身 + SDK 裁剪（0 消费全砍）
+
+- **A 套 workspace 瘦身**（agent-spaces 遗留概念）：`routes/workspace.ts` 169→10 行（仅 GET list，POST /clone 随消费方消亡连带删 `adapters/git.ts`+simple-git）；`workspace-store` 删 3 孤儿函数；`types/workspace.ts` Workspace 删 8 死字段+5 死类型；web 删 chat-input-info-bar miniAppTools 段、editor-panel workspace 绑定；sdk workspace 模块 73→20 行
+- **chat workspaces 数据清理**：flow-spaces-data/workspaces/ 删 A/B 套存量目录（注册表清空、game-asset-canvas/tts 删），tracked 25→19；B 套自愈链验证通过（浏览器绑定自动重建）
+- **SDK 裁剪**（用户裁定"本仓未消费全部砍"）：删 7 个 0 消费模块（account/agent-store/avatar/font/inspector/notification/tools）+46 个 0 消费方法（24→17 模块）；demo 删 7 死页（issue/task/agent-store/agent-cfg/content/settings/version，多为调不存在 API 的幻觉页）+editor 页裁 worktree 区块+home 探活改 /api/health
+- 验证：sdk/server/web tsc 全绿、build:packages 重建、dist 死模块产物清理；A 套冒烟（独立 3199 端口）六死端点 404
+- 文档同步：sdk/server/根 CLAUDE.md+claude 全套（route-index 全重写 25 路由、sdk 覆盖矩阵 17 模块、changelog 三处）
+
 # 根目录变更记录
 
 > 仅保留最近 5 条。

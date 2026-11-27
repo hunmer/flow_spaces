@@ -1,13 +1,13 @@
 # packages/sdk (`@flow-spaces/sdk`)
 
-前端统一 API SDK。封装所有后端 HTTP 调用，提供 `createSDK()` 工厂函数返回 24 个 API 模块、200+ 方法。依赖 `@flow-spaces/shared` 类型。纯逻辑层，无 UI 依赖。
+前端统一 API SDK。封装所有后端 HTTP 调用，提供 `createSDK()` 工厂函数返回 17 个 API 模块（2026-11-27 死代码清理后）。依赖 `@flow-spaces/shared` 类型。纯逻辑层，无 UI 依赖。仅服务本仓前端，未消费的模块/方法不保留。
 
 ## 约定
 
 - 新增 API：在 `src/modules/` 创建模块，在 `src/index.ts` 注册。
 - 每个模块接收 `HttpClient`，返回 API 方法对象。
 - Token 通过 `getToken` 回调延迟获取。
-- 模块覆盖域：account / agent / agent-commands / agent-store / auth / avatar / channel / chat / editor / external-import / font / inspector / knowledge-base / llm / mcps / mini-apps / notification / search / skills / sqlite / tools / workflow / workflow-plugin / workspace。
+- 模块覆盖域：agent / agent-commands / auth / channel / chat / editor / external-import / knowledge-base / llm / mcps / mini-apps / search / skills / sqlite / workflow / workflow-plugin / workspace（2026-11-27 删 account/agent-store/avatar/font/inspector/notification/tools 7 个 0 消费模块）。
 
 ## 文件索引
 
@@ -19,5 +19,5 @@
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-15
-- **已扫描**: package.json、src/index.ts、src/modules/（24 模块逐一核对，旧文档 38/39/40 为过时数字）
+- **更新时间**: 2026-11-27
+- **已扫描**: package.json、src/index.ts、src/modules/（17 模块；死代码清理删 7 模块 46 方法，dist 同步）

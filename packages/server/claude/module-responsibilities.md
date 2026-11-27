@@ -40,7 +40,6 @@
 | Pi | `pi-runtime.ts` | @earendil-works/pi-coding-agent |
 | Open Agent SDK | `open-agent-sdk-runtime.ts` | @codeany/open-agent-sdk |
 | Agent Runtime | `agent-runtime.ts`, `agent-runtime-types.ts` | 统一接口（`AgentRuntimeKind` 8 种） |
-| Git | `git.ts` | simple-git |
 
 ## Agent 运行时 (agents/)
 

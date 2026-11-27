@@ -15,7 +15,6 @@ import { Slider } from "@/components/ui/slider";
 // BoardUI 迁移：tooltip 改用 base 版本
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import { sdk } from "@/lib/sdk";
-import type { MiniAppProject } from "@flow-spaces/sdk";
 import { pluginApi } from "@/lib/workflow-plugin-api";
 import { useAgentStore } from "@/stores/agent";
 import { useChatStore } from "@/stores/chat";
@@ -50,7 +49,6 @@ const EMPTY_HISTORY: never[] = [];
 const DEFAULT_CONTEXT_LENGTH = 20;
 
 type DisplayTodoItem = TodoItem & { title?: string; content?: string };
-type MiniAppToolItem = { miniAppId: string; miniAppName: string; name: string; description?: string };
 
 function getTodoTitle(todo: DisplayTodoItem, fallback: string) {
   return todo.subject || todo.title || todo.activeForm || todo.content || fallback;
@@ -112,8 +110,6 @@ export function ChatInputInfoBar({
   const [contextOpen, setContextOpen] = useState(false);
   const [workflowOpen, setWorkflowOpen] = useState(false);
   const [workflowToolOpen, setWorkflowToolOpen] = useState(false);
-  const [miniAppToolOpen, setMiniAppToolOpen] = useState(false);
-  const [miniAppTools, setMiniAppTools] = useState<MiniAppToolItem[]>([]);
   const [workflowDialogOpen, setWorkflowDialogOpen] = useState(false);
   const [pluginToolDialogOpen, setPluginToolDialogOpen] = useState(false);
   const [mcpsDialogOpen, setMcpsDialogOpen] = useState(false);
@@ -135,29 +131,6 @@ export function ChatInputInfoBar({
   useEffect(() => {
     if (workflowOpen) void loadWorkflows();
   }, [loadWorkflows, workflowOpen]);
-
-  useEffect(() => {
-    if (!miniAppToolOpen) return;
-    let cancelled = false;
-    void Promise.all([sdk.workspace.get(workspaceId), sdk.miniApp.list()]).then(async ([workspace, projects]) => {
-      const selected = projects.filter((project: MiniAppProject) => workspace.miniAppIds?.includes(project.id));
-      const entries = await Promise.all(selected.map(async (project: MiniAppProject) => {
-        try {
-          const { tools } = await sdk.miniApp.listTools(project.id);
-          return tools.map((tool) => ({
-            miniAppId: project.id,
-            miniAppName: project.name,
-            name: tool.name,
-            description: tool.description,
-          }));
-        } catch {
-          return [];
-        }
-      }));
-      if (!cancelled) setMiniAppTools(entries.flat());
-    });
-    return () => { cancelled = true; };
-  }, [miniAppToolOpen, workspaceId]);
 
   // 工作流插件 tool 描述缓存：`${pluginId}:${toolName}` -> description
   const [pluginToolDescMap, setPluginToolDescMap] = useState<Record<string, string>>({});
@@ -583,47 +556,6 @@ export function ChatInputInfoBar({
               {tCommon("manage")}
             </button>
           </div>
-        </PopoverContent>
-      </Popover>
-
-      <Popover open={miniAppToolOpen} onOpenChange={setMiniAppToolOpen}>
-        <PopoverTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 px-2 rounded-full border border-transparent hover:bg-accent text-muted-foreground text-xs"
-            />
-          }
-        >
-          <IconTools className="size-3" />
-          <span className="bar-label">{t("input.miniAppTools")}{miniAppTools.length ? ` ${miniAppTools.length}` : ""}</span>
-        </PopoverTrigger>
-        <PopoverContent align="start" sideOffset={6} className="min-w-[220px] max-w-xs p-1.5">
-          {miniAppTools.length ? (
-            <div className="flex max-h-72 flex-col gap-1 overflow-y-auto">
-              {miniAppTools.map((tool) => (
-                <TooltipTrigger key={`${tool.miniAppId}:${tool.name}`}>
-                  <button
-                    type="button"
-                    className="rounded-md px-2 py-1 text-left text-xs hover:bg-accent"
-                    onClick={() => {
-                      onInsertText?.(`Use ${tool.name} tools with miniapp_id: ${tool.miniAppId} and toolName: ${tool.name}`);
-                      setMiniAppToolOpen(false);
-                    }}
-                  >
-                    {tool.miniAppName}: {tool.name}
-                  </button>
-                  {tool.description ? <Tooltip placement="right" className="max-w-xs">{tool.description}</Tooltip> : null}
-                </TooltipTrigger>
-              ))}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
-              <IconTools size={16} className="opacity-60 shrink-0" />
-              {t("input.noMiniAppTools")}
-            </div>
-          )}
         </PopoverContent>
       </Popover>
 

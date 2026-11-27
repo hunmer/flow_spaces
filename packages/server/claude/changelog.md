@@ -1,3 +1,10 @@
+## 2026-11-27 — A 套 workspace 瘦身 + sdk 死链连带清理
+
+- `routes/workspace.ts` 169→10 行：删 POST /clone（唯一消费方 sdk.workspace.cloneSse 已随 sdk 裁剪删除）+六端点（create/:id/agent-templates/put/delete/reveal），仅留 GET / 列表；`adapters/git.ts`（gitClone）与 simple-git 依赖连带删除
+- `storage/workspace-store.ts` 删 create/update/delete 三孤儿；`services/channel.ts` 删 ensureGeneralChannel
+- `types/workspace.ts`（shared）Workspace 删 8 死字段+5 死类型；flow-spaces-data/workspaces/ 存量数据清理（A 套注册表清空、B 套 UUID 目录删除，tracked 25→19）
+- 文档：route-index.md 全重写（25 路由实测）、public-interfaces.md 端点表修（删 issue/command/git/worktree/hooks 过时行）、CLAUDE.md（adapters 13）
+
 # Changelog
 
 > 本文件只记录 Server 模块 AI 上下文的更新历史，最近 5 条倒序排列。

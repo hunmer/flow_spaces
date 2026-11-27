@@ -16,18 +16,13 @@
 
 | 路由模块 | 挂载路径 | 路由文件 |
 |---|---|---|
-| Workspace | `/api/workspaces` | `routes/workspace.ts` |
+| Workspace | `/api/workspaces`（仅 `GET /` 列表；clone 已删） | `routes/workspace.ts` |
 | File | `/api/workspaces/:id/files` | `routes/file.ts` |
 | Channel | `/api/workspaces/:id/channels` | `routes/channel.ts` |
-| Issue | `/api/workspaces/:id/issues` | `routes/issue.ts` |
-| Command | `/api/workspaces/:id/commands` | `routes/command.ts` |
 | Agent | `/api/workspaces/:id/agents`, `/api/agents`（含 `GET /api/agents/sessions/:agentSessionId/detail` 会话详情下钻） | `routes/agent.ts` |
-| Git | `/api/workspaces/:id/git` | `routes/git.ts` |
 | Search | `/api/workspaces/:id/search` | `routes/search.ts` |
 | Knowledge Base | `/api/workspaces/:id/knowledge-bases` | `routes/knowledge-base.ts` |
-| Worktree | `/api/workspaces/:id/worktrees` | `routes/worktree.ts` |
 | Notification | `/api/workspaces/:id/notifications` | `routes/notification.ts` |
-| Hook | `/api/workspaces/:id/hooks` | `routes/hooks.ts` |
 | Workflow | `/api/workflows` | `routes/workflow.ts` |
 | Plugin | `/api/plugins` | `routes/plugin.ts` |
 | Mini App | `/api/mini-apps` | `routes/mini-apps.ts` |
