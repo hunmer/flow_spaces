@@ -14,6 +14,8 @@ import { Progress, ProgressIndicator, ProgressTrack } from '@/components/ui/prog
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar } from '@/components/base/avatar/avatar';
+import { Switch } from '@/components/base/switch/switch';
+import { useMiniAppFastLoading, useMiniAppLoadingStore } from '@/stores/mini-app-loading';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Info, AlertTriangle, MessageSquareText, Monitor, RefreshCw, Workflow as WorkflowIcon } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -52,6 +54,9 @@ export interface MiniAppPreviewProps {
   files?: Record<string, string>;
   /** entry point filename */
   mainFile?: string;
+  /** 已预构建的 CommonJS 组件 bundle，无需浏览器编译。 */
+  compiled?: boolean;
+  compiledCss?: string;
   /** 支持的设备类型（manifest.devices），如 ['mobile', 'ipad', 'pc'] */
   devices?: string[];
   allowScroll?: boolean;
@@ -100,8 +105,10 @@ function PluginAvatarGroup({ avatars, renderHoverCard }: {
   );
 }
 
-export function MiniAppPreview({ type, sourceCode, error, onError, projectId, projectName, hideHeader, enabledPlugins, files, mainFile, enableAgents, agentChatPlacement, devices, allowScroll = false, onReload, headerStart, toolbarExtra, shareUrl, reloadSignal }: MiniAppPreviewProps) {
+export function MiniAppPreview({ type, sourceCode, error, onError, projectId, projectName, hideHeader, enabledPlugins, files, mainFile, compiled, compiledCss, enableAgents, agentChatPlacement, devices, allowScroll = false, onReload, headerStart, toolbarExtra, shareUrl, reloadSignal }: MiniAppPreviewProps) {
   const t = useTranslations('mini-apps');
+  const fastLoading = useMiniAppFastLoading(projectId);
+  const setAppFastLoading = useMiniAppLoadingStore((state) => state.setAppFastLoading);
   const workflowT = useTranslations('workflows');
   const [infoOpen, setInfoOpen] = useState(false);
   const [chatDockOpen, setChatDockOpen] = useState(false);
@@ -399,6 +406,17 @@ export function MiniAppPreview({ type, sourceCode, error, onError, projectId, pr
           </span>
           <div className="flex-1 flex justify-end items-center gap-1">
             {toolbarExtra}
+            <div className="flex shrink-0 items-center px-2" title={t('preview.fastLoadingTip')}>
+              <Switch
+                size="sm"
+                isSelected={fastLoading}
+                isDisabled={reloading}
+                onChange={(enabled) => { if (projectId) setAppFastLoading(projectId, enabled); }}
+                aria-label={t('preview.fastLoading')}
+              >
+                <span className="text-caption-1-semibold text-text-secondary">{t('preview.fastLoading')}</span>
+              </Switch>
+            </div>
             {availableDevices.length > 0 && (
               <Select value={device} onValueChange={(v) => setDevice(v ?? 'none')}>
                 <SelectTrigger className="h-7 w-auto gap-1 text-xs px-2" aria-label={t('preview.device')}>
@@ -505,7 +523,7 @@ export function MiniAppPreview({ type, sourceCode, error, onError, projectId, pr
           const previewEl = (() => {
             const rendererEl = (
               <MiniAppRenderer
-                key={reloadKey}
+                key={`${compiled ? 'dist' : 'source'}:${reloadKey}`}
                 type={type}
                 sourceCode={sourceCode}
                 onError={handleRendererError}
@@ -513,6 +531,8 @@ export function MiniAppPreview({ type, sourceCode, error, onError, projectId, pr
                 taskEvents={taskEvents}
                 files={files}
                 mainFile={mainFile}
+                compiled={compiled}
+                compiledCss={compiledCss}
                 allowScroll={allowScroll}
                 projectId={projectId}
               />

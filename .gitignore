@@ -21,4 +21,7 @@ packages/logs/
 *.tsbuildinfo
 apps/web/debug.log
 
+# electron 打包产物（deploy 输出 + electron-builder out）
+apps/web/electron-build/
+
 

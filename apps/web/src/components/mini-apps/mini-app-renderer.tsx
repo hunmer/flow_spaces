@@ -21,6 +21,8 @@ interface MiniAppRendererProps {
   files?: Record<string, string>;
   /** entry point filename (used to resolve relative imports from sourceCode) */
   mainFile?: string;
+  compiled?: boolean;
+  compiledCss?: string;
   allowScroll?: boolean;
   /** 显式传入 miniapp projectId（同进程渲染时 URL 不含 ?id=，无法从 location 解析） */
   projectId?: string;
@@ -191,6 +193,8 @@ export function MiniAppRenderer({
   taskEvents,
   files,
   mainFile,
+  compiled = false,
+  compiledCss,
   allowScroll = false,
   projectId,
 }: MiniAppRendererProps) {
@@ -217,9 +221,18 @@ export function MiniAppRenderer({
     componentProps: resolvedComponentProps,
     files,
     mainFile,
+    compiled,
   });
 
   useEffect(() => installFlowSpacesUiGlobals(), []);
+
+  useEffect(() => {
+    if (!compiledCss) return;
+    const style = document.createElement('style');
+    style.textContent = compiledCss;
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, [compiledCss]);
 
   useEffect(() => {
     const previousAgentSpaces = (window as any).AgentSpaces;

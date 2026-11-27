@@ -251,5 +251,7 @@
     "off": "Off",
     "selectPlaceholder": "Select...",
     "saving": "Saving..."
-  }
+  },
+  "miniAppFastLoading": "Mini App fast loading",
+  "miniAppFastLoadingDescription": "Prefer prebuilt bundles, falling back to source when unavailable. On by default in production. Per-app settings take priority; changes reload apps following this setting."
 }

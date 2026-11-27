@@ -1,13 +1,13 @@
 /**
- * HTTP-level integration tests for the minimal AI SDK chat module.
+ * HTTP-level integration tests for the minimal LangChain chat module.
  *
  * Spins up a local node:http stub server on a random 127.0.0.1 port and lets
- * the REAL @ai-sdk/openai (`.chat()` Chat Completions) and @ai-sdk/anthropic
- * providers serialize requests / parse responses over the wire — no
- * languageModel mocks, no real keys, no external network. The server is
- * closed in a finally block in every test.
+ * the REAL @langchain/openai / @langchain/anthropic providers serialize
+ * requests / parse responses over the wire (via initChatModel) — no model
+ * mocks, no real keys, no external network. The server is closed in a
+ * finally block in every test.
  *
- * Run: cd packages/server && pnpm exec tsx --test src/adapters/ai-sdk-chat-http.test.ts
+ * Run: cd packages/server && pnpm exec tsx --test src/adapters/langchain-chat-http.test.ts
  */
 
 import test from 'node:test';
@@ -16,7 +16,7 @@ import http from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
-import { aiSdkChat, type AiSdkChatTool } from './ai-sdk-chat.js';
+import { langchainChat, type LangChainChatTool } from './langchain-chat.js';
 
 interface RecordedRequest {
   method: string | undefined;
@@ -140,7 +140,7 @@ function anthropicTextResponse(text: string, model: string) {
   };
 }
 
-function makeWeatherTool(executed: Array<{ input: unknown; toolUseId: string }>): AiSdkChatTool {
+function makeWeatherTool(executed: Array<{ input: unknown; toolUseId: string }>): LangChainChatTool {
   return {
     name: 'get_weather',
     description: 'Get current weather for a city',
@@ -170,7 +170,7 @@ test('openai provider issues a real Chat Completions request and maps the answer
   });
 
   try {
-    const result = await aiSdkChat({
+    const result = await langchainChat({
       provider: 'openai',
       model: 'gpt-test-1',
       apiKey: 'sk-test-openai',
@@ -188,7 +188,7 @@ test('openai provider issues a real Chat Completions request and maps the answer
     assert.equal(requests[0].headers.authorization, 'Bearer sk-test-openai');
     assert.equal(requests[0].body.model, 'gpt-test-1');
 
-    // prompt + system (instructions) become the message list.
+    // prompt + system become the message list.
     const messages = requests[0].body.messages as Array<{ role: string; content: unknown }>;
     assert.equal(messages[0].role, 'system');
     assert.ok(String(messages[0].content).includes('Be terse.'));
@@ -218,36 +218,42 @@ test('anthropic provider issues a real Messages API request and maps the answer'
   });
 
   try {
-    const result = await aiSdkChat({
+    const result = await langchainChat({
       provider: 'anthropic',
       model: 'claude-test-1',
       apiKey: 'sk-test-anthropic',
       baseURL,
       prompt: 'Dis bonjour',
       system: 'You are French.',
-      maxOutputTokens: 32,
     });
 
     assert.equal(requests.length, 1);
     assert.equal(requests[0].method, 'POST');
     assert.ok(/\/(v1\/)?messages\/?$/.test(requests[0].url ?? ''), `url was ${requests[0].url}`);
 
-    // Anthropic auth style: x-api-key + anthropic-version headers.
-    assert.equal(requests[0].headers['x-api-key'], 'sk-test-anthropic');
+    // Anthropic auth style: x-api-key or Bearer authorization (provider
+    // dependent), plus the anthropic-version header.
+    const auth = requests[0].headers['x-api-key'] ?? requests[0].headers.authorization;
+    assert.ok(
+      String(auth).includes('sk-test-anthropic'),
+      `auth header was ${String(auth)}`,
+    );
     assert.ok(typeof requests[0].headers['anthropic-version'] === 'string');
 
-    // model and prompt/system placement.
+    // model, system and prompt placement.
     assert.equal(requests[0].body.model, 'claude-test-1');
-    // @ai-sdk/anthropic sends the system prompt as an array of content blocks.
-    assert.deepEqual(requests[0].body.system, [{ type: 'text', text: 'You are French.' }]);
+    assert.ok(
+      JSON.stringify(requests[0].body.system).includes('You are French.'),
+      `system was ${JSON.stringify(requests[0].body.system)}`,
+    );
     const messages = requests[0].body.messages as Array<{ role: string; content: unknown }>;
     const last = messages[messages.length - 1];
     assert.equal(last.role, 'user');
     assert.ok(JSON.stringify(last.content).includes('Dis bonjour'));
 
-    // end_turn maps to unified 'stop'; usage mapped from input/output tokens.
+    // end_turn stop_reason is surfaced; usage mapped from input/output tokens.
     assert.equal(result.text, 'Bonjour from Anthropic stub');
-    assert.equal(result.finishReason, 'stop');
+    assert.equal(result.finishReason, 'end_turn');
     assert.deepEqual(result.usage, { inputTokens: 9, outputTokens: 5, totalTokens: 14 });
   } finally {
     await closeStubServer(server);
@@ -269,7 +275,7 @@ test('openai two-step tool call round-trips over real HTTP', async () => {
   });
 
   try {
-    const result = await aiSdkChat({
+    const result = await langchainChat({
       provider: 'openai',
       model: 'gpt-test-1',
       apiKey: 'sk-test-openai',
@@ -296,14 +302,19 @@ test('openai two-step tool call round-trips over real HTTP', async () => {
     assert.equal(toolMessage.tool_call_id, 'call_1');
     assert.ok(JSON.stringify(toolMessage.content).includes('sunny'));
 
-    // Our bridge executed the tool once, with parsed input and the wire toolCallId.
+    // Our loop executed the tool once, with parsed input and the wire tool call id.
     assert.deepEqual(executed, [{ input: { city: 'Paris' }, toolUseId: 'call_1' }]);
 
-    // Aggregated result: final text, reported tool call, summed usage.
+    // Aggregated result: final text, reported tool call, summed usage,
+    // ordered timeline events.
     assert.equal(result.text, 'It is sunny in Paris.');
     assert.equal(result.finishReason, 'stop');
     assert.deepEqual(result.toolCalls, [{ toolName: 'get_weather', input: { city: 'Paris' } }]);
     assert.deepEqual(result.usage, { inputTokens: 30, outputTokens: 13, totalTokens: 43 });
+    assert.deepEqual(result.events, [
+      { type: 'tool_use', id: 'call_1', name: 'get_weather', input: { city: 'Paris' }, line: '' },
+      { type: 'tool_result', toolUseId: 'call_1', result: { weather: 'sunny' } },
+    ]);
   } finally {
     await closeStubServer(server);
   }

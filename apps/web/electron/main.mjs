@@ -1,10 +1,36 @@
-// Electron 主进程：开发模式下加载 Vite dev server（端口与 vite.config.ts 的 5173 对齐）。
+// Electron 主进程。
+// - 开发模式（未打包）：加载 Vite dev server（端口与 vite.config.ts 的 5173 对齐）。
+// - 生产模式（app.isPackaged）：以 ELECTRON_RUN_AS_NODE 子进程启动内嵌 server
+//   （resources/server/dist/app.js，Node-API 原生模块与 Electron 内嵌 Node 兼容，
+//   无需 electron-rebuild），前端由 server 静态服务（resources/server/web）。
+//   数据写入 userData/data（FLOW_SPACES_DATA_DIR），与开发环境的 ~/.flow-spaces-data 隔离。
 import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { spawn } from "node:child_process";
+import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// 统一 app 名称（userData/日志目录名）：package.json 的 scoped name 会生成
+// ~/Library/Application Support/@flow-spaces/web 这样的目录，必须尽早重设。
+app.setName("flow-spaces");
 const DEV_URL = process.env.ELECTRON_DEV_URL || "http://127.0.0.1:5173";
+
+const IS_PACKAGED = app.isPackaged;
+// 覆盖用：FLOW_SPACES_PORT 固定端口（调试）；缺省动态探测空闲端口
+const FIXED_PORT = process.env.FLOW_SPACES_PORT ? parseInt(process.env.FLOW_SPACES_PORT, 10) : null;
+
+/** 探测一个空闲 TCP 端口（listen 0 由内核分配）。 */
+function pickFreePort() {
+  return new Promise((resolve, reject) => {
+    const srv = net.createServer();
+    srv.on("error", reject);
+    srv.listen(0, "127.0.0.1", () => {
+      const { port } = srv.address();
+      srv.close(() => resolve(port));
+    });
+  });
+}
 
 async function waitForServer(url, timeoutMs = 30000) {
   const deadline = Date.now() + timeoutMs;
@@ -19,13 +45,14 @@ async function waitForServer(url, timeoutMs = 30000) {
 }
 
 const DEV_ORIGIN = new URL(DEV_URL).origin;
+let appOrigin = DEV_ORIGIN; // 生产模式下启动后更新
 
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
 // 外部链接交给系统浏览器。子窗口递归应用同一规则。
 function applyWindowOpenHandler(w) {
   w.webContents.setWindowOpenHandler(({ url }) => {
     try {
-      if (new URL(url).origin === DEV_ORIGIN) {
+      if (new URL(url).origin === appOrigin) {
         return {
           action: "allow",
           overrideBrowserWindowConfiguration: {
@@ -39,10 +66,69 @@ function applyWindowOpenHandler(w) {
       }
     } catch { /* 非法 URL，走外部浏览器 */ }
     shell.openExternal(url);
-    return { action: "deny" };
+    return { "action": "deny" };
   });
   // 新窗口里的 window.open 也应用同一规则
   w.webContents.on("did-create-window", (child) => applyWindowOpenHandler(child));
+}
+
+// ---------------- 生产模式：内嵌 server 子进程 ----------------
+let serverChild = null;
+
+function log(tag, chunk) {
+  const text = chunk.toString().trimEnd();
+  if (text) console.log(`[server] ${text}`); // 进程 stdout / 控制台可见
+}
+
+function startEmbeddedServer() {
+  const resourcesDir = process.resourcesPath; // <app>/Contents/Resources
+  const serverRoot = path.join(resourcesDir, "server");
+  const serverEntry = path.join(serverRoot, "dist", "app.js");
+  return pickFreePort().then((port) =>
+    new Promise((resolve, reject) => {
+      const child = spawn(process.execPath, [serverEntry], {
+        cwd: serverRoot,
+        env: {
+          ...process.env,
+          // 用 Electron 二进制自带 Node 跑 server；Node-API 模块跨 ABI 兼容
+          ELECTRON_RUN_AS_NODE: "1",
+          ELECTRON_NO_ATTACH_CONSOLE: "1",
+          PORT: String(FIXED_PORT ?? port),
+          HOST: "127.0.0.1", // 桌面应用只监听本机回环
+          FLOW_SPACES_DATA_DIR: path.join(app.getPath("userData"), "data"),
+          // 不继承 procm 接管（独立桌面实例）
+          PROCM_ROOM_ID: "",
+          PROCM_WS_URL: "",
+        },
+        stdio: ["ignore", "pipe", "pipe"],
+        windowsHide: true,
+      });
+      serverChild = child;
+      child.stdout.on("data", (c) => log("out", c));
+      child.stderr.on("data", (c) => log("err", c));
+      child.on("exit", (code, signal) => {
+        console.log(`[server] exited code=${code} signal=${signal}`);
+        serverChild = null;
+      });
+      resolve(FIXED_PORT ?? port);
+    })
+  );
+}
+
+/** 终止 server 及其派生进程树（win 上 child.kill 只杀主进程）。 */
+function killEmbeddedServer() {
+  if (!serverChild || serverChild.killed) return;
+  const pid = serverChild.pid;
+  try {
+    if (process.platform === "win32" && pid) {
+      spawn("taskkill", ["/pid", String(pid), "/T", "/F"], { stdio: "ignore", windowsHide: true });
+    } else {
+      serverChild.kill("SIGTERM");
+    }
+  } catch (e) {
+    console.warn("[server] kill failed:", e?.message);
+  }
+  serverChild = null;
 }
 
 async function createWindow() {
@@ -58,12 +144,28 @@ async function createWindow() {
 
   applyWindowOpenHandler(win);
 
-  const up = await waitForServer(DEV_URL);
-  if (up) {
-    await win.loadURL(DEV_URL);
+  let loadTarget;
+  if (IS_PACKAGED) {
+    const port = await startEmbeddedServer();
+    loadTarget = `http://127.0.0.1:${port}`;
+    appOrigin = `http://127.0.0.1:${port}`;
+    const up = await waitForServer(loadTarget, 30000);
+    if (!up) {
+      await win.loadURL(
+        `data:text/html,<h3>Server failed to start</h3><p>${loadTarget}</p><p>Check application logs.</p>`,
+      );
+      return win;
+    }
   } else {
-    await win.loadURL(`data:text/html,<h3>无法连接 ${DEV_URL}</h3><p>请先运行 pnpm dev</p>`);
+    const up = await waitForServer(DEV_URL);
+    if (!up) {
+      await win.loadURL(`data:text/html,<h3>无法连接 ${DEV_URL}</h3><p>请先运行 pnpm dev</p>`);
+      return win;
+    }
+    loadTarget = DEV_URL;
   }
+  await win.loadURL(loadTarget);
+  return win;
 }
 
 // —— clientPlugins 命名空间 IPC（最小实现：无本地插件管理器时返回空/失败） ——
@@ -74,13 +176,30 @@ ipcMain.handle("clientPlugins:installFromStore", () => {
 });
 ipcMain.handle("clientPlugins:uninstall", () => ({ success: false }));
 
-app.whenReady().then(async () => {
-  await createWindow();
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+// 单实例锁：避免双开时两个内嵌 server 同写一个数据目录
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    const win = BrowserWindow.getAllWindows()[0];
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
   });
-});
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
-});
+  app.whenReady().then(async () => {
+    await createWindow();
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  });
+
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") app.quit();
+  });
+
+  app.on("will-quit", () => {
+    killEmbeddedServer();
+  });
+}

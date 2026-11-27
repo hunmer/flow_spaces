@@ -2,8 +2,7 @@ import type { WebSocket } from 'ws';
 import { broadcastToWorkspace } from './connection-manager.js';
 import { registerHandler } from './handler.js';
 import * as chatService from '../services/chat.js';
-import { aiSdkChat } from '../adapters/ai-sdk-chat.js';
-import { collectAiSdkChatEvents, mapAiSdkChatProvider } from '../services/ai-sdk-chat-bridge.js';
+import { langchainChat, mapLangChainChatProvider } from '../adapters/langchain-chat.js';
 
 export interface ChatRunHandle {
   controller: AbortController;
@@ -58,7 +57,7 @@ export function registerChatHandlers(): void {
       return;
     }
 
-    const provider = mapAiSdkChatProvider(agent.provider);
+    const provider = mapLangChainChatProvider(agent.provider);
     if (!provider) {
       broadcastToWorkspace(workspaceId, 'chat.agent.error', {
         agentId,
@@ -85,8 +84,8 @@ export function registerChatHandlers(): void {
     const systemPrompt = agent.systemPrompt?.trim();
     if (systemPrompt) prompt = `${systemPrompt}\n\n${prompt}`;
 
-    // Single non-streaming call; reasoning/tool events are replayed from response messages
-    aiSdkChat({
+    // Single non-streaming call; reasoning/tool events come back on result.events
+    langchainChat({
       provider,
       model: agent.model,
       apiKey: agent.apiKey,
@@ -98,7 +97,7 @@ export function registerChatHandlers(): void {
         // Superseded by a newer run, or aborted via chat.stop after resolution:
         // drop silently — never broadcast completion nor save a success message.
         if (!isCurrent() || controller.signal.aborted) return;
-        for (const event of collectAiSdkChatEvents(result.responseMessages)) {
+        for (const event of result.events) {
           switch (event.type) {
             case 'reasoning':
               broadcastToWorkspace(workspaceId, 'chat.agent.thinking', { agentId, chunk: event.text });

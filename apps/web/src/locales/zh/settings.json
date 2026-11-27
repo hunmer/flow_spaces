@@ -251,5 +251,7 @@
     "off": "关闭",
     "selectPlaceholder": "请选择...",
     "saving": "保存中..."
-  }
+  },
+  "miniAppFastLoading": "Mini App 快速加载",
+  "miniAppFastLoadingDescription": "优先加载预构建产物，缺失时使用源码。生产环境默认开启，单应用设置优先；切换后自动重载跟随此设置的应用。"
 }

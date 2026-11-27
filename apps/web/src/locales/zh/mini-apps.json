@@ -142,7 +142,9 @@
     "infoLoading": "加载中…",
     "infoEmpty": "暂无信息",
     "pluginsMissing": "未安装 {count} 个",
-    "pluginsMissingTip": "以下插件未安装：{ids}"
+    "pluginsMissingTip": "以下插件未安装：{ids}",
+    "fastLoading": "快速加载",
+    "fastLoadingTip": "优先加载预构建产物，缺失时使用源码。此应用的设置优先于总开关，切换后重载。"
   },
   "dependency": {
     "title": "缺少运行依赖",

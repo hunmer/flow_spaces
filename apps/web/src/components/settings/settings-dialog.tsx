@@ -3,7 +3,7 @@
 /**
  * 设置对话框：左侧竖排 Tabs（下划线 + 图标前置，参考 coss p-tabs-11）。
  * 首个 Tab 为【外观】（主题模式 + 鼠标指针/react-cursor-studio），
- * 其余 Tab：【通用】语言设置、【模型】服务商与模型列表、
+ * 其余 Tab：【通用】语言与 Mini App 加载设置、【模型】服务商与模型列表、
  * 【商店源】plugins / workflows / mini-app 商店地址、【账号】个人资料与头像。
  * 各面板实现在同目录独立文件：appearance-panel / general-panel /
  * model-settings-panel / store-sources-panel / account-panel。

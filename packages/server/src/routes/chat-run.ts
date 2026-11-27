@@ -2,9 +2,8 @@ import { Router, type Response } from 'express';
 import type { BuiltInAgentToolName, Message, WorkflowAgentTimelineItem, WorkflowAgentToolCall, Workspace } from '@flow-spaces/shared';
 import * as chatService from '../services/chat.js';
 import { generateChatSessionTitle } from '../services/generated-title.js';
-import { aiSdkChat } from '../adapters/ai-sdk-chat.js';
+import { langchainChat, mapLangChainChatProvider } from '../adapters/langchain-chat.js';
 import type { AgentRuntimeEvent } from '../adapters/agent-runtime-types.js';
-import { collectAiSdkChatEvents, mapAiSdkChatProvider } from '../services/ai-sdk-chat-bridge.js';
 import { buildAgentPrompt } from '../ws/agent-prompt.js';
 import { createThinkTagSplitter } from '../services/think-tags.js';
 import {
@@ -67,8 +66,8 @@ router.post('/sessions/:sessionId/run', async (req, res) => {
     return;
   }
 
-  const aiProvider = mapAiSdkChatProvider(agent.provider);
-  if (!aiProvider) {
+  const chatProvider = mapLangChainChatProvider(agent.provider);
+  if (!chatProvider) {
     writeSse(res, 'error', {
       error: `Unsupported chat provider '${agent.provider ?? ''}' for agent chat (supported: openai-chat-completions, openai-responses, anthropic-messages).`,
     });
@@ -136,8 +135,8 @@ router.post('/sessions/:sessionId/run', async (req, res) => {
       boundWorkflowIds: agent.boundWorkflowIds,
       boundWorkflowPluginTools: agent.boundWorkflowPluginTools,
     });
-    const result = await aiSdkChat({
-      provider: aiProvider,
+    const result = await langchainChat({
+      provider: chatProvider,
       model: agent.model,
       apiKey: agent.apiKey,
       baseURL,
@@ -147,7 +146,7 @@ router.post('/sessions/:sessionId/run', async (req, res) => {
       abortSignal: abortController.signal,
     });
     if (abortController.signal.aborted) return;
-    for (const event of collectAiSdkChatEvents(result.responseMessages)) {
+    for (const event of result.events) {
       collectRuntimeTimeline(timeline, event);
       writeRuntimeEvent(res, event);
     }
@@ -243,8 +242,8 @@ router.post('/agents/:id/run', async (req, res) => {
     return;
   }
 
-  const aiProvider = mapAiSdkChatProvider(agent.provider);
-  if (!aiProvider) {
+  const chatProvider = mapLangChainChatProvider(agent.provider);
+  if (!chatProvider) {
     writeSse(res, 'error', {
       error: `Unsupported chat provider '${agent.provider ?? ''}' for agent chat (supported: openai-chat-completions, openai-responses, anthropic-messages).`,
     });
@@ -292,8 +291,8 @@ router.post('/agents/:id/run', async (req, res) => {
       boundWorkflowIds: agent.boundWorkflowIds,
       boundWorkflowPluginTools: agent.boundWorkflowPluginTools,
     });
-    const result = await aiSdkChat({
-      provider: aiProvider,
+    const result = await langchainChat({
+      provider: chatProvider,
       model: agent.model,
       apiKey: agent.apiKey,
       baseURL,
@@ -303,7 +302,7 @@ router.post('/agents/:id/run', async (req, res) => {
       abortSignal: abortController.signal,
     });
     if (abortController.signal.aborted) return;
-    for (const event of collectAiSdkChatEvents(result.responseMessages)) {
+    for (const event of result.events) {
       collectRuntimeTimeline(timeline, event);
       writeRuntimeEvent(res, event);
     }
@@ -523,7 +522,7 @@ export function buildChatRuntimePrompt(options: ChatRuntimePromptOptions): strin
     options.userPrompt,
     toPromptHistoryMessages(options.historyMessages),
     {
-      // Chat runs on the minimal ai-sdk-chat module: no MCP servers or skills
+      // Chat runs on the minimal langchain-chat module: no MCP servers or skills
       // are attached, so the prompt must not advertise those capabilities.
       mcpServers: [],
       skills: [],

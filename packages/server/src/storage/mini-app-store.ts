@@ -83,6 +83,22 @@ export function resolveSrcPath(projectId: string, filePath: string): string {
   return safeSrcPath(projectId, filePath);
 }
 
+/** 固定组件产物约定：项目根目录 dist/index.cjs 与可选 dist/index.css。 */
+export function readDistBundle(projectId: string): { code: string; css?: string } | null {
+  if (!getProject(projectId)) throw new Error(`Project not found: ${projectId}`);
+  const root = realpathSync(projectDir(projectId));
+  const readAsset = (name: string): string | undefined => {
+    const path = join(root, 'dist', name);
+    if (!existsSync(path)) return undefined;
+    const target = realpathSync(path);
+    if (!target.startsWith(root + sep)) throw new Error('Dist path escapes project directory');
+    return readFileSync(target, 'utf-8');
+  };
+  const code = readAsset('index.cjs');
+  if (!code?.trim()) return null;
+  return { code, css: readAsset('index.css') };
+}
+
 function safeProjectSubdirPath(projectId: string, dirName: 'configs' | 'data', filePath: string): string {
   if (!filePath || filePath.includes('\0')) throw new Error('Invalid file path');
   if (filePath.startsWith('/') || /^[a-zA-Z]:[\\/]/.test(filePath)) {

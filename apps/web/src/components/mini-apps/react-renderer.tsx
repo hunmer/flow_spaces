@@ -3,6 +3,9 @@
 
 import React, { Component as ReactComponent, useCallback, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
+import * as ReactJsxRuntime from 'react/jsx-runtime';
+import * as ReactJsxDevRuntime from 'react/jsx-dev-runtime';
+import { evaluateMiniAppDist } from '@/lib/mini-app-dist';
 // @babel/standalone 体积很大（渲染后 5.5MB），且只在编译自定义 React 视图时
 // 才需要：动态 import 拆成按需加载的独立 chunk，避免拖累首屏 vendor 体积。
 // （旧 Next.js/webpack 项目里此处的 require('@babel/standalone') 会被打包器编译掉）
@@ -175,6 +178,8 @@ function scheduleMiniAppReactRootUnmount(container: HTMLDivElement) {
 
 function resolveExternalModule(id: string) {
   if (id === 'react') return React;
+  if (id === 'react/jsx-runtime') return ReactJsxRuntime;
+  if (id === 'react/jsx-dev-runtime') return ReactJsxDevRuntime;
   if (id === 'react-dom' || id === 'react-dom/client') return ReactDOM;
   if (id === 'embla-carousel-react') {
     return { __esModule: true, default: useEmblaCarousel };
@@ -280,6 +285,7 @@ interface UseMiniAppReactRendererOptions {
   componentProps?: Record<string, unknown>;
   files?: Record<string, string>;
   mainFile?: string;
+  compiled?: boolean;
 }
 
 export function useMiniAppReactRenderer({
@@ -290,6 +296,7 @@ export function useMiniAppReactRenderer({
   componentProps,
   files,
   mainFile,
+  compiled: precompiled = false,
 }: UseMiniAppReactRendererOptions) {
   const { locale } = useLocale();
   const reactComponentRef = useRef<React.ComponentType<Record<string, unknown>> | null>(null);
@@ -333,6 +340,11 @@ export function useMiniAppReactRenderer({
     if (!containerRef.current) return;
 
     try {
+      if (precompiled) {
+        reactComponentRef.current = evaluateMiniAppDist(code, resolveExternalModule, React, ReactDOM) as React.ComponentType<Record<string, unknown>>;
+        renderCompiledReact();
+        return;
+      }
       const Babel = await loadBabel();
       const localFiles = filesRef.current;
       const entryFile = mainFileRef.current;
@@ -426,7 +438,7 @@ export function useMiniAppReactRenderer({
     } catch (err: any) {
       reportError(err.message || String(err));
     }
-  }, [containerRef, reportError, renderCompiledReact]);
+  }, [containerRef, reportError, renderCompiledReact, precompiled]);
 
   useEffect(() => {
     if (!enabled || !sourceCode) return;

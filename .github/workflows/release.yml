@@ -1,0 +1,78 @@
+# Electron 桌面发布：推送 v 前缀 tag（如 v0.2.0）触发自动构建并发布 GitHub Release。
+#
+# 结构（构建/发布分离，避免多平台 job 并发创建 release 的竞态）：
+#   build   → mac（arm64 dmg+zip）/ win（x64 nsis）各自构建，产物 upload-artifact
+#   release → 汇总下载全部产物，一次性创建 Release 并上传
+#
+# 版本号：取 tag 名去 v 前缀，经 -c.extraMetadata.version 注入 electron-builder。
+# 签名：未配置证书，mac/win 产物均未签名（用户首次打开需在系统设置中允许）。
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mac-arm64
+            os: macos-latest
+            build-args: "--mac"
+          - name: win-x64
+            os: windows-latest
+            build-args: "--win"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Electron app
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node scripts/electron-build.mjs -- ${{ matrix.build-args }} \
+            -c.extraMetadata.version="$VERSION" \
+            -c.mac.identity=null
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.name }}
+          if-no-files-found: error
+          path: |
+            apps/web/electron-build/out/*.dmg
+            apps/web/electron-build/out/*.zip
+            apps/web/electron-build/out/*.exe
+
+  release:
+    name: GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create release and upload
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate-release-notes: true

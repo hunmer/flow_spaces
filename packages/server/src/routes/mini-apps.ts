@@ -76,6 +76,15 @@ router.delete('/:id', (req: Request<{ id: string }>, res: Response) => {
 });
 
 // Files
+router.get('/:id/dist', (req: Request<{ id: string }>, res: Response) => {
+  try {
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(svc.store.readDistBundle(req.params.id));
+  } catch (error: any) {
+    res.status(error.message.includes('not found') ? 404 : 500).json({ error: error.message });
+  }
+});
+
 router.get('/:id/files', (req: Request<{ id: string }>, res: Response) => {
   try { res.json(svc.getFileTree(req.params.id)); }
   catch (error: any) { res.status(error.message.includes('not found') ? 404 : 500).json({ error: error.message }); }

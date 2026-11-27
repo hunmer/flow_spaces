@@ -9,6 +9,8 @@ import { MiniAppPreview } from '@/components/mini-apps/mini-app-preview';
 import { MiniAppDependencyGuard } from '@/components/mini-apps/mini-app-dependency-guard';
 import { useMiniAppHostApi } from '@/components/mini-apps/use-mini-app-host-api';
 import { isSkippableAsset } from '@/lib/utils';
+import { loadMiniAppDist, type MiniAppDistBundle } from '@/lib/mini-app-dist';
+import { useMiniAppFastLoading } from '@/stores/mini-app-loading';
 import { Loader2 } from 'lucide-react';
 
 const MINI_APP_RUNTIME_INIT_SOURCE = 'flow-spaces:mini-app-runtime:init';
@@ -56,12 +58,15 @@ export default function MiniAppPreviewPageClient() {
   const embedded = searchParams.get('embedded') === '1';
   const [project, setProject] = useState<MiniAppProject | null>(null);
   const [sourceCode, setSourceCode] = useState('');
+  const [distBundle, setDistBundle] = useState<MiniAppDistBundle | null>(null);
+  const fastLoading = useMiniAppFastLoading(projectId);
   const [allFiles, setAllFiles] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [runtimeContext, setRuntimeContext] = useState<MiniAppRuntimeContext>(() => readRuntimeContextFromSearchParams(searchParams));
   const runtimeContextRef = useRef<MiniAppRuntimeContext>(runtimeContext);
-  const loadProjectInFlightRef = useRef<{ projectId: string; promise: Promise<void> } | null>(null);
+  const loadProjectInFlightRef = useRef<{ projectId: string; fastLoading: boolean; promise: Promise<void> } | null>(null);
+  const loadVersionRef = useRef(0);
   // 依赖守卫：声明了插件/工作流依赖时先核查，缺失展示一键安装空态（MiniAppDependencyGuard），
   // 通过（齐全/安装完成/用户跳过）后才渲染真正的预览
   const [depsReady, setDepsReady] = useState(false);
@@ -70,12 +75,24 @@ export default function MiniAppPreviewPageClient() {
 
   const loadProject = useCallback((onProgress?: (loaded: number, total: number) => void) => {
     const inFlight = loadProjectInFlightRef.current;
-    if (inFlight?.projectId === projectId) return inFlight.promise;
+    if (inFlight?.projectId === projectId && inFlight.fastLoading === fastLoading) return inFlight.promise;
+    const version = ++loadVersionRef.current;
 
     const request = (async () => {
       try {
         const p = await sdk.miniApp.get(projectId);
-        setProject(p);
+
+        const dist = fastLoading && p.type === 'react' ? await loadMiniAppDist(sdk.miniApp, projectId) : null;
+        if (dist) {
+          if (version !== loadVersionRef.current) return;
+          setProject(p);
+          setDistBundle(dist);
+          setError(null);
+          setSourceCode(dist.code);
+          setAllFiles({});
+          onProgress?.(1, 1);
+          return;
+        }
 
         // Load ALL files for multi-file import resolution.
         // 跳过二进制/资源文件：这些不会被源码 import 解析，utf-8 读取无意义，
@@ -93,6 +110,10 @@ export default function MiniAppPreviewPageClient() {
           loaded += 1;
           onProgress?.(loaded, tree.length);
         }
+        if (version !== loadVersionRef.current) return;
+        setProject(p);
+        setDistBundle(null);
+        setError(null);
         setAllFiles(files);
 
         // mainFile 在 tree 里找不到通常是导入时多余的顶层目录没剥掉
@@ -108,20 +129,24 @@ export default function MiniAppPreviewPageClient() {
         }
         setSourceCode(files[mainFile] || '');
       } catch (err: unknown) {
+        if (version !== loadVersionRef.current) return;
         setError(err instanceof Error ? err.message : 'Failed to load project');
       } finally {
-        setLoading(false);
+        if (version === loadVersionRef.current) setLoading(false);
       }
     })();
 
-    loadProjectInFlightRef.current = { projectId, promise: request };
+    loadProjectInFlightRef.current = { projectId, fastLoading, promise: request };
     void request.finally(() => {
       if (loadProjectInFlightRef.current?.promise === request) loadProjectInFlightRef.current = null;
     });
     return request;
-  }, [projectId, t]);
+  }, [projectId, t, fastLoading]);
 
-  useEffect(() => { void loadProject(); }, [loadProject]);
+  useEffect(() => {
+    setLoading(true);
+    void loadProject();
+  }, [loadProject]);
 
   // 切换项目时重置依赖守卫，重新核查
   useEffect(() => { setDepsReady(false); }, [projectId]);
@@ -206,6 +231,8 @@ export default function MiniAppPreviewPageClient() {
             devices={project.devices}
             files={allFiles}
             mainFile={project.mainFile}
+            compiled={Boolean(distBundle)}
+            compiledCss={distBundle?.css}
             allowScroll={embedded}
           />
         ) : (

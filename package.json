@@ -2,6 +2,7 @@
   "name": "flow-spaces",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.17.1",
   "description": "Flow Spaces — workflow visual editor & mini-apps, migrated from flow-spaces (Next.js) to Vite + React 19",
   "scripts": {
     "dev": "pnpm --filter @flow-spaces/web dev",
@@ -9,7 +10,12 @@
     "preview": "pnpm --filter @flow-spaces/web preview",
     "typecheck": "pnpm --filter @flow-spaces/web typecheck",
     "build:packages": "pnpm --filter @flow-spaces/sdk build",
+    "build:electron": "node scripts/electron-build.mjs",
     "dev:server": "pnpm --filter @flow-spaces/server dev",
-    "dev:all": "pnpm build:packages && pnpm dev:server & pnpm dev"
+    "dev:all": "pnpm build:packages && pnpm dev:server & pnpm dev",
+    "mini-app:build": "node scripts/build-mini-app.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

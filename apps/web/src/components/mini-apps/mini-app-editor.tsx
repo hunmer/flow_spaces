@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { isSkippableAsset } from '@/lib/utils';
+import { loadMiniAppDist, type MiniAppDistBundle } from '@/lib/mini-app-dist';
+import { useMiniAppFastLoading } from '@/stores/mini-app-loading';
 
 const FILE_POLL_INTERVAL_MS = 2000;
 
@@ -48,6 +50,8 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
     const commonT = useTranslations('common');
     const [project, setProject] = useState<MiniAppProject | null>(null);
     const [sourceCode, setSourceCode] = useState('');
+    const [distBundle, setDistBundle] = useState<MiniAppDistBundle | null>(null);
+    const fastLoading = useMiniAppFastLoading(projectId);
     const [allFiles, setAllFiles] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -67,6 +71,7 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
 
     const filesContentRef = useRef<Record<string, string>>({});
     const fileMtimeRef = useRef<Record<string, number>>({});
+    const loadVersionRef = useRef(0);
 
     const shareUrl = (() => {
         if (typeof window === 'undefined') return '';
@@ -82,8 +87,27 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
 
     // 全量拉取项目与文件（初次加载 + 每次重载）
     const loadFiles = useCallback(async (onProgress?: (loaded: number, total: number) => void) => {
+        const version = ++loadVersionRef.current;
         try {
             const p = await sdk.miniApp.get(projectId);
+            const dist = fastLoading && p.type === 'react' ? await loadMiniAppDist(sdk.miniApp, projectId) : null;
+            if (dist) {
+                let content = '';
+                try { content = (await sdk.miniApp.readFile(projectId, p.mainFile)).content; } catch { /* dist-only install */ }
+                if (version !== loadVersionRef.current) return;
+                setDistBundle(dist);
+                setProject(p);
+                setSourceCode(dist.code);
+                setAllFiles({});
+                setError(null);
+                fileMtimeRef.current = {};
+                filesContentRef.current = {};
+                // Agent 上下文仍使用源码入口，避免将 bundle 当作待编辑源码。
+                setChatFilePath(p.mainFile);
+                setChatFileContent(content);
+                onProgress?.(1, 1);
+                return;
+            }
             const manifest = await sdk.miniApp.getFileManifest(projectId);
 
             const mtimeMap: Record<string, number> = {};
@@ -107,6 +131,8 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
                 onProgress?.(loaded, tree.length);
             }
 
+            if (version !== loadVersionRef.current) return;
+            setDistBundle(null);
             fileMtimeRef.current = mtimeMap;
             filesContentRef.current = files;
             setAllFiles(files);
@@ -129,19 +155,22 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
             setChatFilePath(entry);
             setChatFileContent(files[entry] ?? '');
         } catch (err) {
+            if (version !== loadVersionRef.current) return;
+            setError(err instanceof Error ? err.message : String(err));
             console.error('Failed to load mini-app files:', err);
         }
-    }, [projectId, commonT]);
+    }, [projectId, commonT, fastLoading]);
 
     useEffect(() => {
         let cancelled = false;
+        setLoading(true);
         loadFiles().finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
     }, [loadFiles]);
 
     // Poll files written outside this page (e.g. workflow/chat agents) and auto-refresh the preview.
     useEffect(() => {
-        if (!project) return;
+        if (!project || distBundle) return;
         const interval = setInterval(() => {
             (async () => {
                 try {
@@ -167,7 +196,7 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
             })();
         }, FILE_POLL_INTERVAL_MS);
         return () => clearInterval(interval);
-    }, [project, projectId, autoRefresh, chatFilePath]);
+    }, [project, projectId, autoRefresh, chatFilePath, distBundle]);
 
     if (loading) {
         return (
@@ -200,6 +229,8 @@ export function MiniAppEditor({ projectId }: MiniAppEditorProps) {
                     devices={project.devices}
                     files={allFiles}
                     mainFile={project.mainFile}
+                    compiled={Boolean(distBundle)}
+                    compiledCss={distBundle?.css}
                     shareUrl={shareUrl}
                     headerStart={(
                         <>

@@ -1,0 +1,69 @@
+# electron-builder 配置（项目根 = apps/web）
+#
+# 结构：Electron 壳（electron/）进 asar；server 全量放 resources/（asar 外）——
+# server 子进程以 ELECTRON_RUN_AS_NODE 运行，纯 Node 模式没有 asar 补丁，
+# 且 public/ 有运行时写入（uploads/avatars），必须落在真实目录。
+# 布局对齐 server 的 resolveRuntimeDir：
+#   resources/server/dist       ← tsc 产物（app.js）
+#   resources/server/web        ← vite 产物（前端静态 + SPA fallback）
+#   resources/server/templates  ← packages/templates（agents/mcps/skills 内置模板）
+#   resources/server/public     ← 静态资源（排除用户数据 uploads/avatars）
+#   resources/server/node_modules ← pnpm deploy 的生产依赖（Node-API 原生模块）
+appId: com.flowspaces.desktop
+productName: Flow Spaces
+# 覆盖 asar 内 package.json 的 name（Electron 用它决定 userData 目录）：
+# scoped name @flow-spaces/web 会生成 ~/Library/Application Support/@flow-spaces/web
+extraMetadata:
+  name: flow-spaces
+artifactName: flow-spaces-${version}-${os}-${arch}.${ext}
+
+directories:
+  output: electron-build/out
+
+# asar 只装 Electron 壳：main/preload 不依赖任何 npm 包（仅 electron 内置）。
+# apps/web 的运行时依赖已全部打进 vite bundle；显式排除 node_modules ——
+# electron-builder 的依赖收集独立于 files 白名单，不排除会把 web 全量依赖塞进 asar（+438M）。
+files:
+  - electron/**/*
+  - package.json
+  - "!node_modules/**/*"
+
+asar: true
+
+extraResources:
+  - from: ../../packages/server/dist
+    to: server/dist
+    filter:
+      - "**/*"
+      - "!**/*.map"
+  - from: ../../packages/server/public
+    to: server/public
+    filter:
+      - "**/*"
+      - "!uploads/**"
+      - "!avatars/**"
+  - from: ../../packages/templates
+    to: server/templates
+    filter:
+      - "**/*"
+      - "!node_modules/**"
+  - from: dist
+    to: server/web
+  - from: electron-build/server-node/node_modules
+    to: server/node_modules
+  - from: electron-build/server-node/package.json
+    to: server/package.json
+
+mac:
+  target:
+    - dmg
+    - zip
+  category: public.app-category.developer-tools
+
+win:
+  target:
+    - nsis
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

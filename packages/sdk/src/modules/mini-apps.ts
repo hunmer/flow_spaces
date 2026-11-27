@@ -87,6 +87,10 @@ export function createMiniAppApi(http: HttpClient) {
     get: (id: string): Promise<MiniAppProject> =>
       http.get(`/api/mini-apps/${encodeURIComponent(id)}`),
 
+    /** 读取预构建的 CommonJS 组件与可选 CSS；未构建时返回 null。 */
+    getDist: (id: string): Promise<{ code: string; css?: string } | null> =>
+      http.get(`/api/mini-apps/${encodeURIComponent(id)}/dist`),
+
     /** 记录一次启动（预览页打开时调用），返回记录的最后启动时间 */
     markLaunched: (id: string): Promise<{ ok: true; lastLaunchAt: string }> =>
       http.post(`/api/mini-apps/${encodeURIComponent(id)}/launch`),

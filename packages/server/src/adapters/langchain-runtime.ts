@@ -554,7 +554,7 @@ function normalizeLangChainProvider(provider?: AgentRuntimeConfig['provider']): 
   }
 }
 
-function buildModelConfig(config: AgentRuntimeConfig): Record<string, unknown> {
+export function buildModelConfig(config: AgentRuntimeConfig): Record<string, unknown> {
   // @langchain/anthropic 不识别 baseURL/baseUrl/configuration（OpenAI 风格字段），
   // 自定义 Anthropic 兼容端点（如 https://api.minimax.cn/anthropic）必须通过
   // anthropicApiUrl 或 clientOptions.baseURL 传入，否则会回落到官方 api.anthropic.com。
@@ -937,7 +937,7 @@ function truncateForLog(value: string, maxLength = 300): string {
   return value.length > limit ? `${value.slice(0, limit)}...` : value;
 }
 
-function buildProviderEnv(config: AgentRuntimeConfig, resolvedProvider?: string): Record<string, string | undefined> {
+export function buildProviderEnv(config: AgentRuntimeConfig, resolvedProvider?: string): Record<string, string | undefined> {
   const provider = resolvedProvider ?? normalizeLangChainProvider(config.provider);
   return {
     OPENAI_API_KEY: provider === 'openai' ? config.apiKey : undefined,
@@ -949,7 +949,7 @@ function buildProviderEnv(config: AgentRuntimeConfig, resolvedProvider?: string)
   };
 }
 
-async function withTemporaryEnv<T>(env: Record<string, string | undefined>, fn: () => Promise<T> | T): Promise<T> {
+export async function withTemporaryEnv<T>(env: Record<string, string | undefined>, fn: () => Promise<T> | T): Promise<T> {
   const previous = new Map<string, string | undefined>();
   for (const [key, value] of Object.entries(env)) {
     if (!value) continue;

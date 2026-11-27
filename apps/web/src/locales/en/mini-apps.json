@@ -142,7 +142,9 @@
     "infoLoading": "Loading…",
     "infoEmpty": "No info available",
     "pluginsMissing": "{count} not installed",
-    "pluginsMissingTip": "The following plugins are not installed: {ids}"
+    "pluginsMissingTip": "The following plugins are not installed: {ids}",
+    "fastLoading": "Fast loading",
+    "fastLoadingTip": "Prefer a prebuilt bundle, falling back to source when unavailable. Overrides the global setting for this app and reloads it."
   },
   "dependency": {
     "title": "Missing dependencies",

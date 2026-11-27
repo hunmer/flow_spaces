@@ -159,7 +159,10 @@ export function PopoverPopup({
     >
       <AriaDialog
         className={cx(
-          "flex flex-col outline-none",
+          // h-full: 消费者在 Popover 根上设置固定高度时（如 folder-picker 的
+          // style={{height:360}} / chat-panel 的 h-[420px]），让 Dialog 层把高度
+          // 传递下去，内部 h-full / flex-1 链条才能生效；根高度为 auto 时解析为 auto，无影响。
+          "flex h-full flex-col outline-none",
           tooltipStyle ? "px-2 py-1 text-xs" : "p-2",
         )}
       >

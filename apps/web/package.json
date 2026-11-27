@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "electron/main.mjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "electron:dev": "electron electron/main.mjs",
     "electron:dev:full": "vite & sleep 2 && electron electron/main.mjs; kill %1 2>/dev/null || true",
+    "electron:builder": "electron-builder",
     "typecheck": "tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p tsconfig.node.json"
   },
   "dependencies": {
@@ -118,6 +120,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5",
     "electron": "^38.0.0",
+    "electron-builder": "^26.0.12",
     "react-dev-inspector": "^2.0.1",
     "tailwindcss": "^4",
     "typescript": "^5",
