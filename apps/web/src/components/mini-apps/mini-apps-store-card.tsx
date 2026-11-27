@@ -23,6 +23,8 @@ export interface MiniAppIndexItem {
   tags?: string[];
   /** 文件级 md5 清单：server 对比本地按需下载（增量安装） */
   files?: Array<{ path: string; md5: string }>;
+  /** 开发版额外下载的源码与构建配置 */
+  development?: Array<{ path: string; md5: string }>;
 }
 
 export type MiniAppInstallStatus = 'not-installed' | 'updatable' | 'installed';

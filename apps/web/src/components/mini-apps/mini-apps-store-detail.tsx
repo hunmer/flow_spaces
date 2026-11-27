@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Button as DevelopmentButton } from '@/components/base/buttons/button';
+import { RiCodeLine } from '@remixicon/react';
 import { Check, Download, RefreshCw } from 'lucide-react';
 import { resolveStoreUrl } from '@/lib/agent-store';
 import { AgentIcon } from '@/components/common/agent-icon';
@@ -41,7 +43,7 @@ interface MiniAppStoreDetailDialogProps {
   importing?: boolean;
   /** 某项正在安装时禁用按钮 */
   disabled?: boolean;
-  onInstall: (item: MiniAppIndexItem) => void;
+  onInstall: (item: MiniAppIndexItem, installDevelopment?: boolean) => void;
   onClose: () => void;
 }
 
@@ -149,6 +151,18 @@ export function MiniAppStoreDetailDialog({
                 </>
               )}
             </Button>
+            {!!item.development?.length && (
+              <DevelopmentButton
+                variant="secondary"
+                size="small"
+                className="w-full"
+                leadingIcon={RiCodeLine}
+                disabled={disabled || importing}
+                onClick={() => onInstall(item, true)}
+              >
+                {t('store.installDevelopment')}
+              </DevelopmentButton>
+            )}
           </aside>
           {/* 右栏（3/4）：README 介绍 */}
           <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6">

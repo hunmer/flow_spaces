@@ -475,13 +475,25 @@ export async function installFromStore(input: {
     mainFile?: string;
   };
   files: StoreFileEntry[];
+  /** app.json 中仅开发版需要的附加文件 */
+  development?: StoreFileEntry[];
+  installDevelopment?: boolean;
   storeUrl?: string;
   storeChecksum?: string;
 }): Promise<{ project: MiniAppProject; downloaded: number; skipped: number }> {
   const appId = input.id?.trim();
   if (!appId) throw new Error('installFromStore: id is required');
 
-  const files = (input.files ?? []).filter((f) => f && isSafeRelPath(f.path) && typeof f.md5 === 'string' && f.md5.length === 32);
+  const existing = store.getProject(appId);
+  const installDevelopment = input.installDevelopment ?? existing?.storeDevelopment ?? false;
+  // 开发文件即使出现在旧版 files 中，普通安装也不下载。
+  const development = Array.isArray(input.development) ? input.development : [];
+  const developmentPaths = new Set(development.map((f) => f?.path));
+  const runtimeFiles = (input.files ?? []).filter((f) => !developmentPaths.has(f?.path));
+  const selectedFiles = installDevelopment === true ? [...runtimeFiles, ...development] : runtimeFiles;
+  const files = [...new Map(selectedFiles
+    .filter((f) => f && isSafeRelPath(f.path) && typeof f.md5 === 'string' && f.md5.length === 32)
+    .map((f) => [f.path, f])).values()];
   if (!files.length) throw new Error('installFromStore: empty or invalid file list');
   const base = input.baseUrl?.replace(/\/+$/, '');
   if (!base) throw new Error('installFromStore: baseUrl is required');
@@ -514,7 +526,6 @@ export async function installFromStore(input: {
     mainFile,
     icon: manifest.icon ?? remoteManifest.icon,
     storeUrl: input.storeUrl ?? base,
-    storeChecksum: input.storeChecksum,
   });
 
   const projectRoot = store.getProjectDir(project.id);
@@ -537,7 +548,13 @@ export async function installFromStore(input: {
     downloaded++;
   }
 
-  return { project, downloaded, skipped };
+  const installed = store.upsertStoreProject({
+    id: project.id, name: project.name,
+    storeUrl: input.storeUrl ?? base,
+    storeChecksum: input.storeChecksum,
+    storeDevelopment: installDevelopment,
+  });
+  return { project: installed, downloaded, skipped };
 }
 
 function findFile(dir: string, name: string): string | null {

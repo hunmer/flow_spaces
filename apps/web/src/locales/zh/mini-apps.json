@@ -12,6 +12,16 @@
     "noMatch": "没有匹配的页面。",
     "select": "选择"
   },
+  "updates": {
+    "check": "检查更新",
+    "checking": "检查中…",
+    "found": "发现 {count} 个 Mini App 可更新",
+    "latest": "已检查的 Mini App 均为最新",
+    "noSources": "没有可检查更新的安装来源",
+    "failed": "{count} 个 Mini App 检查失败，请稍后重试",
+    "updated": "「{name}」已更新",
+    "updating": "更新中…"
+  },
   "filters": {
     "typeAll": "全部类型",
     "typeReact": "React",
@@ -62,6 +72,7 @@
     "devicesHint": "在预览工具栏添加设备外框切换器；不选则隐藏。"
   },
   "store": {
+    "installDevelopment": "安装开发版",
     "description": "从商店下载 Workflow UI 模板，一键导入。",
     "loading": "加载中...",
     "empty": "暂无模板",

@@ -642,11 +642,11 @@ router.post('/import', async (req: Request, res: Response) => {
 // 不走整包 zip：按文件级 md5 清单对比本地，按需下载（幂等，可断点续装）
 router.post('/install-from-store', async (req: Request, res: Response) => {
   try {
-    const { id, baseUrl, manifest, files, storeUrl, storeChecksum } = req.body ?? {};
+    const { id, baseUrl, manifest, files, development, installDevelopment, storeUrl, storeChecksum } = req.body ?? {};
     if (!id || typeof id !== 'string') { res.status(400).json({ error: 'id is required' }); return; }
     if (!baseUrl || typeof baseUrl !== 'string') { res.status(400).json({ error: 'baseUrl is required' }); return; }
     if (!Array.isArray(files) || !files.length) { res.status(400).json({ error: 'files (md5 list) is required' }); return; }
-    const result = await svc.installFromStore({ id, baseUrl, manifest, files, storeUrl, storeChecksum });
+    const result = await svc.installFromStore({ id, baseUrl, manifest, files, development, installDevelopment, storeUrl, storeChecksum });
     res.json(result);
   } catch (error: any) {
     if (error instanceof DuplicateNameError) { res.status(409).json({ error: 'name already exists' }); return; }

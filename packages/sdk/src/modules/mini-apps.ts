@@ -30,6 +30,8 @@ export interface MiniAppProject {
   lastLaunchAt?: string;
   storeUrl?: string;
   storeChecksum?: string;
+  /** 更新时保留开发版源码安装模式 */
+  storeDevelopment?: boolean;
 }
 
 export interface MiniAppAgentConfig {
@@ -146,6 +148,8 @@ export function createMiniAppApi(http: HttpClient) {
       baseUrl: string;
       manifest?: { name?: string; type?: 'react' | 'html'; description?: string; version?: string; tags?: string[]; icon?: string; enabledPlugins?: string[]; enabledWorkflows?: string[]; mainFile?: string };
       files: Array<{ path: string; md5: string }>;
+      development?: Array<{ path: string; md5: string }>;
+      installDevelopment?: boolean;
       storeUrl?: string;
       storeChecksum?: string;
     }): Promise<{ project: MiniAppProject; downloaded: number; skipped: number }> =>

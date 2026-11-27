@@ -32,6 +32,8 @@ export interface MiniAppProject {
   createdAt: string;
   storeUrl?: string;
   storeChecksum?: string;
+  /** 更新时保留开发版源码安装模式 */
+  storeDevelopment?: boolean;
 }
 
 function baseDir(): string {
@@ -150,6 +152,7 @@ export function rebuildIndex(): MiniAppProject[] {
   const root = baseDir();
   if (!existsSync(root)) return [];
 
+  const registered = new Map(listProjects().map(project => [project.id, project]));
   const onDisk: MiniAppProject[] = [];
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
@@ -159,7 +162,13 @@ export function rebuildIndex(): MiniAppProject[] {
       if (manifest.updatedAt !== undefined) {
         writeJsonFile(manifestPath(entry.name), stripLegacyTimestamps(manifest));
       }
-      onDisk.push(stripLegacyTimestamps(manifest));
+      const saved = registered.get(entry.name);
+      onDisk.push({
+        ...stripLegacyTimestamps(manifest),
+        storeUrl: saved?.storeUrl ?? manifest.storeUrl,
+        storeChecksum: saved?.storeChecksum ?? manifest.storeChecksum,
+        storeDevelopment: saved?.storeDevelopment ?? manifest.storeDevelopment,
+      });
     }
   }
 
@@ -430,6 +439,7 @@ export function upsertStoreProject(input: {
   icon?: string;
   storeUrl?: string;
   storeChecksum?: string;
+  storeDevelopment?: boolean;
 }): MiniAppProject {
   const id = safeNameId(input.id);
   const existing = getProject(id);
@@ -442,6 +452,7 @@ export function upsertStoreProject(input: {
       icon: input.icon ?? existing.icon,
       storeUrl: input.storeUrl ?? existing.storeUrl,
       storeChecksum: input.storeChecksum ?? existing.storeChecksum,
+      storeDevelopment: input.storeDevelopment ?? existing.storeDevelopment,
     };
     // 增量安装模式：更新分支不回写项目目录的 manifest.json——
     // 文件级 md5 幂等要求本地文件与商店源字节一致；storeUrl 等商店元数据只进 index.json 注册表。
@@ -474,6 +485,7 @@ export function upsertStoreProject(input: {
     createdAt: now,
     storeUrl: input.storeUrl,
     storeChecksum: input.storeChecksum,
+    storeDevelopment: input.storeDevelopment,
   };
 
   const targetDir = projectDir(id);

@@ -12,6 +12,16 @@
     "noMatch": "No pages match your search.",
     "select": "Select"
   },
+  "updates": {
+    "check": "Check for updates",
+    "checking": "Checking…",
+    "found": "Updates available for {count} Mini Apps",
+    "latest": "All checked Mini Apps are up to date",
+    "noSources": "No installation sources available to check",
+    "failed": "Failed to check {count} Mini Apps. Please retry later.",
+    "updated": "Updated {name}",
+    "updating": "Updating…"
+  },
   "filters": {
     "typeAll": "All types",
     "typeReact": "React",
@@ -62,6 +72,7 @@
     "devicesHint": "Adds a device-frame switcher to the preview toolbar. Leave empty to hide."
   },
   "store": {
+    "installDevelopment": "Install development version",
     "description": "Download Workflow UI templates from the store and import them with one click.",
     "loading": "Loading...",
     "empty": "No templates available",

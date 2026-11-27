@@ -8,6 +8,9 @@ import { sdk } from '@/lib/sdk';
 import { pluginApi } from '@/lib/workflow-plugin-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button as UpdateButton } from '@/components/base/buttons/button';
+import { RiRefreshLine } from '@remixicon/react';
+import { checkMiniAppUpdates, loadMiniAppUpdate, type MiniAppUpdate } from '@/lib/mini-app-updates';
 import { Plus, Upload, FileQuestion, Globe, Download, CheckSquare, Search } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
@@ -63,6 +66,8 @@ function MiniAppListPage() {
   const [githubUrl, setGithubUrl] = useState('');
   const [githubImporting, setGithubImporting] = useState(false);
   const [githubError, setGithubError] = useState<string | null>(null);
+  const [checkingUpdates, setCheckingUpdates] = useState(false);
+  const [availableUpdates, setAvailableUpdates] = useState<MiniAppUpdate[]>([]);
 
   const filters = useMiniAppFilters({ projects, persistKey: 'miniapp-filter' });
 
@@ -106,19 +111,20 @@ function MiniAppListPage() {
     }).catch(() => {});
   }, []);
 
-  // 已安装项目：id -> version（版本号字符串）。用于判断「已导入 / 有更新」
+  // 已安装项目按 id 索引，MD5 优先判断更新。
   const installedMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const p of projects) map[p.id] = p.version;
+    const map: Record<string, MiniAppProject> = {};
+    for (const p of projects) map[p.id] = p;
     return map;
   }, [projects]);
 
-  // 三态：未安装 / 有更新（商店 version ≠ 已安装 version）/ 已导入（已安装且版本一致）
+  // 三态：未安装 / 有更新 / 已导入；旧清单没有 MD5 时回退版本号。
   const getInstallStatus = useCallback(
     (item: MiniAppIndexItem) => {
-      const installedVersion = installedMap[item.id];
-      if (!installedVersion) return 'not-installed' as const;
-      if (item.version && item.version !== installedVersion) return 'updatable' as const;
+      const installed = installedMap[item.id];
+      if (!installed) return 'not-installed' as const;
+      if (item.md5 && item.md5 !== installed.storeChecksum) return 'updatable' as const;
+      if (!item.md5 && item.version && item.version !== installed.version) return 'updatable' as const;
       return 'installed' as const;
     },
     [installedMap],
@@ -127,6 +133,7 @@ function MiniAppListPage() {
   const handleDelete = useCallback(async (id: string) => {
     await sdk.miniApp.delete_(id);
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    setAvailableUpdates((prev) => prev.filter((update) => update.id !== id));
   }, []);
 
   const handleUpdated = useCallback((updated: MiniAppProject) => {
@@ -154,7 +161,7 @@ function MiniAppListPage() {
 
   // 商店安装（增量）：server 按文件级 md5 清单对比本地，仅下载缺失/变化的文件。
   // 安装后刷新本地列表与三态按钮，保持商店模式便于连续安装。
-  const handleInstallStoreItem = async (item: MiniAppIndexItem) => {
+  const handleInstallStoreItem = async (item: MiniAppIndexItem, installDevelopment?: boolean) => {
     setStoreImportingId(item.id);
     try {
       const baseUrl = resolveStoreUrl(`mini-app/${item.id}`);
@@ -170,10 +177,14 @@ function MiniAppListPage() {
           icon: item.icon,
         },
         files: item.files ?? [],
+        development: item.development,
+        installDevelopment,
         storeUrl: baseUrl,
         storeChecksum: item.md5,
       });
       await loadProjects();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('store.githubFailed'));
     } finally {
       setStoreImportingId(null);
     }
@@ -204,6 +215,7 @@ function MiniAppListPage() {
         mainFile?: string;
         md5?: string;
         files?: Array<{ path: string; md5: string }>;
+        development?: Array<{ path: string; md5: string }>;
       };
       if (!Array.isArray(app.files) || !app.files.length) {
         throw new Error('app.json has no file list');
@@ -224,6 +236,7 @@ function MiniAppListPage() {
           mainFile: app.mainFile,
         },
         files: app.files,
+        development: app.development,
         storeUrl: manifestUrl,
         storeChecksum: app.md5,
       });
@@ -234,6 +247,44 @@ function MiniAppListPage() {
       setGithubError(t('store.githubFailed'));
     } finally {
       setGithubImporting(false);
+    }
+  };
+
+  const handleCheckUpdates = async () => {
+    setCheckingUpdates(true);
+    try {
+      const result = await checkMiniAppUpdates(projects, resolveStoreUrl('mini-app/'));
+      setAvailableUpdates(result.updates);
+      if (result.updates.length) toast.success(t('updates.found', { count: result.updates.length }));
+      else if (result.checked && !result.failed) toast.success(t('updates.latest'));
+      else if (!result.failed) toast.info(t('updates.noSources'));
+      if (result.failed) toast.error(t('updates.failed', { count: result.failed }));
+    } finally {
+      setCheckingUpdates(false);
+    }
+  };
+
+  const handleUpdateMiniApp = async (update: MiniAppUpdate) => {
+    setStoreImportingId(update.id);
+    try {
+      const app = await loadMiniAppUpdate(update);
+      await sdk.miniApp.installFromStore({
+        id: update.id,
+        baseUrl: update.baseUrl,
+        manifest: app,
+        files: app.files,
+        development: app.development,
+        installDevelopment: installedMap[update.id]?.storeDevelopment,
+        storeUrl: update.storeUrl,
+        storeChecksum: app.md5,
+      });
+      await loadProjects();
+      setAvailableUpdates((prev) => prev.filter((item) => item.id !== update.id));
+      toast.success(t('updates.updated', { name: update.name }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('store.githubFailed'));
+    } finally {
+      setStoreImportingId(null);
     }
   };
 
@@ -371,12 +422,21 @@ function MiniAppListPage() {
           {githubError && <p className="text-xs text-destructive mb-4">{githubError}</p>}
         </>
       ) : (
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
           <MiniAppFilterToolbar state={filters} showSearch={false} />
           <Button variant="outline" size="sm" className="shrink-0" onClick={openPicker}>
             <CheckSquare className="h-4 w-4 mr-2" />
             {t('page.select')}
           </Button>
+          <UpdateButton
+            variant="secondary"
+            size="small"
+            leadingIcon={RiRefreshLine}
+            disabled={loading || checkingUpdates || storeImportingId !== null || !projects.length}
+            onClick={handleCheckUpdates}
+          >
+            {t(checkingUpdates ? 'updates.checking' : 'updates.check')}
+          </UpdateButton>
           {/* 搜索栏固定在最右侧 */}
           <div className="relative ml-auto min-w-[140px] max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -387,6 +447,25 @@ function MiniAppListPage() {
               className="pl-8 h-8 text-sm"
             />
           </div>
+        </div>
+      )}
+
+      {!storeMode && availableUpdates.length > 0 && (
+        <div className="mb-4 flex flex-col gap-2">
+          {availableUpdates.map((update) => (
+            <div key={update.id} className="flex items-center justify-between gap-3 rounded-xl border border-border-button-default bg-background-secondary-default p-3">
+              <span className="min-w-0 truncate text-body-regular text-text-primary">{update.name}</span>
+              <UpdateButton
+                variant="secondary"
+                size="small"
+                leadingIcon={RiRefreshLine}
+                disabled={checkingUpdates || storeImportingId !== null}
+                onClick={() => handleUpdateMiniApp(update)}
+              >
+                {t(storeImportingId === update.id ? 'updates.updating' : 'store.update')}
+              </UpdateButton>
+            </div>
+          ))}
         </div>
       )}
 
