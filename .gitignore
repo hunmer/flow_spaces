@@ -2,6 +2,9 @@ node_modules/
 dist/
 *.local
 .DS_Store
+
+# 本机实例配置（含本地仓库路径），不入库
+packages/server/.env
 packages/server/flow-spaces-data/
 packages/server/public/uploads/*
 
