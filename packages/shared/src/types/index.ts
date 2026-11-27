@@ -15,7 +15,6 @@ export * from './workflow-plugin.js';
 export * from './workflow-composite.js';
 export * from './workflow-ws.js';
 export * from './workflow-shortcut.js';
-export * from './command.js';
 export * from './subscription.js';
 export * from './search.js';
 export * from './notification.js';

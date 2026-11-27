@@ -8,28 +8,6 @@ export interface DatabaseMeta {
   updatedAt: number;
 }
 
-export interface DatabaseVectorStats {
-  databaseId: string;
-  embeddingModelId: string | null;
-  indexedCount: number;
-  nodeCount: number;
-  lastIndexedAt: number | null;
-}
-
-export interface DatabaseVectorIndexResult extends DatabaseVectorStats {
-  indexedCount: number;
-  skippedCount: number;
-}
-
-export interface DatabaseVectorSearchResult {
-  nodeId: string;
-  title: string;
-  path: string;
-  score: number;
-  content: string;
-  updatedAt: number;
-}
-
 export interface DocNode {
   id: string;
   databaseId: string;

@@ -1,5 +1,4 @@
 import type { Workflow } from './workflow.js';
-import type { CommandProcessEvent } from './command.js';
 import type { AppNotification } from './notification.js';
 import type { ClientNodeRequest, ClientNodeResponse, InteractionRequest, InteractionResponse } from './workflow-ws.js';
 
@@ -175,9 +174,6 @@ export type ServerEventMap = {
   'workflow.created': { workflow: Workflow };
   'workflow.updated': { workflow: Workflow };
   'workflow.deleted': { workflowId: string };
-  'command.started': CommandProcessEvent;
-  'command.stopped': CommandProcessEvent;
-  'command.restarted': CommandProcessEvent;
   'notification.created': AppNotification;
   'notification.cleared': null;
   'worktree.created': import('./worktree.js').WorktreeInfo;
