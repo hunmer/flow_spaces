@@ -1,6 +1,6 @@
 # packages/shared (`@flow-spaces/shared`)
 
-跨前后端共享 TypeScript 类型定义（v0.2.6）。纯类型包，无运行时代码；`src/types/` 27 个域文件 + `src/index.ts` 桶导出，workflow 契约细分 8 个文件。被 `@flow-spaces/server`、`@flow-spaces/sdk`、web 依赖。
+跨前后端共享 TypeScript 类型定义（v0.2.6）。纯类型包，无运行时代码；`src/types/` 26 个域文件 + `src/index.ts` 桶导出，workflow 契约细分 8 个文件。被 `@flow-spaces/server`、`@flow-spaces/sdk`、web 依赖。
 
 ## 约定
 
@@ -15,7 +15,7 @@
 |---|---|---|
 | [概述](claude/overview.md) | 结构、构建形态、边界 | 首次接触 |
 | [开发约定](claude/conventions.md) | 新增类型流程 | 改类型前 |
-| [模块职责](claude/module-responsibilities.md) | 27 个类型域清单 | 找类型 |
+| [模块职责](claude/module-responsibilities.md) | 26 个类型域清单 | 找类型 |
 | [入口与启动](claude/entrypoints.md) | 构建/导出链 | 构建问题 |
 | [对外接口](claude/public-interfaces.md) | 包导出面 | 消费方接入 |
 | [依赖与配置](claude/dependencies-and-config.md) | package.json/tsconfig | 升级 |
@@ -27,6 +27,6 @@
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-15
-- **已扫描**: package.json、src/index.ts、src/types/ 全 27 域文件清点（team.ts 已移除，与 07-10 记录的 30 个相比现状 27 个）
+- **更新时间**: 2026-11-27
+- **已扫描**: package.json、src/index.ts、src/types/ 域文件清点（team.ts 已移除；2026-11-27 死代码清理删 command.ts，现状 26 个）
 - **未深挖**: 各域文件逐接口展开（类型清单见 module-responsibilities.md）

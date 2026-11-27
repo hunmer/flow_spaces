@@ -2,7 +2,7 @@
   "project": "flow-spaces",
   "description": "flow-spaces 功能依赖图谱：功能 → 文件映射、行数排行、覆盖率报告",
   "generated": "2026-11-27",
-  "head_commit": "8ca398b",
+  "head_commit": "d154cbb",
   "legend": {
     "types": "ts/tsx/js/jsx/mjs=代码 sh/py=脚本 md=文档 config=配置 data=资源(含svg/图片/二进制) css/html=样式页面 dir=目录",
     "note": "一个文件可归属多个功能（shared）；tests 挂在被测功能的 tests[] 下"
@@ -16,7 +16,7 @@
         {
           "id": "web.entry",
           "name": "入口与路由",
-          "desc": "main.tsx SPA 入口、react-router 路由表、Vite 配置（19 文件 / 1,945 行）",
+          "desc": "main.tsx SPA 入口、react-router 路由表、Vite 配置（18 文件 / 1,574 行）",
           "files": [
             {
               "path": "apps/web/AGENTS.md",
@@ -37,11 +37,6 @@
               "path": "apps/web/package.json",
               "type": "config",
               "lines": 126
-            },
-            {
-              "path": "apps/web/src/app/api/chat/route.ts",
-              "type": "ts",
-              "lines": 371
             },
             {
               "path": "apps/web/src/app/login/login-rings.module.css",
@@ -1021,7 +1016,7 @@
         {
           "id": "web.mini-apps",
           "name": "Mini App 页面",
-          "desc": "列表/编辑器/预览页与工作流配置（27 文件 / 7,239 行）",
+          "desc": "列表/编辑器/预览页与工作流配置（27 文件 / 7,251 行）",
           "files": [
             {
               "path": "apps/web/src/components/mini-apps/mini-app-agent-adapter.ts",
@@ -1076,7 +1071,7 @@
             {
               "path": "apps/web/src/components/mini-apps/mini-app-renderer.tsx",
               "type": "tsx",
-              "lines": 312,
+              "lines": 321,
               "role": "eslint-disable @typescript-eslint/no-explicit-any"
             },
             {
@@ -1148,7 +1143,7 @@
             {
               "path": "apps/web/src/components/mini-apps/use-mini-app-host-api.tsx",
               "type": "tsx",
-              "lines": 1254
+              "lines": 1257
             },
             {
               "path": "apps/web/src/lib/layout-templates.ts",
@@ -1376,7 +1371,7 @@
         {
           "id": "web.boardui",
           "name": "BoardUI 组件库",
-          "desc": "base/application/foundations/reui 源码级组件（136 文件 / 28,248 行）",
+          "desc": "base/application/foundations/reui 源码级组件（135 文件 / 28,004 行）",
           "files": [
             {
               "path": "apps/web/src/components/application/agent-chat/agent-chat-actions.tsx",
@@ -1462,7 +1457,7 @@
             {
               "path": "apps/web/src/components/application/dashboard/dashboard-sidebar.tsx",
               "type": "tsx",
-              "lines": 595
+              "lines": 612
             },
             {
               "path": "apps/web/src/components/application/dashboard/dashboard-team-menu.tsx",
@@ -1809,11 +1804,6 @@
               "path": "apps/web/src/components/base/combobox/combobox.tsx",
               "type": "tsx",
               "lines": 199
-            },
-            {
-              "path": "apps/web/src/components/base/command-palette/command-palette.tsx",
-              "type": "tsx",
-              "lines": 261
             },
             {
               "path": "apps/web/src/components/base/context-menu/context-menu.tsx",
@@ -2593,7 +2583,7 @@
         {
           "id": "web.shell",
           "name": "壳与导航",
-          "desc": "SidebarRail、首页、命令面板、设置、仪表盘（57 文件 / 12,885 行）",
+          "desc": "SidebarRail、首页、命令面板、设置、仪表盘（56 文件 / 12,672 行）",
           "files": [
             {
               "path": "apps/web/src/components/command-palette/ask-ai.ts",
@@ -2636,11 +2626,6 @@
               "path": "apps/web/src/components/home/workflow-executions-card.tsx",
               "type": "tsx",
               "lines": 158
-            },
-            {
-              "path": "apps/web/src/components/home/workflows-table.tsx",
-              "type": "tsx",
-              "lines": 213
             },
             {
               "path": "apps/web/src/components/layout/dev-inspector.tsx",
@@ -3251,17 +3236,12 @@
         {
           "id": "web.i18n",
           "name": "国际化",
-          "desc": "en/zh 双语消息（next-intl shim）（72 文件 / 8,283 行）",
+          "desc": "en/zh 双语消息（next-intl shim）（60 文件 / 7,723 行）",
           "files": [
             {
               "path": "apps/web/src/locales/en/agent.json",
               "type": "config",
               "lines": 168
-            },
-            {
-              "path": "apps/web/src/locales/en/agentCommands.json",
-              "type": "config",
-              "lines": 26
             },
             {
               "path": "apps/web/src/locales/en/chat.json",
@@ -3289,19 +3269,9 @@
               "lines": 29
             },
             {
-              "path": "apps/web/src/locales/en/database.json",
-              "type": "config",
-              "lines": 69
-            },
-            {
               "path": "apps/web/src/locales/en/editor.json",
               "type": "config",
               "lines": 147
-            },
-            {
-              "path": "apps/web/src/locales/en/flexLayout.json",
-              "type": "config",
-              "lines": 15
             },
             {
               "path": "apps/web/src/locales/en/folderPicker.json",
@@ -3326,12 +3296,7 @@
             {
               "path": "apps/web/src/locales/en/index.ts",
               "type": "ts",
-              "lines": 75
-            },
-            {
-              "path": "apps/web/src/locales/en/issue.json",
-              "type": "config",
-              "lines": 106
+              "lines": 63
             },
             {
               "path": "apps/web/src/locales/en/knowledgeBase.json",
@@ -3357,11 +3322,6 @@
               "path": "apps/web/src/locales/en/models.json",
               "type": "config",
               "lines": 55
-            },
-            {
-              "path": "apps/web/src/locales/en/outputStyles.json",
-              "type": "config",
-              "lines": 34
             },
             {
               "path": "apps/web/src/locales/en/projectSettings.json",
@@ -3399,11 +3359,6 @@
               "lines": 46
             },
             {
-              "path": "apps/web/src/locales/en/skillsPackages.json",
-              "type": "config",
-              "lines": 18
-            },
-            {
               "path": "apps/web/src/locales/en/sqlite.json",
               "type": "config",
               "lines": 56
@@ -3439,11 +3394,6 @@
               "lines": 168
             },
             {
-              "path": "apps/web/src/locales/zh/agentCommands.json",
-              "type": "config",
-              "lines": 26
-            },
-            {
               "path": "apps/web/src/locales/zh/chat.json",
               "type": "config",
               "lines": 337
@@ -3469,19 +3419,9 @@
               "lines": 29
             },
             {
-              "path": "apps/web/src/locales/zh/database.json",
-              "type": "config",
-              "lines": 69
-            },
-            {
               "path": "apps/web/src/locales/zh/editor.json",
               "type": "config",
               "lines": 147
-            },
-            {
-              "path": "apps/web/src/locales/zh/flexLayout.json",
-              "type": "config",
-              "lines": 15
             },
             {
               "path": "apps/web/src/locales/zh/folderPicker.json",
@@ -3506,12 +3446,7 @@
             {
               "path": "apps/web/src/locales/zh/index.ts",
               "type": "ts",
-              "lines": 75
-            },
-            {
-              "path": "apps/web/src/locales/zh/issue.json",
-              "type": "config",
-              "lines": 106
+              "lines": 63
             },
             {
               "path": "apps/web/src/locales/zh/knowledgeBase.json",
@@ -3537,11 +3472,6 @@
               "path": "apps/web/src/locales/zh/models.json",
               "type": "config",
               "lines": 55
-            },
-            {
-              "path": "apps/web/src/locales/zh/outputStyles.json",
-              "type": "config",
-              "lines": 34
             },
             {
               "path": "apps/web/src/locales/zh/projectSettings.json",
@@ -3579,11 +3509,6 @@
               "lines": 45
             },
             {
-              "path": "apps/web/src/locales/zh/skillsPackages.json",
-              "type": "config",
-              "lines": 18
-            },
-            {
               "path": "apps/web/src/locales/zh/sqlite.json",
               "type": "config",
               "lines": 56
@@ -3619,19 +3544,13 @@
         {
           "id": "web.shims",
           "name": "Next 兼容层",
-          "desc": "next/* → SPA shim（dynamic/image/navigation/next-intl）（5 文件 / 542 行）",
+          "desc": "next/* → SPA shim（dynamic/image/navigation/next-intl）（3 文件 / 466 行）",
           "files": [
             {
               "path": "apps/web/src/shims/next-intl.tsx",
               "type": "tsx",
               "lines": 259,
               "role": "`next-intl` shim：纯 React 实现（无 Next.js 请求上下文依赖）。"
-            },
-            {
-              "path": "apps/web/src/shims/next/dynamic.tsx",
-              "type": "tsx",
-              "lines": 62,
-              "role": "`next/dynamic` shim：React.lazy + Suspense 的简化版。"
             },
             {
               "path": "apps/web/src/shims/next/image.tsx",
@@ -3644,12 +3563,6 @@
               "type": "ts",
               "lines": 137,
               "role": "`next/navigation` shim（Vite + react-router-dom v7 适配层）。"
-            },
-            {
-              "path": "apps/web/src/shims/styled-jsx.d.ts",
-              "type": "ts",
-              "lines": 14,
-              "role": "styled-jsx 类型补齐：Next.js 内置 styled-jsx（next-env.d.ts 的"
             }
           ],
           "tests": []
@@ -9481,7 +9394,7 @@
         {
           "id": "server.services",
           "name": "业务服务",
-          "desc": "74 个服务：workflow 引擎、issue、chat-run、团队协作、通知（74 文件 / 24,693 行）",
+          "desc": "74 个服务：workflow 引擎、issue、chat-run、团队协作、通知（71 文件 / 24,314 行）",
           "files": [
             {
               "path": "packages/server/src/services/agent-capability-catalog.ts",
@@ -9633,22 +9546,6 @@
               "path": "packages/server/src/services/client-node-manager.ts",
               "type": "ts",
               "lines": 143
-            },
-            {
-              "path": "packages/server/src/services/command-process-manager.ts",
-              "type": "ts",
-              "lines": 192,
-              "role": "packages/server/src/services/command-process-manager.ts"
-            },
-            {
-              "path": "packages/server/src/services/command.ts",
-              "type": "ts",
-              "lines": 65
-            },
-            {
-              "path": "packages/server/src/services/database-vector.ts",
-              "type": "ts",
-              "lines": 122
             },
             {
               "path": "packages/server/src/services/embedding-util.ts",
@@ -10105,7 +10002,7 @@
         {
           "id": "server.storage",
           "name": "存储层",
-          "desc": "19 个 store：SQLite/JSON 持久化、SQL 安全（19 文件 / 4,325 行）",
+          "desc": "19 个 store：SQLite/JSON 持久化、SQL 安全（17 文件 / 3,798 行）",
           "files": [
             {
               "path": "packages/server/src/storage/agent-store.ts",
@@ -10116,16 +10013,6 @@
               "path": "packages/server/src/storage/chat-store.ts",
               "type": "ts",
               "lines": 499
-            },
-            {
-              "path": "packages/server/src/storage/command-store.ts",
-              "type": "ts",
-              "lines": 21
-            },
-            {
-              "path": "packages/server/src/storage/database-store.ts",
-              "type": "ts",
-              "lines": 506
             },
             {
               "path": "packages/server/src/storage/hook-store.ts",
@@ -10218,7 +10105,7 @@
         {
           "id": "server.adapters",
           "name": "AI 运行时适配",
-          "desc": "Claude Code/Codex/Grok/Gemini CLI/LangChain 等 20 runtime（8 文件 / 4,325 行）",
+          "desc": "Claude Code/Codex/Grok/Gemini CLI/LangChain 等 20 runtime（7 文件 / 4,312 行）",
           "files": [
             {
               "path": "packages/server/src/adapters/agent-runtime-types.ts",
@@ -10246,12 +10133,6 @@
               "path": "packages/server/src/adapters/langchain-runtime.ts",
               "type": "ts",
               "lines": 1182
-            },
-            {
-              "path": "packages/server/src/agents/agent-context.ts",
-              "type": "ts",
-              "lines": 13,
-              "role": "Shared agent context — passed between agents and hooks."
             },
             {
               "path": "packages/server/src/agents/agent-designer.ts",
@@ -11991,7 +11872,7 @@
         {
           "id": "shared.types",
           "name": "共享类型",
-          "desc": "@flow-spaces/shared：前后端共享 TS 类型（27 个域）（32 文件 / 3,449 行）",
+          "desc": "@flow-spaces/shared：前后端共享 TS 类型（27 个域）（31 文件 / 3,391 行）",
           "files": [
             {
               "path": "packages/shared/.npmignore",
@@ -12019,20 +11900,14 @@
               "lines": 165
             },
             {
-              "path": "packages/shared/src/types/command.ts",
-              "type": "ts",
-              "lines": 31,
-              "role": "packages/shared/src/types/command.ts"
-            },
-            {
               "path": "packages/shared/src/types/database.ts",
               "type": "ts",
-              "lines": 69
+              "lines": 47
             },
             {
               "path": "packages/shared/src/types/events.ts",
               "type": "ts",
-              "lines": 212
+              "lines": 208
             },
             {
               "path": "packages/shared/src/types/file.ts",
@@ -12052,7 +11927,7 @@
             {
               "path": "packages/shared/src/types/index.ts",
               "type": "ts",
-              "lines": 27
+              "lines": 26
             },
             {
               "path": "packages/shared/src/types/issue.ts",
@@ -13749,7 +13624,7 @@
         {
           "id": "infra.docs",
           "name": "文档与上下文",
-          "desc": "CLAUDE.md/claude 索引、docs 指南、迁移笔记、审查报告（79 文件 / 6,672 行）",
+          "desc": "CLAUDE.md/claude 索引、docs 指南、迁移笔记、审查报告（84 文件 / 6,960 行）",
           "files": [
             {
               "path": "CLAUDE.md",
@@ -13824,7 +13699,7 @@
             {
               "path": "claude/changelog.md",
               "type": "md",
-              "lines": 18
+              "lines": 19
             },
             {
               "path": "claude/conventions.md",
@@ -13882,9 +13757,34 @@
               "lines": 59
             },
             {
+              "path": "docs/dead-code-audit/SUMMARY.md",
+              "type": "md",
+              "lines": 41
+            },
+            {
+              "path": "docs/dead-code-audit/packages.md",
+              "type": "md",
+              "lines": 83
+            },
+            {
+              "path": "docs/dead-code-audit/server.md",
+              "type": "md",
+              "lines": 49
+            },
+            {
+              "path": "docs/dead-code-audit/web-components.md",
+              "type": "md",
+              "lines": 47
+            },
+            {
+              "path": "docs/dead-code-audit/web-lib.md",
+              "type": "md",
+              "lines": 58
+            },
+            {
               "path": "docs/init-project-report-2026-11-27.md",
               "type": "md",
-              "lines": 64
+              "lines": 73
             },
             {
               "path": "docs/workflow/README.md",
@@ -14152,7 +14052,7 @@
         {
           "id": "infra.scripts",
           "name": "工程与脚本",
-          "desc": "根配置、workspace 清单、i18n 审计与拷贝校验脚本（15 文件 / 13,149 行）",
+          "desc": "根配置、workspace 清单、i18n 审计与拷贝校验脚本（14 文件 / 12,795 行）",
           "files": [
             {
               "path": ".gitignore",
@@ -14208,11 +14108,6 @@
               "path": "scripts/copy-closure.mjs",
               "type": "mjs",
               "lines": 359
-            },
-            {
-              "path": "scripts/copy-report.txt",
-              "type": "data",
-              "lines": 354
             },
             {
               "path": "scripts/gen-feature-map.py",

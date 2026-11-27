@@ -6,7 +6,7 @@
 
 ## 结构与运行形态
 
-- `src/index.ts` 桶文件重导出 `src/types/*` 全部 27 个域文件。
+- `src/index.ts` 桶文件重导出 `src/types/*` 全部 26 个域文件。
 - 构建即 `tsc` 产 `dist/`（ESM only，`declaration` + `declarationMap`），web/sdk/server 引用其产物或经 workspace 直解析。
 - 发布配置 `publishConfig.access: public`（npm 公开包）。
 

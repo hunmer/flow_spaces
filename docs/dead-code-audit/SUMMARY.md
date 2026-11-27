@@ -2,6 +2,12 @@
 
 4 × GLM-5.3-Flash 并行审计（dead-code-audit 团队），Lead 对全部 A 档条目逐一复验。分报告：[web-components.md](web-components.md) / [web-lib.md](web-lib.md) / [server.md](server.md) / [packages.md](packages.md)。
 
+> **执行结果（2026-11-27 17:15，用户指令 "执行A, B的话把 AgentSpacesUI 重命名成 FlowSpacesUI"）**：
+> - **A 档 12 项已全部删除**（含 `app/api/` 与 `base/command-palette/` 整目录、`scripts/copy-report.txt`），下游孤儿（`shared/types/command.ts`、`events.ts` command 段、`database.ts` DatabaseVector* 三接口）一并清理。
+> - **B 档已裁决执行**：locales 6 namespace×2 删除（barrel 同步清理）；AgentSpacesUI→**FlowSpacesUI** 全链重命名（13 文件，`window.AgentSpacesUI` 保留兼容别名 + `new Function` 形参双注入，存量 mini-app 不受影响）；docs/workflow 过期路径改指 flow-spaces-plugins 仓库。workflow-ws 契约段、5 个脚本、sdk demo、sdk 7 模块/shared 4 域**保留**（发布包对外 API）。
+> - **验证**：`pnpm typecheck` ✓、`build:packages` ✓；feature_map 重建 33 节点 / 2728 文件 / 100% 覆盖 / ghost 0；tracked 2750 → 2730。
+> - **附带修复**：`ui/morphing-spinner.tsx` `<style jsx>` → `<style>`（styled-jsx shim 删除后 typecheck 报错）。
+
 ## A 高置信可删（12 项，Lead 已逐一复验 0 引用）
 
 | # | 文件 | 证据摘要 |

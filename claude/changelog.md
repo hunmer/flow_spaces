@@ -2,6 +2,16 @@
 
 > 仅保留最近 5 条。
 
+## 2026-11-27 — 死代码清理执行（A 档全量 + B 档裁决）
+
+- 删除 A 档 12 文件（审计报告 `docs/dead-code-audit/`，Lead 复验 0 引用）：server 6（`agents/agent-context.ts`、`command-process-manager.ts`→`command.ts`→`command-store.ts` 死链、`database-vector.ts`→`database-store.ts` 死链）；web 5（`shims/next/dynamic.tsx`、`shims/styled-jsx.d.ts`、`app/api/chat/route.ts` 371 行 Next.js 残留、`components/home/workflows-table.tsx`、`components/base/command-palette/`）；`scripts/copy-report.txt`。
+- 下游孤儿清理：`shared/types/command.ts` 删除（shared 27→26 域）、`events.ts` 删 `command.*` 事件段、`database.ts` 删 `DatabaseVectorStats/IndexResult/SearchResult` 向量类型。
+- **AgentSpacesUI → FlowSpacesUI 全链重命名**：window 主名 FlowSpacesUI，`window.AgentSpacesUI` 保留兼容别名（存量 mini-app 兜底），`new Function` 形参双注入；server 工具名 `list_agent_spaces_ui_components`→`list_flow_spaces_ui_components`（`agent-prompt.ts`/`mini-app-tools.ts`/`mini-apps.ts` 文案与模板同步）。
+- locales 清理：en/zh 各删 6 个 0 消费 namespace（issue/flexLayout/database/agentCommands/skillsPackages/outputStyles），en/zh 各剩 29 json。
+- 附带修复：`ui/morphing-spinner.tsx` 的 `<style jsx>` styled-jsx 残留语法改 `<style>`（typecheck 揪出）；docs/workflow 插件路径改指 flow-spaces-plugins 仓库。
+- 裁决保留：workflow-ws 契约段、5 个未接线脚本、sdk demo 页、sdk 7 模块/shared 4 域（发布包对外 API）。
+- 验证与图谱：`pnpm typecheck` ✓、`build:packages` ✓；feature_map 重建 33 节点 / 2728 文件 / 100% / ghost 0；tracked 2750 → 2730。
+
 ## 2026-11-27 — init-project 增量更新：商店拆仓
 
 - 全仓清点（git ls-files 4072 → **2750**）：内置 plugins/workflows/mini-apps 迁出至独立 GitHub 商店仓库（hunmer/flow-spaces-plugins、flow-spaces-workflows、flow-spaces-mini-apps、game-asset-canvas），`packages/templates` 缩容为 agents/mcps/skills/output-styles/prompt/skillspackage（393 → 316 文件），`pack-mini-apps.mjs` 移除。

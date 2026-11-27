@@ -2,6 +2,11 @@
 
 > 本文件只记录 Shared 模块 AI 上下文的更新历史，最近 5 条倒序排列。
 
+## 2026-11-27 — 死代码清理
+
+- 删除 `src/types/command.ts`（QuickCommand/CommandProcess/CommandProcessEvent 全仓 0 引用），`src/index.ts` 桶导出移除对应行，类型域 27 → 26。
+- `events.ts` 删除 `command.*` 事件类型段；`database.ts` 删除 DatabaseVectorStats/IndexResult/SearchResult（向量检索死链下游）。
+- dist 已通过 `pnpm build:packages` 重建刷新。
 ## 2026-11-15 — 复核类型清单并刷新索引
 
 - 复核 `src/types/`：现状 27 个域文件（team.ts 已移除，TeammateIdle hook 协议保留于 hooks 域）。

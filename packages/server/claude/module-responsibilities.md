@@ -46,7 +46,6 @@
 
 | 文件 | 职责 |
 |---|---|
-| `agent-context.ts` | Agent 上下文管理 |
 | `agent-designer.ts` | Agent 设计器 |
 | `issue-agent-runner.ts` | Issue Agent 执行 |
 | `commit-agent.ts` | Git Commit Agent |

@@ -2,6 +2,13 @@
 
 > 本文件记录索引生成/更新，不是产品 Changelog。仅保留最近 5 条。
 
+## 2026-11-27 — 死代码清理
+
+- 删除 5 处 0 引用代码：`src/shims/next/dynamic.tsx`、`src/shims/styled-jsx.d.ts`、`src/app/api/chat/route.ts`（371 行 Next.js route handler 残留，`/api/chat` 已由 Express 实现）、`src/components/home/workflows-table.tsx`（被 metrics-dashboard 取代）、`src/components/base/command-palette/`（注意：活码是 `src/components/command-palette/`，被 `main.tsx` 引用）。
+- `AgentSpacesUI` → `FlowSpacesUI` 全链重命名：`use-mini-app-host-api.tsx`、`react-renderer.tsx`、`mini-app-renderer.tsx`、`display.ts`、`ui/*.tsx` 注释；`window.AgentSpacesUI` 保留兼容别名（挂载/卸载双名同步、`new Function` 形参双注入），存量 mini-app 脚本不受影响。
+- locales 清理：en/zh 各删 6 个 0 消费 namespace（issue/flexLayout/database/agentCommands/skillsPackages/outputStyles），各剩 29 json。
+- 附带修复：`ui/morphing-spinner.tsx` 的 `<style jsx>`（styled-jsx 类型 shim 删除后 typecheck 报错）改为普通 `<style>`。
+- `pnpm typecheck` 通过；feature_map 重建 2728 文件 100% 覆盖。
 ## 2026-11-27 — init-project 增量更新：商店拆仓
 
 - 商店消费迁移至外部仓库：新增/确认 `src/lib/agent-store.ts`（`resolveStoreUrl` + `REPO_ROUTES` 前缀路由：plugins→flow-spaces-plugins、workflows→flow-spaces-workflows、mini-app→flow-spaces-mini-apps，均走 gh-proxy raw main 分支；`DEFAULT_BASE` 指向 flow_spaces master `packages/templates/`；镜像覆写 localStorage `flow-spaces:store-api-base`；`LEGACY_LOCAL_BASE_SUFFIX='/agents-store'` 旧同源 base 自动清除；`parseGithubRepoUrl` 支持 owner/repo 简写）。

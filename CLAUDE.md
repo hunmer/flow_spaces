@@ -16,7 +16,7 @@ Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19
 | `apps/web` | React 19 SPA（编辑器/Mini App/聊天/BoardUI） | [CLAUDE.md](apps/web/CLAUDE.md) |
 | `packages/server` | Express 5 + WS + SQLite + AI 运行时适配 + 运行时数据 | [CLAUDE.md](packages/server/CLAUDE.md) |
 | `packages/sdk` | 前端统一 API SDK（24 模块 + demo 页） | [CLAUDE.md](packages/sdk/CLAUDE.md) |
-| `packages/shared` | 前后端共享 TS 类型（27 域） | [CLAUDE.md](packages/shared/CLAUDE.md) |
+| `packages/shared` | 前后端共享 TS 类型（26 域） | [CLAUDE.md](packages/shared/CLAUDE.md) |
 | `packages/templates` | Agent Store 内容源（agents/mcps/skills/output-styles/prompt/skillspackage） | [CLAUDE.md](packages/templates/CLAUDE.md) |
 | `packages/logs/` | server 运行日志（运行时生成，不入库） | — |
 
@@ -48,11 +48,11 @@ graph LR
   WEB --商店索引/安装--> STORES[独立商店仓库 x4]
 ```
 
-- 找功能代码：`docs/feature_map.html`（33 功能节点 / 2748 文件 / 100% 覆盖，2026-11-27 重建后已入库）或 `rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
+- 找功能代码：`docs/feature_map.html`（33 功能节点 / 2728 文件 / 100% 覆盖，2026-11-27 死代码清理后重建）或 `rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
 - 商店内容（plugins/workflows/mini-app）默认从独立仓库 GitHub raw 拉取；本地 `/agents-store` 只分发 templates 包内剩余内容（agents/mcps/skills 等）。
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓 + 编辑器 Monaco→CodeMirror 6）
-- **已扫描**: 全仓 tracked 文件清点（git ls-files 2750；Monaco 迁移删除后）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、编辑器迁移（`components/editor/code-editor.tsx` CodeMirror 6 兼容层）、flow-spaces-data 入库范围（25 文件）
+- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓 + 编辑器迁移 + 死代码清理）
+- **已扫描**: 全仓 tracked 文件清点（git ls-files 2730；死代码清理后）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、编辑器迁移（CodeMirror 6 兼容层）、死代码审计与清理（A 档 12 文件 + locales 6 namespace + `AgentSpacesUI`→`FlowSpacesUI` 重命名，报告见 `docs/dead-code-audit/`）、flow-spaces-data 入库范围（25 文件）
 - **未深挖**: 各模块内部细节见各模块 claude/（server services、web components 为清单级）；`packages/sdk/demo/`（41 个 HTML 演示页）未逐一核对

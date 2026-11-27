@@ -2,6 +2,11 @@
 
 > 本文件只记录 Server 模块 AI 上下文的更新历史，最近 5 条倒序排列。
 
+## 2026-11-27 — 死代码清理
+
+- 删除 6 个 0 引用文件：`agents/agent-context.ts`（被 `persistent-agent-context.ts` 取代）、`services/command-process-manager.ts`、`services/command.ts`、`storage/command-store.ts`（三文件死链）、`services/database-vector.ts`、`storage/database-store.ts`（向量检索死链）。对应 `shared` 契约（command 域、DatabaseVector* 类型）同日删除。
+- `AgentSpacesUI` → `FlowSpacesUI` 全链重命名：`agent-prompt.ts` 八处文案、`mini-apps.ts` 模板、`mini-app-tools.ts` 工具名（`list_agent_spaces_ui_components` → `list_flow_spaces_ui_components`）与描述；`window.AgentSpacesUI` 保留兼容别名供存量 mini-app。
+- 审计报告：`docs/dead-code-audit/`；`pnpm typecheck` + `build:packages` 通过。
 ## 2026-11-27 — init-project 增量更新：商店拆仓
 
 - **商店内容迁出**: `packages/templates` 的 plugins/workflows/mini-app 目录与 `pack-mini-apps.mjs` 迁至独立 GitHub 仓库（hunmer/flow-spaces-plugins / flow-spaces-workflows / flow-spaces-mini-apps）；本地 `/agents-store` 静态路由（app.ts `resolveRuntimeDir('../templates')`）只分发 templates 剩余 6 类内容，plugins/workflows/mini-app 请求改由 web 端 `apps/web/src/lib/agent-store.ts` `resolveStoreUrl` 前缀路由直达外部仓库 raw（gh-proxy 默认代理）。
@@ -31,43 +36,3 @@
 - **mini-app 子系统迭代**: 新增 `ws/mini-app-channels.ts`（`miniApp.taskStop` 事件，前端凭 taskId 中断 mini-app agent）；`services/mini-app-services.ts` 新增 `startServicesWatcher`（app.ts 启动调用）；`services/builtin-tools/mini-app-tools.ts` 本期改动 6 次（全仓库最高）。更新 `claude/public-interfaces.md`（WS 表 +mini-app-channels）、`claude/module-responsibilities.md`（ws 表 +mini-app-channels/+html-utils）。
 - **文档修正**: `claude/public-interfaces.md` 移除 2 个虚构路由（`routes/code-favorites.ts`、`routes/task.ts` 实际不存在）；`claude/module-responsibilities.md` 修正可视化办公模块 mapRoutes 描述（旧 web 包已删除）。
 - 更新文件：`CLAUDE.md`（功能描述/约定/文件索引 +gemini-cli-runtime/扫描状态）+ `claude/ai-adapters.md` + `claude/public-interfaces.md` + `claude/module-responsibilities.md` + `claude/changelog.md`；新建 `claude/gemini-cli-runtime.md`
-
-## 2026-07-18 — 深挖已移除的可视化办公模块 + Grok 协议（新增 2 个详情文件）
-
-- 精读已移除的可视化办公房间实现（房间生命周期 + 5 类 message handler + Dispatcher 命令模式）、状态 schema（Player/Agent/ChatMessage）、广播桥接层（Agent 广播 → 房间状态的核心枢纽：dispatch 路由 7 种广播类型 + 椅子占用机制 + 业务 roomId↔内部 roomId 映射）
-- 精读 `adapters/grok-runtime.ts`（345 行）：spawn 子进程 + streaming-json 按行解析、text/thought/end/error 事件 schema、缓冲 flush 策略、自定义模型 config.toml 生成、normalizeGrokEndpoint 按 provider 归一化 backend、env_key 区分（XAI_API_KEY 原生 / FLOW_SPACES_GROK_API_KEY 自定义）
-- 新建可视化办公模块详情文件（本期已删除）：双源实体模型（Player=sessionId vs Agent=业务agentId）、dispatch 路由表、椅子占用算法、Agent 广播协议 JSON 示例、相对原版的裁剪清单、前端集成指引
-- 新建 `claude/grok-runtime.md`：CLI 参数表、JSON 事件 schema、usage/cost 归一化、结果判定逻辑、config.toml 模板、backend 归一化表、环境变量、日志规范
-- 更新 `CLAUDE.md` 文件索引：+grok-runtime.md +办公模块详情文件两行
-
-## 2026-07-18 — 可视化办公模块合并 + Grok 运行时
-
-- **可视化办公模块**（本期已整体移除）：原房间服务合并进主后端单进程，现已连同挂载点、路由与升级分发分支一并删除。
-- **可视化办公 API**（本期已全部移除）：房间 CRUD、地图数据、monitor；Agent WS 与 Viewer 连接均已移除；原环境开关同步移除
-- **Grok 运行时**（`adapters/grok-runtime.ts`）：`AgentRuntimeKind` 新增 `'grok'`，spawn 子进程 + JSON 事件流，支持 baseURL/resume/maxTurns/tools/permission/thinking；已在 `RUNTIME_DESCRIPTORS` 登记（descriptor 8 → 9）；测试 `src/adapters/grok-runtime.test.ts`
-- 更新文件：`CLAUDE.md`（功能描述 + 约定 + 扫描状态）、`claude/ai-adapters.md`（+Grok 章节 + Runtime 管理 descriptor 8→9）、`claude/module-responsibilities.md`（adapters 表 +Grok、+可视化办公子目录）、`claude/public-interfaces.md`（+可视化办公 REST/WS）、`claude/changelog.md`
-
-## 2026-07-13 — 深挖 team-runtime.ts + 增量核对
-
-- 新增 `claude/team-runtime.md`：team-runtime.ts（1379 行）全量精读，覆盖成员调度（preset/chat/custom 三分流）、消息路由（postTeamRuntimeMessage → dispatchTeamReply）、handoff 机制、任务管理（owner/非 owner 责任 + 工具入口）、工具装配、事件广播、会话生命周期、文件级持久化模型
-- 修正 Team 服务文件数：9 → 8
-- `services/builtin-tools/` 补全：12 文件（含 `agent-tools.ts`，含 workflow-editor/ 子目录）
-- services 总数 99 → 100；路由数确认 42
-- 更新 `CLAUDE.md`（新增 team-runtime 索引行/约定 Team 文件数/扫描状态补 team-runtime 全文）
-
-## 2026-07-13 — 增量核对（Team 文件数修正 + builtin-tools 补全）
-
-- 修正 Team 服务文件数：9 → 8（team/team-manage/team-membership/team-message/team-inbox/team-runtime/team-internal/team-types）
-- `services/builtin-tools/` 补全：12 文件（新增 `agent-tools.ts`，含 workflow-editor/ 子目录）
-- services 总数 99 → 100；路由数确认 42
-- 更新 `CLAUDE.md`（约定 Team 文件数/扫描状态）、`claude/module-responsibilities.md`（路由数/服务数/builtin-tools 列表/team 文件数）
-
-## 2026-07-10 — Team 多 Agent 协作系统
-
-- 新增 Team 协作子系统：`services/team*.ts`（8 文件：team/team-manage/team-membership/team-message/team-inbox/team-runtime/team-internal/team-types）
-- `routes/team.ts` 挂载 3 个 API：`/api/teams`（团队 CRUD/成员/邀请/角色/解散）、`/api/team-inbox`（收件箱查询/删除/状态）、`/api/team-messages`（消息发送/更新/删除/评论/运行时回送）
-- `services/builtin-tools/team-tools.ts`：Agent 可调用的团队协作工具集
-- `services/chat-run.ts` + `routes/chat-run.ts`：聊天运行模块
-- 路由总数 40+ → 42；services 总数 90+ → 99
-- 更新 `CLAUDE.md`（功能描述/约定补 Team/扫描状态）、`claude/public-interfaces.md`（team/chat-run 路由）、`claude/module-responsibilities.md`（Team 子域 + chat-run）
-

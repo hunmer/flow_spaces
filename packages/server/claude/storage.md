@@ -77,8 +77,6 @@
 | `workspace-store.ts` | 工作空间 + boundDirs | JSON |
 | `issue-store.ts` | Issue 列表 + 状态 | JSON |
 | `task-store.ts` | Task（Issue 自动化派生） | JSON |
-| `command-store.ts` | 快捷命令 | JSON |
-| `database-store.ts` | 文档数据库（Notion 风格，集合 + 文档） | JSON |
 | `code-favorites-store.ts` | 代码收藏 | JSON |
 | `worktree-store.ts` | Git worktree | JSON |
 | `robot-account-store.ts` | 机器人账号 | JSON |

@@ -1,6 +1,6 @@
 # apps/web 数据模型（前端侧）
 
-类型契约源头在 `@flow-spaces/shared`（packages/shared/src/types，27 个域文件）。此处只记录 web 特有的状态与数据形态。
+类型契约源头在 `@flow-spaces/shared`（packages/shared/src/types，26 个域文件）。此处只记录 web 特有的状态与数据形态。
 
 ## Zustand stores（src/stores/）
 

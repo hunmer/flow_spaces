@@ -18,11 +18,9 @@
 | `json-store.ts` | JSON 存储基础 |
 | `agent-store.ts` | Agent 配置 |
 | `chat-store.ts` | 聊天会话/消息 |
-| `command-store.ts` | 命令记录 |
 | `issue-store.ts` | Issue |
 | `task-store.ts` | 任务 |
 | `code-favorites-store.ts` | 代码收藏 |
-| `database-store.ts` | 数据库配置 |
 | `hook-store.ts` | Hook |
 | `knowledge-base-store.ts` | 知识库 |
 | `llm-store.ts` | LLM 配置 |

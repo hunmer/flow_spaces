@@ -27,7 +27,6 @@ packages/shared/
       workflow-composite.ts         # 复合节点：循环常量 + 树遍历 + 作用域锚定 + 嵌入式 Workflow 工厂
       workflow-shortcut.ts          # 快捷键：8种动作 + 分组 + 合并函数
       workflow-ws.ts                # WebSocket 协议：消息类型 + 交互(10种) + 握手 + ChannelMap(50+契约)
-      command.ts                    # QuickCommand + CommandProcess + CommandProcessEvent
       subscription.ts               # SubscriptionConfig + SubscriptionQuota + SubscriptionLimit
       search.ts                     # CodeSearchResult + FileSearchResult + SearchCodeOptions
       notification.ts               # NotificationType(5种) + AppNotification
@@ -60,4 +59,4 @@ packages/shared/
 | 核心业务 | workspace, issue, task, agent, channel, file, git | 7 |
 | 基础设施 | events, llm, tool | 3 |
 | Workflow | workflow, workflow-execution, workflow-errors, workflow-plugin, workflow-composite, workflow-shortcut, workflow-ws | 7 |
-| 辅助功能 | command, subscription, search, notification, speech, code-favorites, hooks, database, kanban, worktree | 10 |
+| 辅助功能 | subscription, search, notification, speech, code-favorites, hooks, database, kanban, worktree | 9 |

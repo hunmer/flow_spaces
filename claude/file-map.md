@@ -16,7 +16,7 @@ flow_spaces/
 │   ├── audit-i18n-hardcode.mjs
 │   ├── copy-closure.mjs / verify-copy.mjs   # 迁移期 closure 复制校验
 ├── docs/
-│   ├── feature_map.json    # 功能依赖图谱数据（33 节点/2748 文件；已入库）
+│   ├── feature_map.json    # 功能依赖图谱数据（33 节点/2728 文件；已入库）
 │   ├── feature_map.html    # 功能图谱可视化（vis-network；已入库）
 │   ├── init-project-report-2026-11-27.md  # 本轮 init-project 执行报告
 │   ├── agent-tools-mcp.md  # agent-tools MCP 服务说明
