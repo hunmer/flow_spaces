@@ -573,8 +573,6 @@ function createMiniAppAgentFunctionTools(
         agentspaceDir: miniAppStore.resolveDataPath(projectId, 'agent_files/preview'),
         createdAt: '',
         updatedAt: '',
-        activeChannels: [],
-        activeIssues: [],
       } : null,
     ));
   }

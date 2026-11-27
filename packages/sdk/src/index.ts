@@ -32,17 +32,10 @@ export { createLlmApi } from './modules/llm';
 export { createWorkflowApi } from './modules/workflow';
 export { createWorkflowPluginApi } from './modules/workflow-plugin';
 export { createKnowledgeBaseApi } from './modules/knowledge-base';
-export { createNotificationApi } from './modules/notification';
 export { createSkillsApi, type SkillInfo, type SkillSyncItem } from './modules/skills';
 export { createMcpsApi, type McpServerInfo } from './modules/mcps';
-export { createToolsApi } from './modules/tools';
 export { createAuthApi } from './modules/auth';
-export { createAccountApi, type UserProfile } from './modules/account';
 export { createSearchApi } from './modules/search';
-export { createAgentStoreApi } from './modules/agent-store';
-export { createFontApi } from './modules/font';
-export { createInspectorApi } from './modules/inspector';
-export { createAvatarApi } from './modules/avatar';
 export { createAgentCommandsApi } from './modules/agent-commands';
 export { createExternalImportApi, type ExternalImportKind, type ExternalImportMode, type ExternalImportSource, type ExternalImportResult } from './modules/external-import';
 export { createChatApi } from './modules/chat';
@@ -63,17 +56,10 @@ import { createLlmApi } from './modules/llm';
 import { createWorkflowApi } from './modules/workflow';
 import { createWorkflowPluginApi } from './modules/workflow-plugin';
 import { createKnowledgeBaseApi } from './modules/knowledge-base';
-import { createNotificationApi } from './modules/notification';
 import { createSkillsApi } from './modules/skills';
 import { createMcpsApi } from './modules/mcps';
-import { createToolsApi } from './modules/tools';
 import { createAuthApi } from './modules/auth';
-import { createAccountApi } from './modules/account';
 import { createSearchApi } from './modules/search';
-import { createAgentStoreApi } from './modules/agent-store';
-import { createFontApi } from './modules/font';
-import { createInspectorApi } from './modules/inspector';
-import { createAvatarApi } from './modules/avatar';
 import { createAgentCommandsApi } from './modules/agent-commands';
 import { createExternalImportApi } from './modules/external-import';
 import { createChatApi } from './modules/chat';
@@ -97,17 +83,10 @@ export interface SDK {
   readonly workflow: ReturnType<typeof createWorkflowApi>;
   readonly workflowPlugin: ReturnType<typeof createWorkflowPluginApi>;
   readonly knowledgeBase: ReturnType<typeof createKnowledgeBaseApi>;
-  readonly notification: ReturnType<typeof createNotificationApi>;
   readonly skills: ReturnType<typeof createSkillsApi>;
   readonly mcps: ReturnType<typeof createMcpsApi>;
-  readonly tools: ReturnType<typeof createToolsApi>;
   readonly auth: ReturnType<typeof createAuthApi>;
-  readonly account: ReturnType<typeof createAccountApi>;
   readonly search: ReturnType<typeof createSearchApi>;
-  readonly agentStore: ReturnType<typeof createAgentStoreApi>;
-  readonly font: ReturnType<typeof createFontApi>;
-  readonly inspector: ReturnType<typeof createInspectorApi>;
-  readonly avatar: ReturnType<typeof createAvatarApi>;
   readonly agentCommands: ReturnType<typeof createAgentCommandsApi>;
   readonly externalImport: ReturnType<typeof createExternalImportApi>;
   readonly chat: ReturnType<typeof createChatApi>;
@@ -139,17 +118,10 @@ export function createSDK(config: SDKConfig): SDK {
     workflow: createWorkflowApi(http),
     workflowPlugin: createWorkflowPluginApi(http),
     knowledgeBase: createKnowledgeBaseApi(http),
-    notification: createNotificationApi(http),
     skills: createSkillsApi(http),
     mcps: createMcpsApi(http),
-    tools: createToolsApi(http),
     auth: createAuthApi(http),
-    account: createAccountApi(http),
     search: createSearchApi(http),
-    agentStore: createAgentStoreApi(http),
-    font: createFontApi(http),
-    inspector: createInspectorApi(http),
-    avatar: createAvatarApi(http),
     agentCommands: createAgentCommandsApi(http),
     externalImport: createExternalImportApi(http),
     chat: createChatApi(http),

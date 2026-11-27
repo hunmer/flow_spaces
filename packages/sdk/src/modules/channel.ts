@@ -9,9 +9,6 @@ export function createChannelApi(http: HttpClient) {
     create: (workspaceId: string, data: { id?: string; name: string; type?: string; members?: string[]; titlePrompt?: string; overwrite?: boolean }): Promise<Channel> =>
       http.post(`/api/workspaces/${workspaceId}/channels`, data),
 
-    get: (workspaceId: string, channelId: string): Promise<Channel> =>
-      http.get(`/api/workspaces/${workspaceId}/channels/${channelId}`),
-
     update: (workspaceId: string, channelId: string, data: Partial<Pick<Channel, 'name' | 'type' | 'issueId' | 'members' | 'pinnedMentionId' | 'draft' | 'todos' | 'archived'>>): Promise<Channel> =>
       http.put(`/api/workspaces/${workspaceId}/channels/${channelId}`, data),
 
@@ -26,10 +23,6 @@ export function createChannelApi(http: HttpClient) {
 
     clearMessages: (workspaceId: string, channelId: string): Promise<void> =>
       http.delete(`/api/workspaces/${workspaceId}/channels/${channelId}/messages`),
-
-    /** 上传附件 */
-    uploadAttachment: (workspaceId: string, formData: FormData): Promise<{ url: string }> =>
-      http.upload(`/api/workspaces/${workspaceId}/channels/upload`, formData),
 
     /** Delete a single message */
     deleteMessage: (workspaceId: string, channelId: string, messageId: string): Promise<void> =>

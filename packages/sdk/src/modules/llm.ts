@@ -51,9 +51,6 @@ export function createLlmApi(http: HttpClient) {
     deleteModel: (id: string): Promise<void> =>
       http.delete(`/api/models/${id}`),
 
-    syncModelPrices: (): Promise<ModelSyncResult> =>
-      http.post("/api/models/sync-prices"),
-
     listProviders: (): Promise<LLMProvider[]> =>
       http.get("/api/providers"),
 
@@ -75,16 +72,5 @@ export function createLlmApi(http: HttpClient) {
     getCatalog: (): Promise<unknown> =>
       http.get("/api/model-catalog"),
 
-    getCatalogMeta: (): Promise<ModelCatalogMeta> =>
-      http.get("/api/model-catalog/meta"),
-
-    refreshCatalog: (): Promise<ModelCatalogRefreshResult> =>
-      http.post("/api/model-catalog/refresh"),
-
-    selectCatalog: (providers: Record<string, string[]>): Promise<ModelCatalogMeta> =>
-      http.post("/api/model-catalog/select", { providers }),
-
-    refreshProviderIcons: (): Promise<ModelCatalogProviderIconsResult> =>
-      http.post("/api/model-catalog/refresh-icons"),
   };
 }

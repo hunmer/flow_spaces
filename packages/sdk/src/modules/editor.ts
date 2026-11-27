@@ -28,19 +28,7 @@ export function createEditorApi(http: HttpClient) {
     saveEditorState: (workspaceId: string, state: { openFilePaths: string[]; activeFilePath: string | null; pinnedPaths: string[] }): Promise<void> =>
       http.putVoid(`/api/workspaces/${workspaceId}/files/editor-state`, state),
 
-    /** 代码搜索 */
-    search: (workspaceId: string, opts: { query: string; regex?: boolean; caseSensitive?: boolean; filePattern?: string; maxResults?: number }): Promise<import('@flow-spaces/shared').CodeSearchResult[]> => {
-      const params = new URLSearchParams({ query: opts.query });
-      if (opts.regex) params.set('regex', 'true');
-      if (opts.caseSensitive) params.set('caseSensitive', 'true');
-      if (opts.filePattern) params.set('filePattern', opts.filePattern);
-      if (opts.maxResults) params.set('maxResults', String(opts.maxResults));
-      return http.get(`/api/workspaces/${workspaceId}/files/search?${params}`);
-    },
 
-    /** Check if file exists */
-    exists: (workspaceId: string, path: string): Promise<boolean> =>
-      http.get<{ exists: boolean }>(`/api/workspaces/${workspaceId}/files/exists?path=${encodeURIComponent(path)}`).then(r => r.exists),
 
     /** Reveal file in OS file manager */
     reveal: (workspaceId: string, path: string): Promise<void> =>

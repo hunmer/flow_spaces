@@ -6,61 +6,41 @@
 
 ```
 packages/sdk/demo/
-├── index.html          # 首页：服务器配置 + 登录 + 功能导航
-├── version.html        # Version / 连通性检测（无需鉴权）
-├── auth.html           # Auth 鉴权（login / check / changeSecret）
-├── workspace.html      # Workspace（list / get / browseFolder / create）
-├── agent.html          # Agent 预设（listPresets / usageDashboard / design）
-├── issue.html          # Issue（list / create / start，依赖 workspaceId）
-├── task.html           # Task 任务（list / create / retry / cancel，依赖 workspaceId）
-├── git.html            # Git（status / log / branches，依赖 workspaceId）
-├── editor.html         # Editor 文件树 & Worktree（依赖 workspaceId）
+├── index.html          # 首页：服务器配置 + 登录 + 功能导航（/api/health 连通探针）
+├── auth.html           # Auth 鉴权（login）
+├── agent.html          # Agent 预设（listPresets 等）
+├── editor.html         # Editor 文件树/内容/CRUD/导入（依赖 workspaceId）
 ├── channel.html        # Channel 对话频道（依赖 workspaceId）
 ├── chat.html           # Chat 会话 / Agent / Workspace / Session
 ├── workflow.html       # Workflow 工作流 & 插件
 ├── llm.html            # LLM 模型/供应商 & 知识库
-├── agent-cfg.html      # Agent 配置（prompts/skills/mcps/tools/outputStyles/hooks/command/agentCommands）
-├── content.html        # 全局数据 & Search & 代码收藏
 ├── mini-app.html       # Mini Apps 小应用管理
 ├── sqlite.html         # SQLite 数据库适配器
-├── settings.html       # 系统设置（npm/font/avatar/robot/订阅/语音/通知/埋点）
-├── agent-store.html    # Agent Store 商店索引
 ├── css/style.css       # 公共样式
 └── js/
     ├── sdk-config.js   # 公共：SDK 单例 + 配置持久化 + UI helpers
-    ├── home.js
-    ├── version.js · auth.js · workspace.js
-    ├── agent.js · issue.js · task.js · git.js
-    ├── editor.js · channel.js · chat.js
-    ├── workflow.js · llm.js · agent-cfg.js
-    ├── content.js · mini-app.js · sqlite.js
-    └── settings.js · agent-store.js
+    ├── home.js · auth.js
+    ├── agent.js · editor.js · channel.js · chat.js
+    └── workflow.js · llm.js · mini-app.js · sqlite.js
 ```
 
 ## 模块覆盖矩阵
 
-全部 39 个 API 模块均有对应 demo：
+sdk 现存模块（17 个）中带 UI 演示的页：
 
 | demo 页 | SDK 模块 | 鉴权 | 依赖 |
 |---|---|---|---|
-| version | `version` | ❌ | — |
-| auth | `auth` | 部分无需 | — |
-| workspace | `workspace` | ✅ | — |
+| auth | `auth` | ✅ | — |
 | agent | `agent` | ✅ | — |
-| issue | `issue` | ✅ | workspaceId |
-| task | `task` | ✅ | workspaceId |
-| git | `git` | ✅ | workspaceId |
-| editor | `editor` · `worktree` | ✅ | workspaceId |
+| editor | `editor` | ✅ | workspaceId |
 | channel | `channel` | ✅ | workspaceId |
 | chat | `chat` | ✅ | — |
 | workflow | `workflow` · `workflowPlugin` | ✅ | workflowId |
 | llm | `llm` · `knowledgeBase` | ✅ | workspaceId（KB） |
-| agent-cfg | `prompts`·`outputStyles`·`skills`·`mcps`·`tools`·`agentCommands`·`hooks`·`command` | ✅ | 部分 workspaceId |
-| content | `data` · `search` · `codeFavorites` | ✅ | 部分 workspaceId |
 | mini-app | `miniApp` | ✅ | appId |
 | sqlite | `sqlite` | ✅ | databaseId |
-| settings | `npmSettings`·`font`·`avatar`·`robotAccounts`·`subscription`·`speech`·`notification`·`inspector` | ✅ | — |
-| agent-store | `agentStore` | ✅ | baseUrl |
+
+（account/agent-store/avatar/font/inspector/notification/tools 等模块与对应 demo 页已随 2026-11-27 死代码清理删除；skills/mcps/agentCommands/search/workspace 等无独立 demo 页。）
 
 ## 为什么能直接引用 dist
 

@@ -104,8 +104,6 @@ export function getAgentWorkspace(agentId: string) {
     agentspaceDir: workingDir,
     createdAt: now,
     updatedAt: now,
-    activeChannels: [],
-    activeIssues: [],
   };
 }
 
@@ -122,8 +120,6 @@ export function getChatWorkspaceRoot(workspaceId: string) {
     agentspaceDir: dir,
     createdAt: workspace.createdAt ?? now,
     updatedAt: workspace.updatedAt ?? now,
-    activeChannels: [],
-    activeIssues: [],
   };
 }
 

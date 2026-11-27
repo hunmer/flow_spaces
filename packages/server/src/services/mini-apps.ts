@@ -65,8 +65,6 @@ export function getAgentFilesWorkspace(projectId: string, scope?: string): Works
     agentspaceDir: root,
     createdAt: '',
     updatedAt: '',
-    activeChannels: [],
-    activeIssues: [],
   };
 }
 

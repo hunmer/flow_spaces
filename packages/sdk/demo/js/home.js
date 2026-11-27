@@ -30,13 +30,13 @@ $('#cfg-save').addEventListener('click', () => {
   setTimeout(() => (statusBadge.textContent = '未检测', statusBadge.className = 'badge'), 1500);
 });
 
-// 测试连通：version.current（noAuth）
+// 测试连通：/api/health（noAuth）
 $('#cfg-test').addEventListener('click', async (e) => {
   applyBaseUrl(baseInput.value.trim().replace(/\/$/, ''));
   resetSdk();
   await run(e.target, statusBadge, async () => {
-    const r = await sdk().version.current();
-    setBadge(statusBadge, true, `✓ ${r.version}`);
+    const r = await sdk().http.get('/api/health');
+    setBadge(statusBadge, true, `✓ ${r.status ?? 'ok'}`);
     return r;
   });
 });

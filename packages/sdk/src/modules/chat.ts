@@ -1,4 +1,4 @@
-import type { BuiltInAgentToolName, FileNode, WorkflowAgentTimelineItem, WorkflowAgentToolCall } from '@flow-spaces/shared';
+import type { BuiltInAgentToolName, WorkflowAgentTimelineItem, WorkflowAgentToolCall } from '@flow-spaces/shared';
 
 export interface ChatAgent {
   id: string;
@@ -107,25 +107,9 @@ export function createChatApi(http: { get: Function; post: Function; put: Functi
     clearMessages: (agentId: string): Promise<void> =>
       http.delete(`/api/chat/agents/${agentId}/messages`),
 
-    workspaceTree: (agentId: string, opts?: { path?: string; depth?: number }): Promise<FileNode[]> => {
-      const qs = new URLSearchParams();
-      if (opts?.path) qs.set('path', opts.path);
-      if (opts?.depth != null) qs.set('depth', String(opts.depth));
-      return http.get(`/api/chat/agents/${agentId}/workspace/tree${qs.size ? `?${qs}` : ''}`);
-    },
 
-    chatWorkspaceTree: (workspaceId: string, opts?: { path?: string; depth?: number }): Promise<FileNode[]> => {
-      const qs = new URLSearchParams();
-      if (opts?.path) qs.set('path', opts.path);
-      if (opts?.depth != null) qs.set('depth', String(opts.depth));
-      return http.get(`/api/chat/workspaces/${workspaceId}/tree${qs.size ? `?${qs}` : ''}`);
-    },
 
-    uploadWorkspaceFiles: (agentId: string, targetDir: string, files: Array<{ name: string; content: string }>): Promise<void> =>
-      http.post(`/api/chat/agents/${agentId}/workspace/upload`, { targetDir, files }),
 
-    uploadChatWorkspaceFiles: (workspaceId: string, targetDir: string, files: Array<{ name: string; content: string }>): Promise<void> =>
-      http.post(`/api/chat/workspaces/${workspaceId}/upload`, { targetDir, files }),
 
     workspaceFileContent: (agentId: string, path: string): Promise<{ content: string; encoding: string }> =>
       http.get(`/api/chat/agents/${agentId}/workspace/content?path=${encodeURIComponent(path)}`),
@@ -150,8 +134,6 @@ export function createChatApi(http: { get: Function; post: Function; put: Functi
     createSession: (workspaceId: string, agentId: string): Promise<ChatSession> =>
       http.post(`/api/chat/workspaces/${workspaceId}/sessions`, { agentId }),
 
-    renameSession: (workspaceId: string, sessionId: string, title: string): Promise<ChatSession> =>
-      http.put(`/api/chat/workspaces/${workspaceId}/sessions/${sessionId}`, { title }),
 
     updateSession: (workspaceId: string, sessionId: string, data: Partial<Pick<ChatSession, 'title' | 'archived' | 'editorDirectoryTabs' | 'activeEditorDirectoryTabId' | 'contextLength'>>): Promise<ChatSession> =>
       http.patch(`/api/chat/workspaces/${workspaceId}/sessions/${sessionId}`, data),

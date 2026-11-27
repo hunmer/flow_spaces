@@ -10,60 +10,7 @@ export interface Workspace {
   agentspaceDir: string;
   createdAt: string;
   updatedAt: string;
-  activeChannels: string[];
-  activeIssues: string[];
-  autoProcessIssues?: boolean;
-  editorSettings?: WorkspaceEditorSettings;
-  notificationSettings?: WorkspaceNotificationSettings;
   hooksEnabled?: boolean;
-  miniAppIds?: string[];
-  isWorktree?: boolean;
-  parentWorkspaceId?: string;
-}
-
-export type NotificationProvider = 'lark' | 'wechat' | 'native';
-
-export interface WorkspaceEditorSettings {
-  showHiddenFiles?: boolean;
-}
-
-export type NotificationEventKey = 'issue_started' | 'issue_completed';
-
-export interface RobotAccount {
-  id: string;
-  name: string;
-  type: 'lark' | 'wechat';
-  lark?: { appId: string; appSecret: string };
-  wechat?: { token: string; baseUrl?: string; accountId: string; userId?: string };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface WorkspaceNotificationSettings {
-  enabled: boolean;
-  provider: NotificationProvider;
-  events: NotificationEventKey[];
-  serviceRunning?: boolean;
-  botAgentId?: string;
-  botMarkdown?: boolean;
-  robotAccountId?: string;
-  lark?: {
-    appId?: string;
-    appSecret?: string;
-    chatIds?: string[];
-  };
-  wechat?: {
-    token?: string;
-    baseUrl?: string;
-    accountId?: string;
-    userId?: string;
-    userIds?: string[];
-    getUpdatesBuf?: string;
-  };
-  native?: {
-    permissionGranted?: boolean;
-    androidOngoingWorkflowNotification?: boolean;
-  };
 }
 
 export interface AgentConfig {
@@ -103,9 +50,4 @@ export interface AgentConfig {
   /** Hide this agent from the global sidebar agent list. */
   hideInAgentList?: boolean;
   enabled: boolean;
-}
-
-export interface CreateWorkspaceInput {
-  name: string;
-  boundDirs: string[];
 }

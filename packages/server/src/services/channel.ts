@@ -138,10 +138,3 @@ export function deleteChannel(workspaceId: string, channelId: string): boolean {
   rmSync(channelDir, { recursive: true, force: true });
   return true;
 }
-
-export function ensureGeneralChannel(workspaceId: string): void {
-  const channels = listChannels(workspaceId);
-  if (!channels.some((c) => c.name === 'general')) {
-    createChannel(workspaceId, { name: 'general', type: 'general', overwrite: true });
-  }
-}

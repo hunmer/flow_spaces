@@ -84,9 +84,6 @@ export function createMiniAppApi(http: HttpClient) {
     markLaunched: (id: string): Promise<{ ok: true; lastLaunchAt: string }> =>
       http.post(`/api/mini-apps/${encodeURIComponent(id)}/launch`),
 
-    listTools: (id: string): Promise<{ tools: Array<{ name: string; description?: string; inputSchema: Record<string, unknown> }> }> =>
-      http.get(`/api/mini-apps/${encodeURIComponent(id)}/tools`),
-
     create: (data: { name: string; type: 'react' | 'html'; description?: string; tags?: string[] }): Promise<MiniAppProject> =>
       http.post('/api/mini-apps', data),
 
@@ -105,26 +102,8 @@ export function createMiniAppApi(http: HttpClient) {
     readFile: (id: string, filePath: string): Promise<{ content: string }> =>
       http.get(`/api/mini-apps/${encodeURIComponent(id)}/files/content?path=${encodeURIComponent(filePath)}`),
 
-    writeFile: (id: string, filePath: string, content: string): Promise<void> =>
-      http.putVoid(`/api/mini-apps/${encodeURIComponent(id)}/files/content`, { path: filePath, content }),
-
-    uploadFiles: (id: string, formData: FormData): Promise<{ ok: true; files: { path: string; size: number }[] }> =>
-      http.upload(`/api/mini-apps/${encodeURIComponent(id)}/files/upload`, formData),
-
-    deleteFile: (id: string, filePath: string): Promise<void> =>
-      http.delete(`/api/mini-apps/${encodeURIComponent(id)}/files?path=${encodeURIComponent(filePath)}`),
-
-    renameFile: (id: string, from: string, to: string): Promise<void> =>
-      http.postVoid(`/api/mini-apps/${encodeURIComponent(id)}/files/rename`, { from, to }),
-
-    createFolder: (id: string, dirPath: string): Promise<void> =>
-      http.postVoid(`/api/mini-apps/${encodeURIComponent(id)}/files/folder`, { path: dirPath }),
-
     readConfig: <T = unknown>(id: string, filePath: string): Promise<{ value: T | null }> =>
       http.get(`/api/mini-apps/${encodeURIComponent(id)}/configs/content?path=${encodeURIComponent(filePath)}`),
-
-    writeConfig: (id: string, filePath: string, value: unknown): Promise<void> =>
-      http.putVoid(`/api/mini-apps/${encodeURIComponent(id)}/configs/content`, { path: filePath, value }),
 
     writeDataFile: (id: string, filePath: string, content: string, encoding?: 'base64'): Promise<{ ok: true; path: string; size: number }> =>
       http.put(`/api/mini-apps/${encodeURIComponent(id)}/data/content`, { path: filePath, content, encoding }),

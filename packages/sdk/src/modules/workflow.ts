@@ -1,5 +1,5 @@
 import type { HttpClient } from '../client';
-import type { WorkflowTemplate, WorkflowNode, WorkflowFolder, WorkflowVersion, ExecutionLog, OperationEntry, StagedNode, WorkflowEdge, WorkflowAgentChatMessage, WorkflowExecuteRequest, ActiveWorkflowExecution } from '@flow-spaces/shared';
+import type { WorkflowTemplate, WorkflowNode, WorkflowFolder, WorkflowVersion, ExecutionLog, OperationEntry, StagedNode, WorkflowEdge, ActiveWorkflowExecution } from '@flow-spaces/shared';
 
 // Re-export from shared for convenience
 export type { OperationEntry, StagedNode };
@@ -12,9 +12,6 @@ export function createWorkflowApi(http: HttpClient) {
 
     get: (id: string): Promise<WorkflowTemplate> =>
       http.get(`/api/workflows/${id}`),
-
-    getPath: (id: string): Promise<{ path: string }> =>
-      http.get(`/api/workflows/${id}/path`),
 
     create: (data: Partial<WorkflowTemplate>): Promise<WorkflowTemplate> =>
       http.post('/api/workflows', data),
@@ -30,9 +27,6 @@ export function createWorkflowApi(http: HttpClient) {
 
     recordOpen: (id: string): Promise<WorkflowTemplate> =>
       http.post(`/api/workflows/${id}/open`),
-
-    execute: (workflowId: string, body?: Omit<WorkflowExecuteRequest, 'workflowId'>): Promise<Response> =>
-      http.sse(`/api/workflows/${workflowId}/execute`, body),
 
     // ---- Folders ----
     listFolders: (): Promise<WorkflowFolder[]> =>
@@ -106,13 +100,5 @@ export function createWorkflowApi(http: HttpClient) {
       http.delete(`/api/workflows/${workflowId}/staging`),
 
     // ---- Workflow Agent Chat ----
-    loadChat: (workflowId: string): Promise<WorkflowAgentChatMessage[]> =>
-      http.get(`/api/workflows/${workflowId}/chat`),
-
-    saveChat: (workflowId: string, messages: WorkflowAgentChatMessage[]): Promise<void> =>
-      http.putVoid(`/api/workflows/${workflowId}/chat`, { messages }),
-
-    clearChat: (workflowId: string): Promise<void> =>
-      http.delete(`/api/workflows/${workflowId}/chat`),
   };
 }

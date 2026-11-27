@@ -5,15 +5,5 @@ export function createAuthApi(http: HttpClient) {
     login: (password: string): Promise<{ token: string }> =>
       http.post('/api/auth/login', { password }, { noAuth: true }),
 
-    check: (): Promise<{ valid: boolean }> =>
-      http.get('/api/auth/check'),
-
-    /** 头像上传 */
-    uploadAvatar: (formData: FormData): Promise<{ url: string }> =>
-      http.upload('/api/avatar', formData),
-
-    /** Change secret key */
-    changeSecret: (newSecret: string): Promise<void> =>
-      http.postVoid('/api/auth/change-secret', { newSecret }),
   };
 }
