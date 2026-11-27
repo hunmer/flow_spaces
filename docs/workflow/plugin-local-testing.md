@@ -158,7 +158,7 @@ packages/server/src/dev/plugin-tests/fetch-config.json
 fetch 插件本体仍保持在：
 
 ```text
-packages/templates/plugins/fetch
+flow-spaces-plugins 仓库 plugins/fetch
 ```
 
 不要把测试文件移动到插件目录。测试代码应独立放置，通过 `--plugin` 指定要测试的插件路径。

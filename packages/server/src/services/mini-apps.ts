@@ -160,7 +160,7 @@ export function createProject(input: {
 
   const defaultFiles: Record<string, string> = input.type === 'react'
     ? {
-        'index.jsx': `const { Button, Card, CardContent } = window.AgentSpacesUI;
+        'index.jsx': `const { Button, Card, CardContent } = window.FlowSpacesUI;
 
 function App() {
   return (

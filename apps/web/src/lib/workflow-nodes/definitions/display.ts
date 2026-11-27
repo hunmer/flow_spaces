@@ -4,7 +4,7 @@ import { MarkdownNodeView } from '@/components/workflow/markdown-node-view';
 import { StickyNoteView } from '@/components/workflow/sticky-note-view';
 
 const CODE_RENDER_DEFAULT_REACT = `export default function View() {
-  const { Card, CardContent, Badge } = window.AgentSpacesUI;
+  const { Card, CardContent, Badge } = window.FlowSpacesUI;
 
   return (
     <div className="h-full w-full bg-background p-2">

@@ -9,7 +9,7 @@ import { newEmptyAgent, normalizeAgent, type AgentPreset } from '@/components/si
 import { miniAppConfigToAgentPreset, agentPresetToMiniAppConfig } from './mini-app-agent-adapter';
 import type { MiniAppAgentConfig } from '@flow-spaces/sdk';
 import type { WorkflowTemplate } from '@flow-spaces/shared';
-import * as AgentSpacesUI from '@/lib/ui-exports';
+import * as FlowSpacesUI from '@/lib/ui-exports';
 import { useEditorStore } from '@/stores/editor';
 import { getWS } from '@/lib/ws';
 import {
@@ -262,7 +262,7 @@ function WrappedFileUpload(props: any) {
     }
   };
 
-  return createElement(AgentSpacesUI.FileUpload as any, {
+  return createElement(FlowSpacesUI.FileUpload as any, {
     ...props,
     autoUpload: undefined,
     onChange: handleChange,
@@ -270,7 +270,7 @@ function WrappedFileUpload(props: any) {
 }
 
 /**
- * Mount `window.AgentSpacesUI`, `window.AgentSpaces`, `window.AgentSpacesAPI`
+ * Mount `window.FlowSpacesUI`, `window.AgentSpaces`, `window.AgentSpacesAPI`
  * for mini-app preview code. Cleans up on unmount.
  */
 export function useMiniAppHostApi(
@@ -934,7 +934,7 @@ export function useMiniAppHostApi(
     };
 
     const hostUi = {
-      ...AgentSpacesUI,
+      ...FlowSpacesUI,
       FileUpload: WrappedFileUpload,
       readConfigJson,
       writeConfigJson,
@@ -1105,6 +1105,8 @@ export function useMiniAppHostApi(
       }
     };
 
+    (window as any).FlowSpacesUI = hostUi;
+    // 兼容存量 mini-app：旧全局名指向同一对象
     (window as any).AgentSpacesUI = hostUi;
     (window as any).AgentSpaces = {
       ...pluginApi,
@@ -1189,6 +1191,7 @@ export function useMiniAppHostApi(
       configCacheRef.current = new Map();
       window.removeEventListener('flow-spaces:open-file', handleOpenFile);
       clearMiniAppHostSlots(projectId);
+      delete (window as any).FlowSpacesUI;
       delete (window as any).AgentSpacesUI;
       delete (window as any).AgentSpaces;
       delete (window as any).AgentSpacesAPI;

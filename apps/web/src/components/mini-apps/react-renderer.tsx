@@ -73,7 +73,7 @@ import dagre, { graphlib } from '@dagrejs/dagre';
 import * as htmlToImagePkg from 'html-to-image';
 import * as diffPkg from 'diff';
 import * as pinyinPkg from 'tiny-pinyin';
-import * as AgentSpacesUI from '@/lib/ui-exports';
+import * as FlowSpacesUI from '@/lib/ui-exports';
 import { LocaleIntlProvider, useLocale } from '@/components/layout/locale-provider';
 import { getTranslator } from 'next-intl';
 
@@ -260,8 +260,8 @@ function resolveExternalModule(id: string) {
     return { __esModule: true, default: dagre, graphlib };
   }
   if (id === '@flow-spaces/ui' || id === '@flow-spaces/ui') {
-    // 兼容旧 mini-app 的 @flow-spaces/ui 导入别名（window.AgentSpacesUI 全局同名保留）
-    return { __esModule: true, ...AgentSpacesUI };
+    // 兼容旧 mini-app 的 @flow-spaces/ui 导入别名（window.FlowSpacesUI 全局同名保留）
+    return { __esModule: true, ...FlowSpacesUI };
   }
   if (id === 'diff') {
     return { __esModule: true, ...diffPkg };

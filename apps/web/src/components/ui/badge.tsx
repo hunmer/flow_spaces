@@ -1,6 +1,6 @@
 "use client";
 
-// Mini App 运行时兼容层：存量 Mini App 经 @flow-spaces/ui / window.AgentSpacesUI
+// Mini App 运行时兼容层：存量 Mini App 经 @flow-spaces/ui / window.FlowSpacesUI
 // 消费 Badge/badgeVariants 的 shadcn API 表面（lib/ui-exports.ts 再导出）。
 // 业务代码请改用 @/components/base/badges；此文件仅为 Mini App 平台契约保留。
 

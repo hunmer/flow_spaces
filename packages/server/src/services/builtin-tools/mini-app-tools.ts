@@ -225,7 +225,7 @@ const DEFAULT_WORKFLOW_SYNC_TIMEOUT_MS = 120_000;
 const MAX_WORKFLOW_SYNC_TIMEOUT_MS = 600_000;
 const WORKFLOW_POLL_INTERVAL_MS = 500;
 
-function listAgentSpacesUiComponents(): string[] {
+function listFlowSpacesUiComponents(): string[] {
   const exportsPath = [
     resolve(process.cwd(), 'packages/web/src/lib/ui-exports.ts'),
     resolve(process.cwd(), '../web/src/lib/ui-exports.ts'),
@@ -246,8 +246,8 @@ function listAgentSpacesUiComponents(): string[] {
   return names.size ? [...names].sort((a, b) => a.localeCompare(b)) : FALLBACK_AGENT_SPACES_UI_COMPONENTS;
 }
 
-function listAgentSpacesUiComponentsByCategory(): Array<{ category: string; description: string; components: string[] }> {
-  const components = listAgentSpacesUiComponents();
+function listFlowSpacesUiComponentsByCategory(): Array<{ category: string; description: string; components: string[] }> {
+  const components = listFlowSpacesUiComponents();
   const available = new Set(components);
   const categorized = new Set<string>();
   const groups = MINI_APP_COMPONENT_CATEGORIES
@@ -859,8 +859,8 @@ function miniAppAgentConfigToPreset(config: JsonRecord): MiniAppAgentPreset {
 export function createMiniAppFunctionTools(ctx: MiniAppToolContext): AgentFunctionTool[] {
   return [
     {
-      name: 'list_agent_spaces_ui_components',
-      description: 'List React UI components exposed on window.AgentSpacesUI for Workflow UI projects by category. Lucide React icons are also exposed on window.AgentSpacesUI by their standard icon names.',
+      name: 'list_flow_spaces_ui_components',
+      description: 'List React UI components exposed on window.FlowSpacesUI for Workflow UI projects by category. Lucide React icons are also exposed on window.FlowSpacesUI by their standard icon names.',
       inputSchema: schema({
         category: {
           type: 'string',
@@ -872,7 +872,7 @@ export function createMiniAppFunctionTools(ctx: MiniAppToolContext): AgentFuncti
       execute: async (input) => {
         const record = asRecord(input);
         const category = stringInput(record, 'category')?.toLowerCase();
-        const groups = listAgentSpacesUiComponentsByCategory();
+        const groups = listFlowSpacesUiComponentsByCategory();
         const selectedGroups = category
           ? groups.filter((group) => group.category.toLowerCase() === category)
           : groups;
@@ -896,8 +896,8 @@ export function createMiniAppFunctionTools(ctx: MiniAppToolContext): AgentFuncti
           })),
           groups: selectedGroups,
           usage: {
-            react: 'const { Button, Card, CardContent, Search, Loader2 } = window.AgentSpacesUI;',
-            html: 'window.AgentSpacesUI is available, but React components are primarily intended for React mode.',
+            react: 'const { Button, Card, CardContent, Search, Loader2 } = window.FlowSpacesUI;',
+            html: 'window.FlowSpacesUI is available, but React components are primarily intended for React mode.',
           },
           components,
         };

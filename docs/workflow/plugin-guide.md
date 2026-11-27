@@ -17,7 +17,7 @@
 
 目录：
 
-- 开发内置插件可放 `packages/templates/plugins/<plugin-id>`
+- 开发内置插件可放 `flow-spaces-plugins 仓库 `plugins/<plugin-id>`（本仓不再内置）`
 - 用户安装后会进入 数据目录 `plugins/<plugin-id>`（默认 `~/.flow-spaces-data/plugins`，可用 `FLOW_SPACES_DATA_DIR` 覆盖；本地开发数据在 `packages/server/flow-spaces-data/plugins`）
 
 ### `client` 插件
@@ -31,7 +31,7 @@
 
 Electron 本地 client 插件：
 
-- 开发态目录：`packages/templates/plugins/<plugin-id>`
+- 开发态目录：`flow-spaces-plugins 仓库 `plugins/<plugin-id>`（本仓不再内置）`
 
 Web client 插件：
 
@@ -298,7 +298,7 @@ module.exports = {
 
 当同一个能力既要注册为 workflow node，又要暴露为 Agent tool，推荐把元数据和执行逻辑放在一份动作定义里，并在 `main.js` 的 `activate(context)` 中通过 `context.registerActions(actions)` 注册。插件加载器会把这份动作定义转换成 workflow nodes 和 Agent tools，避免在 `workflow.js` 和 `tools.js` 中重复维护字段、schema 和 handler。
 
-参考 `packages/templates/plugins/aliyun_oss`：
+参考 flow-spaces-plugins 仓库 `plugins/aliyun_oss`：
 
 ```text
 aliyun_oss/
@@ -423,7 +423,7 @@ customView: {
   type: 'react',
   sourceCode: `
 export default function View({ nodeId, data }) {
-  const { Card, CardContent, Badge } = window.AgentSpacesUI;
+  const { Card, CardContent, Badge } = window.FlowSpacesUI;
   return (
     <div className="h-full w-full bg-background p-2">
       <Card className="h-full rounded-md shadow-none">
@@ -457,7 +457,7 @@ container.querySelector('[data-title]').textContent = props.data.title || props.
 customViewMinSize: { width: 240, height: 160 },
 ```
 
-完整示例见 `packages/templates/plugins/custom-view-demo`。其中 `custom_view_demo_react` 使用 `window.AgentSpacesUI` 渲染 React 节点界面，`custom_view_demo_html` 使用 HTML + script 渲染节点界面。
+完整示例见 flow-spaces-plugins 仓库 `plugins/custom-view-demo`。其中 `custom_view_demo_react` 使用 `window.FlowSpacesUI` 渲染 React 节点界面（旧名 `window.AgentSpacesUI` 仍以别名保留），`custom_view_demo_html` 使用 HTML + script 渲染节点界面。
 
 ## 多语言配置
 
@@ -754,9 +754,9 @@ exports.activate = (context) => {
 
 ### 参考实现
 
-- `packages/templates/plugins/mira-sdk`：`package.json` 声明 `mira-app-core`，在 `shared.js` 里 `require('mira-app-core/shared/sdk')`
-- `packages/templates/plugins/aliyun_oss`：`package.json` 声明 `ali-oss`，在 `shared.js` 里 `require('ali-oss')`
-- `packages/templates/plugins/feed-parser`：`package.json` 声明 `feedsmith`，在 `actions.js` 里 `require('feedsmith')`
+- flow-spaces-plugins 仓库 `plugins/mira-sdk`：`package.json` 声明 `mira-app-core`，在 `shared.js` 里 `require('mira-app-core/shared/sdk')`
+- flow-spaces-plugins 仓库 `plugins/aliyun_oss`：`package.json` 声明 `ali-oss`，在 `shared.js` 里 `require('ali-oss')`
+- flow-spaces-plugins 仓库 `plugins/feed-parser`：`package.json` 声明 `feedsmith`，在 `actions.js` 里 `require('feedsmith')`
 
 ## 配置系统
 

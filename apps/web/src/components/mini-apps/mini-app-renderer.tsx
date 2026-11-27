@@ -2,7 +2,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import * as AgentSpacesUI from '@/lib/ui-exports';
+import * as FlowSpacesUI from '@/lib/ui-exports';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/components/layout/theme-provider';
 import { useMiniAppReactRenderer } from './react-renderer';
@@ -32,8 +32,8 @@ export interface MiniAppTaskEvent {
   timestamp?: string;
 }
 
-let agentSpacesUiMountCount = 0;
-let initialAgentSpacesUi: unknown;
+let flowSpacesUiMountCount = 0;
+let initialFlowSpacesUi: unknown;
 
 // ---- 沙箱 iframe 支持：用于需要原生 ESM / import map 的 HTML 项目（如 Excalidraw）----
 
@@ -154,24 +154,31 @@ function renderHtmlInSandboxIframe(container: HTMLDivElement, html: string, proj
   return () => window.removeEventListener('message', handleMessage);
 }
 
-function installAgentSpacesUiGlobals() {
-  if (agentSpacesUiMountCount === 0) {
-    initialAgentSpacesUi = (window as any).AgentSpacesUI;
+function installFlowSpacesUiGlobals() {
+  if (flowSpacesUiMountCount === 0) {
+    initialFlowSpacesUi = (window as any).FlowSpacesUI;
   }
-  agentSpacesUiMountCount++;
+  flowSpacesUiMountCount++;
 
-  const previous = (window as any).AgentSpacesUI;
-  (window as any).AgentSpacesUI = {
-    ...AgentSpacesUI,
+  const previous = (window as any).FlowSpacesUI;
+  (window as any).FlowSpacesUI = {
+    ...FlowSpacesUI,
     ...(previous && typeof previous === 'object' ? previous : {}),
   };
+  // 兼容存量 mini-app：window.AgentSpacesUI 与新名指向同一对象
+  (window as any).AgentSpacesUI = (window as any).FlowSpacesUI;
 
   return () => {
-    agentSpacesUiMountCount = Math.max(0, agentSpacesUiMountCount - 1);
-    if (agentSpacesUiMountCount > 0) return;
-    if (initialAgentSpacesUi === undefined) delete (window as any).AgentSpacesUI;
-    else (window as any).AgentSpacesUI = initialAgentSpacesUi;
-    initialAgentSpacesUi = undefined;
+    flowSpacesUiMountCount = Math.max(0, flowSpacesUiMountCount - 1);
+    if (flowSpacesUiMountCount > 0) return;
+    if (initialFlowSpacesUi === undefined) {
+      delete (window as any).FlowSpacesUI;
+      delete (window as any).AgentSpacesUI;
+    } else {
+      (window as any).FlowSpacesUI = initialFlowSpacesUi;
+      (window as any).AgentSpacesUI = initialFlowSpacesUi;
+    }
+    initialFlowSpacesUi = undefined;
   };
 }
 
@@ -212,7 +219,7 @@ export function MiniAppRenderer({
     mainFile,
   });
 
-  useEffect(() => installAgentSpacesUiGlobals(), []);
+  useEffect(() => installFlowSpacesUiGlobals(), []);
 
   useEffect(() => {
     const previousAgentSpaces = (window as any).AgentSpaces;
@@ -276,10 +283,12 @@ export function MiniAppRenderer({
 
     for (const script of scripts) {
       try {
-        const fn = new Function('container', 'props', 'AgentSpacesUI', 'AgentSpaces', 'AgentSpacesAPI', script);
+        // 旧脚本按形参名访问：保留 AgentSpacesUI 形参兜底存量 mini-app
+        const fn = new Function('container', 'props', 'FlowSpacesUI', 'AgentSpacesUI', 'AgentSpaces', 'AgentSpacesAPI', script);
         fn(
           container,
           resolvedComponentProps,
+          (window as any).FlowSpacesUI,
           (window as any).AgentSpacesUI,
           (window as any).AgentSpaces,
           (window as any).AgentSpacesAPI,
