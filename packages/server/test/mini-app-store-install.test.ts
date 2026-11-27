@@ -1,4 +1,5 @@
 import test from 'node:test';
+import type { MiniAppInstallProgress } from '../src/services/mini-apps.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, existsSync, rmSync } from 'node:fs';
@@ -42,7 +43,12 @@ test('store installs runtime files by default, adds development on request, and 
     const root = store.getProjectDir(regular.project.id);
     assert.equal(existsSync(join(root, sourcePath)), false);
     requested.length = 0;
-    const development = await installFromStore({ ...input, installDevelopment: true });
+    const developmentProgress: MiniAppInstallProgress[] = [];
+    const development = await installFromStore({ ...input, installDevelopment: true }, update => developmentProgress.push(update));
+    assert.deepEqual(developmentProgress.map(update => update.completed), [0, 1, 2, 3]);
+    assert.ok(developmentProgress.every(update => update.total === 3 && update.installDevelopment));
+    assert.equal(developmentProgress.at(-1)?.skipped, 1);
+    assert.equal(developmentProgress.at(-1)?.downloaded, 2);
     assert.equal(development.downloaded, 2);
     assert.equal(development.skipped, 1);
     assert.deepEqual(requested, [sourcePath, configPath]);

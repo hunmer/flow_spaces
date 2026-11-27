@@ -72,6 +72,8 @@
     "devicesHint": "在预览工具栏添加设备外框切换器；不选则隐藏。"
   },
   "store": {
+    "installProgress": "{percent}% ({completed}/{total})",
+    "installPreparing": "准备中…",
     "installDevelopment": "安装开发版",
     "description": "从商店下载 Workflow UI 模板，一键导入。",
     "loading": "加载中...",

@@ -29,6 +29,7 @@ Vite + React 19 SPA 前端（自 flow-spaces Next.js 迁移）。三大界面域
 ## 扫描状态
 
 - **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓）
+- **2026-11-27 增量②**: settings 拆分——536 行 `components/settings/settings-dialog.tsx` 按功能拆为瘦壳 + `appearance-panel.tsx`（主题+鼠标指针）/ `general-panel.tsx` / `account-panel.tsx` / `store-sources-panel.tsx` / `option-card.tsx`（model-settings-panel 原已独立）；新增「商店源」设置栏目：新建 `lib/store-sources.ts`（类型/默认源/配置缓存/REST），三类商店源地址可增删改、默认 GitHub+本地端口两源、持久化后端，`agent-store.ts` 的 `fetchStoreIndex` 改按源顺序故障转移（成功源记忆供散件解析跟随），见 server 侧 `GET/PUT /api/user/store-sources`。
 - **2026-11-27 增量**: 商店消费改外部仓库——`lib/agent-store.ts`（`resolveStoreUrl`/`REPO_ROUTES`/`parseGithubRepoUrl`，默认 gh-proxy raw，镜像存 localStorage `flow-spaces:store-api-base`，旧同源 `/agents-store` base 自动清除）成为 plugins/workflows/mini-app 三类商店索引的统一入口（消费点 6 处：mini-apps-page / workflows-page / workflow-plugins-dialog / agent-dialog-data / mcps-dialog / use-skills-data）；本地 `/agents-store` 仅剩 agents/mcps/skills 等无前缀内容。
 - **已扫描**: src/ 全子树结构、vite/tsconfig/AGENTS/boardui 配置、electron、路由表、入口链
 - **未深挖**: `components/ui/`（96 文件）与 `components/reui/` 逐件 API；`locales/` 逐命名空间内容

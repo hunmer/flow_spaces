@@ -41,6 +41,7 @@ export { createExternalImportApi, type ExternalImportKind, type ExternalImportMo
 export { createChatApi } from './modules/chat';
 export type { ChatAgent, ChatMessage, ChatWorkspace, ChatSession } from './modules/chat';
 export { createMiniAppApi, type MiniAppProject, type MiniAppAgentConfig, type MiniAppChatMessage } from './modules/mini-apps';
+export type { MiniAppInstallProgress, MiniAppInstallResult } from './modules/mini-app-install';
 export { createSqliteApi } from './modules/sqlite';
 
 // ---- 工厂函数 ----

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import type { MiniAppProject } from '@flow-spaces/sdk';
+import type { MiniAppProject, MiniAppInstallProgress } from '@flow-spaces/sdk';
 import { sdk } from '@/lib/sdk';
 import { pluginApi } from '@/lib/workflow-plugin-api';
 import { Button } from '@/components/ui/button';
@@ -60,6 +60,8 @@ function MiniAppListPage() {
   const [storeTemplates, setStoreTemplates] = useState<MiniAppIndexItem[]>([]);
   const [storeLoading, setStoreLoading] = useState(false);
   const [storeImportingId, setStoreImportingId] = useState<string | null>(null);
+  const [storeInstallProgress, setStoreInstallProgress] = useState<MiniAppInstallProgress | null>(null);
+  const [storeInstallingDevelopment, setStoreInstallingDevelopment] = useState(false);
   // 当前查看详情的商店条目；null = 关闭详情对话框
   const [selectedStoreItem, setSelectedStoreItem] = useState<MiniAppIndexItem | null>(null);
   // 从 GitHub 地址安装独立 mini-app 仓库
@@ -163,6 +165,8 @@ function MiniAppListPage() {
   // 安装后刷新本地列表与三态按钮，保持商店模式便于连续安装。
   const handleInstallStoreItem = async (item: MiniAppIndexItem, installDevelopment?: boolean) => {
     setStoreImportingId(item.id);
+    setStoreInstallProgress(null);
+    setStoreInstallingDevelopment(installDevelopment === true);
     try {
       const baseUrl = resolveStoreUrl(`mini-app/${item.id}`);
       await sdk.miniApp.installFromStore({
@@ -181,12 +185,13 @@ function MiniAppListPage() {
         installDevelopment,
         storeUrl: baseUrl,
         storeChecksum: item.md5,
-      });
+      }, setStoreInstallProgress);
       await loadProjects();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('store.githubFailed'));
     } finally {
       setStoreImportingId(null);
+      setStoreInstallProgress(null);
     }
   };
 
@@ -266,6 +271,8 @@ function MiniAppListPage() {
 
   const handleUpdateMiniApp = async (update: MiniAppUpdate) => {
     setStoreImportingId(update.id);
+    setStoreInstallProgress(null);
+    setStoreInstallingDevelopment(false);
     try {
       const app = await loadMiniAppUpdate(update);
       await sdk.miniApp.installFromStore({
@@ -277,7 +284,7 @@ function MiniAppListPage() {
         installDevelopment: installedMap[update.id]?.storeDevelopment,
         storeUrl: update.storeUrl,
         storeChecksum: app.md5,
-      });
+      }, setStoreInstallProgress);
       await loadProjects();
       setAvailableUpdates((prev) => prev.filter((item) => item.id !== update.id));
       toast.success(t('updates.updated', { name: update.name }));
@@ -285,6 +292,7 @@ function MiniAppListPage() {
       toast.error(err instanceof Error ? err.message : t('store.githubFailed'));
     } finally {
       setStoreImportingId(null);
+      setStoreInstallProgress(null);
     }
   };
 
@@ -462,7 +470,13 @@ function MiniAppListPage() {
                 disabled={checkingUpdates || storeImportingId !== null}
                 onClick={() => handleUpdateMiniApp(update)}
               >
-                {t(storeImportingId === update.id ? 'updates.updating' : 'store.update')}
+                {storeImportingId === update.id && storeInstallProgress
+                  ? t('store.installProgress', {
+                    percent: Math.floor(storeInstallProgress.completed / storeInstallProgress.total * 100),
+                    completed: storeInstallProgress.completed,
+                    total: storeInstallProgress.total,
+                  })
+                  : t(storeImportingId === update.id ? 'updates.updating' : 'store.update')}
               </UpdateButton>
             </div>
           ))}
@@ -529,6 +543,8 @@ function MiniAppListPage() {
         item={selectedStoreItem}
         status={selectedStoreItem ? getInstallStatus(selectedStoreItem) : 'not-installed'}
         importing={!!selectedStoreItem && storeImportingId === selectedStoreItem.id}
+        progress={storeInstallProgress ?? undefined}
+        installingDevelopment={storeInstallingDevelopment}
         disabled={storeImportingId !== null}
         onInstall={handleInstallStoreItem}
         onClose={() => setSelectedStoreItem(null)}

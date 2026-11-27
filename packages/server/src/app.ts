@@ -79,7 +79,7 @@ import chatRunRouter from './routes/chat-run.js';
 import miniAppRouter from './routes/mini-apps.js';
 import sqliteRouter from './routes/sqlite.js';
 import mcpServerRouter from './routes/mcp-server.js';
-import { getUserSettings, setUserAvatarUrl, removeUserAvatarUrl } from './storage/user-settings-store.js';
+import { getUserSettings, setUserAvatarUrl, removeUserAvatarUrl, getStoreSources, setStoreSources, type StoreSourcesConfig } from './storage/user-settings-store.js';
 import { getDataDir } from './storage/json-store.js';
 import { authMiddleware, verifyToken } from './middleware/auth.js';
 import { handleConnection } from './ws/handler.js';
@@ -288,6 +288,57 @@ app.put('/api/user/settings', (req, res) => {
     setUserAvatarUrl(avatarUrl);
   }
   res.json({ ok: true });
+});
+
+// Store sources（商店源地址：plugins / workflows / mini-app）
+const STORE_SOURCE_CATEGORIES = ['plugins', 'workflows', 'mini-app'] as const;
+const MAX_STORE_SOURCES_PER_CATEGORY = 50;
+
+/** 校验并归一商店源配置；null 表示恢复默认（清空存储）。非法输入返回 error 字符串。 */
+function sanitizeStoreSources(input: unknown): { sources: StoreSourcesConfig | null } | { error: string } {
+  if (input === null || input === undefined) return { sources: null };
+  if (typeof input !== 'object' || Array.isArray(input)) return { error: 'sources must be an object or null' };
+  const raw = input as Record<string, unknown>;
+  const sources: StoreSourcesConfig = { plugins: [], workflows: [], 'mini-app': [] };
+  for (const category of STORE_SOURCE_CATEGORIES) {
+    const list = raw[category];
+    if (list === undefined || list === null) continue; // 缺省类别视作空（前端回落默认源）
+    if (!Array.isArray(list)) return { error: `sources.${category} must be an array` };
+    if (list.length > MAX_STORE_SOURCES_PER_CATEGORY) {
+      return { error: `sources.${category} exceeds ${MAX_STORE_SOURCES_PER_CATEGORY} entries` };
+    }
+    for (const item of list) {
+      if (item === null || typeof item !== 'object' || Array.isArray(item)) {
+        return { error: `sources.${category} items must be objects` };
+      }
+      const { id, name, url } = item as { id?: unknown; name?: unknown; url?: unknown };
+      if (typeof url !== 'string' || !url.trim()) return { error: 'source url is required' };
+      const cleanUrl = url.trim();
+      // 允许绝对 http(s) 地址与同源相对路径（/agents-store 等）
+      if (!/^https?:\/\/\S+$/i.test(cleanUrl) && !/^\/\S+$/.test(cleanUrl)) {
+        return { error: `invalid source url: ${cleanUrl}` };
+      }
+      const cleanId = typeof id === 'string' && id.trim() ? id.trim() : randomUUID();
+      const cleanName = typeof name === 'string' ? name.trim().slice(0, 64) : '';
+      sources[category].push({ id: cleanId, name: cleanName, url: cleanUrl });
+    }
+  }
+  return { sources };
+}
+
+app.get('/api/user/store-sources', (_req, res) => {
+  res.json({ sources: getStoreSources() });
+});
+
+app.put('/api/user/store-sources', (req, res) => {
+  const { sources: input } = req.body as { sources?: unknown };
+  const result = sanitizeStoreSources(input);
+  if ('error' in result) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  setStoreSources(result.sources);
+  res.json({ ok: true, sources: result.sources });
 });
 
 app.use('/api/workspaces/:id/files', fileRouter);

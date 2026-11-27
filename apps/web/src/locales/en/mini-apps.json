@@ -72,6 +72,8 @@
     "devicesHint": "Adds a device-frame switcher to the preview toolbar. Leave empty to hide."
   },
   "store": {
+    "installProgress": "{percent}% ({completed}/{total})",
+    "installPreparing": "Preparing…",
     "installDevelopment": "Install development version",
     "description": "Download Workflow UI templates from the store and import them with one click.",
     "loading": "Loading...",

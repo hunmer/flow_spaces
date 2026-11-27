@@ -457,6 +457,15 @@ function md5OfFile(filePath: string): string | null {
   }
 }
 
+export interface MiniAppInstallProgress {
+  total: number;
+  completed: number;
+  downloaded: number;
+  skipped: number;
+  path?: string;
+  installDevelopment: boolean;
+}
+
 export async function installFromStore(input: {
   id: string;
   /** app 源根的 raw base，如 .../flow-spaces-mini-apps/raw/refs/heads/main/tts */
@@ -480,7 +489,7 @@ export async function installFromStore(input: {
   installDevelopment?: boolean;
   storeUrl?: string;
   storeChecksum?: string;
-}): Promise<{ project: MiniAppProject; downloaded: number; skipped: number }> {
+}, onProgress?: (progress: MiniAppInstallProgress) => void): Promise<{ project: MiniAppProject; downloaded: number; skipped: number }> {
   const appId = input.id?.trim();
   if (!appId) throw new Error('installFromStore: id is required');
 
@@ -497,6 +506,7 @@ export async function installFromStore(input: {
   if (!files.length) throw new Error('installFromStore: empty or invalid file list');
   const base = input.baseUrl?.replace(/\/+$/, '');
   if (!base) throw new Error('installFromStore: baseUrl is required');
+  onProgress?.({ total: files.length, completed: 0, downloaded: 0, skipped: 0, installDevelopment });
 
   // 远端 manifest.json（清单内含）兜底合并——enabledPlugins/enableAgents 等字段不进商店索引，只存在 manifest 里；
   // input.manifest 已带（app.json 顶层）时直接采用
@@ -533,10 +543,14 @@ export async function installFromStore(input: {
 
   let downloaded = 0;
   let skipped = 0;
+  const reportProgress = (path: string) => onProgress?.({
+    total: files.length, completed: downloaded + skipped, downloaded, skipped, path, installDevelopment,
+  });
   for (const file of files) {
     const targetPath = join(projectRoot, file.path);
     if (md5OfFile(targetPath) === file.md5) {
       skipped++;
+      reportProgress(file.path);
       continue;
     }
     const buf = await fetchStoreBuffer(`${base}/${file.path}`);
@@ -546,6 +560,7 @@ export async function installFromStore(input: {
     mkdirSync(dirname(targetPath), { recursive: true });
     writeFileSync(targetPath, buf);
     downloaded++;
+    reportProgress(file.path);
   }
 
   const installed = store.upsertStoreProject({

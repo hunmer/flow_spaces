@@ -1,4 +1,5 @@
 import type { HttpClient } from '../client';
+import { readMiniAppInstallStream, type MiniAppInstallProgress, type MiniAppInstallResult } from './mini-app-install';
 import type { RequestOptions } from '../types';
 import type { FileNode, WorkflowAgentTimelineItem } from '@flow-spaces/shared';
 
@@ -143,7 +144,7 @@ export function createMiniAppApi(http: HttpClient) {
       http.post('/api/mini-apps/import', data),
 
     /** 商店增量安装：按文件级 md5 清单对比本地，仅下载缺失/变化的文件 */
-    installFromStore: (data: {
+    installFromStore: async (data: {
       id: string;
       baseUrl: string;
       manifest?: { name?: string; type?: 'react' | 'html'; description?: string; version?: string; tags?: string[]; icon?: string; enabledPlugins?: string[]; enabledWorkflows?: string[]; mainFile?: string };
@@ -152,8 +153,11 @@ export function createMiniAppApi(http: HttpClient) {
       installDevelopment?: boolean;
       storeUrl?: string;
       storeChecksum?: string;
-    }): Promise<{ project: MiniAppProject; downloaded: number; skipped: number }> =>
-      http.post('/api/mini-apps/install-from-store', data),
+    }, onProgress?: (progress: MiniAppInstallProgress) => void): Promise<MiniAppInstallResult> => {
+      if (!onProgress) return http.post('/api/mini-apps/install-from-store', data);
+      const response = await http.sse('/api/mini-apps/install-from-store', data);
+      return readMiniAppInstallStream(response, onProgress);
+    },
 
     exportZip: (id: string): Promise<Blob> =>
       http.raw(`/api/mini-apps/${encodeURIComponent(id)}/export`).then(r => r.blob()),

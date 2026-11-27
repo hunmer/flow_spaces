@@ -646,9 +646,32 @@ router.post('/install-from-store', async (req: Request, res: Response) => {
     if (!id || typeof id !== 'string') { res.status(400).json({ error: 'id is required' }); return; }
     if (!baseUrl || typeof baseUrl !== 'string') { res.status(400).json({ error: 'baseUrl is required' }); return; }
     if (!Array.isArray(files) || !files.length) { res.status(400).json({ error: 'files (md5 list) is required' }); return; }
-    const result = await svc.installFromStore({ id, baseUrl, manifest, files, development, installDevelopment, storeUrl, storeChecksum });
-    res.json(result);
+    const streaming = req.get('accept')?.includes('text/event-stream');
+    const send = (type: string, data: unknown) => {
+      if (!res.destroyed && !res.writableEnded) res.write(`data: ${JSON.stringify({ type, data })}\n\n`);
+    };
+    if (streaming) {
+      res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('X-Accel-Buffering', 'no');
+      res.flushHeaders();
+    }
+    const result = await svc.installFromStore(
+      { id, baseUrl, manifest, files, development, installDevelopment, storeUrl, storeChecksum },
+      streaming ? (progress) => send('progress', progress) : undefined,
+    );
+    if (streaming) {
+      send('result', result);
+      res.end();
+    } else res.json(result);
   } catch (error: any) {
+    if (res.headersSent) {
+      if (!res.destroyed && !res.writableEnded) {
+        res.write(`data: ${JSON.stringify({ type: 'error', data: { error: error.message } })}\n\n`);
+        res.end();
+      }
+      return;
+    }
     if (error instanceof DuplicateNameError) { res.status(409).json({ error: 'name already exists' }); return; }
     res.status(500).json({ error: error.message });
   }

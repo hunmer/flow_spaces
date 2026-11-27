@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import type { MiniAppInstallProgress } from '@flow-spaces/sdk';
 import { Button } from '@/components/ui/button';
 import { Button as DevelopmentButton } from '@/components/base/buttons/button';
 import { RiCodeLine } from '@remixicon/react';
@@ -41,6 +42,9 @@ interface MiniAppStoreDetailDialogProps {
   status: MiniAppInstallStatus;
   /** 当前条目正在安装 */
   importing?: boolean;
+  progress?: MiniAppInstallProgress;
+  /** 将进度放到用户点击的按钮上 */
+  installingDevelopment?: boolean;
   /** 某项正在安装时禁用按钮 */
   disabled?: boolean;
   onInstall: (item: MiniAppIndexItem, installDevelopment?: boolean) => void;
@@ -52,11 +56,20 @@ export function MiniAppStoreDetailDialog({
   item,
   status,
   importing,
+  progress,
+  installingDevelopment,
   disabled,
   onInstall,
   onClose,
 }: MiniAppStoreDetailDialogProps) {
   const t = useTranslations('mini-apps');
+  const progressLabel = progress?.total
+    ? t('store.installProgress', {
+      percent: Math.floor(progress.completed / progress.total * 100),
+      completed: progress.completed,
+      total: progress.total,
+    })
+    : t('store.installPreparing');
   const [intro, setIntro] = useState<{ loading: boolean; content: string; error: boolean }>({
     loading: false,
     content: '',
@@ -130,10 +143,14 @@ export function MiniAppStoreDetailDialog({
               size="sm"
               className="w-full h-8 mt-1"
               disabled={disabled || importing || status === 'installed'}
+              aria-busy={importing && !installingDevelopment}
               onClick={() => onInstall(item)}
             >
-              {importing ? (
-                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              {importing && !installingDevelopment ? (
+                <>
+                  <span className="me-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  {progressLabel}
+                </>
               ) : status === 'installed' ? (
                 <>
                   <Check className="size-3.5 mr-1" />
@@ -158,9 +175,10 @@ export function MiniAppStoreDetailDialog({
                 className="w-full"
                 leadingIcon={RiCodeLine}
                 disabled={disabled || importing}
+                aria-busy={importing && installingDevelopment}
                 onClick={() => onInstall(item, true)}
               >
-                {t('store.installDevelopment')}
+                {importing && installingDevelopment ? progressLabel : t('store.installDevelopment')}
               </DevelopmentButton>
             )}
           </aside>
