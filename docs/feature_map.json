@@ -2064,7 +2064,7 @@
         {
           "id": "web.ui",
           "name": "通用 UI",
-          "desc": "ui/common/table/viewers/decorations 组件（102 文件 / 18,807 行）",
+          "desc": "ui/common/table/viewers/decorations 组件（101 文件 / 18,632 行）",
           "files": [
             {
               "path": "apps/web/src/components/common/agent-icon.tsx",
@@ -2090,11 +2090,6 @@
               "path": "apps/web/src/components/common/editors/markdown-editor.tsx",
               "type": "tsx",
               "lines": 50
-            },
-            {
-              "path": "apps/web/src/components/common/editors/notion-editor.tsx",
-              "type": "tsx",
-              "lines": 175
             },
             {
               "path": "apps/web/src/components/common/editors/prompt-text-editor.tsx",

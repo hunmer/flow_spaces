@@ -481,6 +481,9 @@
   overflow-x: hidden;
   background: var(--background);
   container: main / inline-size;
+  /* topbar 高度单一来源：.main 是滚动容器，页面级 sticky header 用
+     sticky top-[var(--rail-topbar-h)] 吸附在 topbar 下缘 */
+  --rail-topbar-h: 52px;
 }
 
 .topbar {
@@ -488,7 +491,7 @@
   top: 0;
   z-index: 1;
   display: flex;
-  height: 52px;
+  height: var(--rail-topbar-h);
   flex: none;
   align-items: center;
   gap: 8px;

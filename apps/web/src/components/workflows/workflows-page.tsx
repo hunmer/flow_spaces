@@ -303,8 +303,9 @@ export function WorkflowsPage() {
   }, [selectedIds, deleteWorkflow]);
 
   return (
-    <div className="p-6 h-full overflow-y-auto">
-      <div className="hidden md:flex items-center justify-between mb-6">
+    <div className="p-6 h-full">
+      {/* sticky header：吸附在 shell topbar 下缘，内容从其下方滚过（.main 拥有滚动） */}
+      <div className="hidden md:flex items-center justify-between mb-6 sticky top-[var(--rail-topbar-h)] z-10 bg-background -mt-6 pt-6">
         <div>
           {/* 本地 / 商店 链接式切换代替 h2 标题 */}
           <h2 className="text-lg font-semibold flex items-baseline gap-2">

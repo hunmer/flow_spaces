@@ -258,9 +258,9 @@ function MiniAppListPage() {
   }, []);
 
   return (
-    <div className="p-6 h-full flex flex-col overflow-y-auto">
-      {/* Header */}
-      <div className="hidden md:flex items-center justify-between mb-6">
+    <div className="p-6 h-full flex flex-col">
+      {/* Header — sticky：吸附在 shell topbar 下缘，内容从其下方滚过（.main 拥有滚动） */}
+      <div className="hidden md:flex items-center justify-between mb-6 sticky top-[var(--rail-topbar-h)] z-10 bg-background -mt-6 pt-6">
         <div>
           {/* 本地 / 商店 链接式切换代替 h2 标题 */}
           <h2 className="text-lg font-semibold flex items-baseline gap-2">
@@ -296,8 +296,8 @@ function MiniAppListPage() {
         </div>
       </div>
 
-      {/* Mobile header */}
-      <div className="md:hidden mb-4">
+      {/* Mobile header — 同样 sticky 吸附在 topbar 下缘 */}
+      <div className="md:hidden mb-4 sticky top-[var(--rail-topbar-h)] z-10 bg-background -mt-6 pt-6">
         {/* 本地 / 商店 链接式切换代替 h2 标题 */}
         <h2 className="text-lg font-semibold flex items-baseline gap-2">
           <button

@@ -16,6 +16,7 @@ export type { NumberInputProps } from '@/components/ui/number-input';
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 export { AvatarGroup } from '@/components/ui/avatar-group';
 export { Skeleton, SkeletonGroup } from '@/components/ui/skeleton';
+export { Separator } from '@/components/ui/separator';
 export { Checkbox } from '@/components/ui/checkbox';
 export { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 export { Textarea } from '@/components/ui/textarea';
@@ -96,7 +97,6 @@ export { Router, useRouter, Link, serializeRoute, parseRoute } from '@/component
 export type { RouteState, RouterApi } from '@/components/mini-apps/mini-app-router';
 
 // 富文本编辑器 + markdown 转换（database 组件迁移到 mini-app 用）
-export { default as NotionEditor } from '@/components/common/editors/notion-editor';
 export { default as MarkdownEditor } from '@/components/common/editors/markdown-editor';
 export { htmlToMarkdown, markdownToHtml } from '@/lib/converter';
 

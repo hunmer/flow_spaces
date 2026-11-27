@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { markdownToHtml } from '@/lib/converter';
 
 interface MarkdownEditorProps {
-  /** 初始内容，按 markdown 解析后注入 tiptap（与 notion-editor 一致，仅在挂载时生效） */
+  /** 初始内容，按 markdown 解析后注入 tiptap（仅在挂载时生效） */
   contentMarkdown: string;
   /** 内容变更回调，回吐 tiptap 产出的 HTML */
   onChange: (html: string) => void;
