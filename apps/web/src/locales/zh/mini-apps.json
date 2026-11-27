@@ -74,6 +74,7 @@
     "devicesHint": "在预览工具栏添加设备外框切换器；不选则隐藏。"
   },
   "store": {
+    "loadPartialFailed": "部分商店应用加载失败（{count} 项），请稍后重试",
     "installProgress": "{percent}% ({completed}/{total})",
     "installPreparing": "准备中…",
     "installDevelopment": "安装开发版",

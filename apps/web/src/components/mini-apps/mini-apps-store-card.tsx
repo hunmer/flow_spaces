@@ -21,6 +21,13 @@ export interface MiniAppIndexItem {
   hasIntro?: boolean;
   version?: string;
   tags?: string[];
+  mainFile?: string;
+  enabledPlugins?: string[];
+  enabledWorkflows?: string[];
+  /** 外部仓库的安装及详情资源地址 */
+  baseUrl?: string;
+  storeUrl?: string;
+  introUrl?: string;
   /** 文件级 md5 清单：server 对比本地按需下载（增量安装） */
   files?: Array<{ path: string; md5: string }>;
   /** 开发版额外下载的源码与构建配置 */
@@ -47,7 +54,7 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
       centerIcon={
         <AgentIcon
           name={item.name}
-          avatarUrl={item.iconUrl ? resolveStoreUrl(item.iconUrl) : undefined}
+          avatarUrl={item.iconUrl ? (/^https?:\/\//.test(item.iconUrl) ? item.iconUrl : resolveStoreUrl(item.iconUrl)) : undefined}
           icon={item.icon}
           bordered={false}
           textSize="text-4xl"

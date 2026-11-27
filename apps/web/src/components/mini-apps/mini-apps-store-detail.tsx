@@ -78,6 +78,7 @@ export function MiniAppStoreDetailDialog({
 
   const itemId = item?.id;
   const itemHasIntro = item?.hasIntro ?? false;
+  const itemIntroUrl = item?.introUrl;
 
   useEffect(() => {
     if (!itemId || !itemHasIntro) {
@@ -87,7 +88,7 @@ export function MiniAppStoreDetailDialog({
     const controller = new AbortController();
     setIntro({ loading: true, content: '', error: false });
     // 介绍内容直接读 app 目录的 README.md（源目录即商店内容，无 intro 产物目录）
-    fetch(resolveStoreUrl(`mini-app/${itemId}/README.md`), { signal: controller.signal })
+    fetch(itemIntroUrl ?? resolveStoreUrl(`mini-app/${itemId}/README.md`), { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`);
         return res.text();
@@ -100,7 +101,7 @@ export function MiniAppStoreDetailDialog({
         setIntro({ loading: false, content: '', error: true });
       });
     return () => controller.abort();
-  }, [itemId, itemHasIntro]);
+  }, [itemId, itemHasIntro, itemIntroUrl]);
 
   if (!item) return null;
 
@@ -120,7 +121,7 @@ export function MiniAppStoreDetailDialog({
           <aside className="sm:w-1/4 shrink-0 border-b sm:border-b-0 sm:border-e p-4 flex flex-col items-center text-center gap-3 overflow-y-auto">
             <AgentIcon
               name={item.name}
-              avatarUrl={item.iconUrl ? resolveStoreUrl(item.iconUrl) : undefined}
+              avatarUrl={item.iconUrl ? (/^https?:\/\//.test(item.iconUrl) ? item.iconUrl : resolveStoreUrl(item.iconUrl)) : undefined}
               icon={item.icon}
               className="size-16 rounded"
             />

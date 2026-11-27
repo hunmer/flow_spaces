@@ -28,7 +28,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { fetchStoreIndex, resolveStoreUrl } from '@/lib/agent-store';
+import { fetchStoreIndex, resolveStoreUrl, githubRepoRawUrl } from '@/lib/agent-store';
+import { loadMiniAppStoreIndex } from '@/lib/mini-app-store-index';
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -90,9 +91,11 @@ function MiniAppListPage() {
     if (!storeMode) return;
     let cancelled = false;
     setStoreLoading(true);
-    fetchStoreIndex<MiniAppIndexItem>('mini-app/index.json')
-      .then((index) => {
-        if (!cancelled) setStoreTemplates(index);
+    loadMiniAppStoreIndex(fetchStoreIndex, githubRepoRawUrl)
+      .then(({ items, failed }) => {
+        if (cancelled) return;
+        setStoreTemplates(items);
+        if (failed) toast.error(t('store.loadPartialFailed', { count: failed }));
       })
       .catch(() => {
         /* ignore */
@@ -167,7 +170,7 @@ function MiniAppListPage() {
     setStoreInstallProgress(null);
     setStoreInstallingDevelopment(installDevelopment === true);
     try {
-      const baseUrl = resolveStoreUrl(`mini-app/${item.id}`);
+      const baseUrl = item.baseUrl ?? resolveStoreUrl(`mini-app/${item.id}`);
       await sdk.miniApp.installFromStore({
         id: item.id,
         baseUrl,
@@ -178,11 +181,14 @@ function MiniAppListPage() {
           version: item.version,
           tags: item.tags,
           icon: item.icon,
+          mainFile: item.mainFile,
+          enabledPlugins: item.enabledPlugins,
+          enabledWorkflows: item.enabledWorkflows,
         },
         files: item.files ?? [],
         development: item.development,
         installDevelopment,
-        storeUrl: baseUrl,
+        storeUrl: item.storeUrl ?? baseUrl,
         storeChecksum: item.md5,
       }, setStoreInstallProgress);
       await loadProjects();

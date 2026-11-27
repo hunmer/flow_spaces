@@ -74,6 +74,7 @@
     "devicesHint": "Adds a device-frame switcher to the preview toolbar. Leave empty to hide."
   },
   "store": {
+    "loadPartialFailed": "Failed to load {count} store entries. Please retry later.",
     "installProgress": "{percent}% ({completed}/{total})",
     "installPreparing": "Preparing…",
     "installDevelopment": "Install development version",

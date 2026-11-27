@@ -77,7 +77,7 @@ function categorySourceBases(category: StoreCategory): string[] {
  * 拉取商店索引：三类商店内容按源列表顺序故障转移（第一个成功者胜出并
  * 记为该类当前源）；其余内容单地址直取。
  */
-export async function fetchStoreIndex<T>(path: string): Promise<T[]> {
+export async function fetchStoreIndex<T>(path: string, { rememberSource = true }: { rememberSource?: boolean } = {}): Promise<T[]> {
   const cleanPath = path.replace(/^\/+/, '');
   const category = typeof window === 'undefined' ? null : matchStoreCategory(cleanPath);
 
@@ -91,7 +91,7 @@ export async function fetchStoreIndex<T>(path: string): Promise<T[]> {
       try {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
-        rememberActiveSourceBase(category, base);
+        if (rememberSource) rememberActiveSourceBase(category, base);
         return (await res.json()) as T[];
       } catch (err) {
         lastError = err;
@@ -121,8 +121,8 @@ export function parseGithubRepoUrl(input: string): { owner: string; repo: string
 }
 
 /** mini-app 独立仓库的 raw 根地址（走默认代理）；清单内 path 相对该根 */
-export function githubRepoRawUrl(owner: string, repo: string): string {
-  return `https://gh-proxy.org/https://github.com/${owner}/${repo}/raw/refs/heads/main`;
+export function githubRepoRawUrl(owner: string, repo: string, branch = 'main'): string {
+  return `https://gh-proxy.org/https://github.com/${owner}/${repo}/raw/refs/heads/${branch.split('/').map(encodeURIComponent).join('/')}`;
 }
 
 /** mini-app 独立仓库的 app.json（安装清单）地址 */

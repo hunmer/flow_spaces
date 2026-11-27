@@ -29,6 +29,7 @@ Vite + React 19 SPA 前端（自 flow-spaces Next.js 迁移）。三大界面域
 ## 扫描状态
 
 - **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓）
+- **2026-11-28 增量⑤**: 商店源设置改自动保存——`store-sources-panel.tsx` 删保存按钮，修改（输入/增删行/切默认源）即 500ms 防抖 PUT（空白行不进载荷；校验不过暂缓并提示，失败停自动重试、留「重试」按钮）；保存期间编辑保持 dirty，完成后补存，无竞态。
 - **2026-11-27 增量②**: settings 拆分——536 行 `components/settings/settings-dialog.tsx` 按功能拆为瘦壳 + `appearance-panel.tsx`（主题+鼠标指针）/ `general-panel.tsx` / `account-panel.tsx` / `store-sources-panel.tsx` / `option-card.tsx`（model-settings-panel 原已独立）；新增「商店源」设置栏目：新建 `lib/store-sources.ts`（类型/默认源/配置缓存/REST），三类商店源地址可增删改、默认 GitHub+本地端口两源、持久化后端，`agent-store.ts` 的 `fetchStoreIndex` 改按源顺序故障转移（成功源记忆供散件解析跟随），见 server 侧 `GET/PUT /api/user/store-sources`。
 - **2026-11-28 增量④**: 默认本地商店源改指三仓 http-server 镜像端口——`lib/store-sources.ts` `defaultStoreSources()` 的 Local 源从 `${serverUrl}/agents-store`（3110，已不含拆仓后的三类内容）改为跟随访问主机名的 `http://<host>:8091|8092|8093`（plugins/workflows/mini-app 三仓 `npm run serve`，见各仓 package.json）；已保存过商店源配置的用户不受影响（存量值优先，恢复默认后生效新端口）。
 - **2026-11-27 增量③**: mini-apps 页导入改造——header「导入 ZIP」按钮换成「导入」下拉（导入 ZIP / 从 GitHub 导入两项），GitHub 地址输入从商店模式内联行移入新组件 `mini-apps/mini-apps-github-import-dialog.tsx`（自包含：parse → 拉 app.json → installFromStore → 刷新+关闭），商店模式 toolbar 仅本地模式显示；商店源设置每行新增默认源 radio（`StoreSource.default`，`store-sources.ts` 归一为每类恰一个默认 + `orderedSources` 默认排前优先尝试），删除默认源/首个新增自动补默认，见 server 侧 store-sources 归一。

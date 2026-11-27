@@ -2,12 +2,12 @@
 
 /**
  * 【商店源】Tab：plugins / workflows / mini-app 三类商店的源地址管理。
- * 默认每类两个源（GitHub + 本地服务端口），可添加 / 修改 / 删除，
- * 保存到后端（PUT /api/user/store-sources，存 user-settings.json）。
+ * 默认每类两个源（GitHub + 本地镜像端口），可添加 / 修改 / 删除，
+ * 修改即自动保存（500ms 防抖，PUT /api/user/store-sources，存 user-settings.json）。
  * 商店索引拉取按列表顺序故障转移（见 lib/agent-store.ts fetchStoreIndex）。
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { PlusIcon, RotateCcwIcon, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,15 +34,24 @@ function newSource(): StoreSource {
   return { id: crypto.randomUUID(), name: '', url: '', default: false };
 }
 
+/** 完全空白的行视为草稿：不进入保存载荷（填好后才持久化）。 */
+function stripDraftRows(config: StoreSourcesConfig): StoreSourcesConfig {
+  const result = {} as StoreSourcesConfig;
+  for (const category of STORE_CATEGORIES) {
+    result[category] = config[category].filter(
+      (source) => source.name.trim() !== '' || source.url.trim() !== '',
+    );
+  }
+  return result;
+}
+
 /** 行内校验：每行 URL 必填（http(s) 或 / 开头的相对路径）。 */
 function validateSources(config: StoreSourcesConfig): boolean {
   return STORE_CATEGORIES.every((category) =>
-    config[category].every(
-      (source) => {
-        const url = source.url.trim();
-        return url !== '' && (/^https?:\/\/\S+$/i.test(url) || /^\/\S+$/.test(url));
-      },
-    ),
+    config[category].every((source) => {
+      const url = source.url.trim();
+      return url !== '' && (/^https?:\/\/\S+$/i.test(url) || /^\/\S+$/.test(url));
+    }),
   );
 }
 
@@ -54,6 +63,12 @@ export function StoreSourcesPanel() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const [invalidHint, setInvalidHint] = useState(false);
+
+  // 最新配置与最近一次已尝试版本（失败后等修改或手动重试，避免自动重试风暴）
+  const configRef = useRef(config);
+  configRef.current = config;
+  const lastAttemptedRef = useRef<StoreSourcesConfig | null>(null);
 
   // 打开面板时加载后端配置；null = 未配置，展示默认源
   useEffect(() => {
@@ -73,29 +88,32 @@ export function StoreSourcesPanel() {
     };
   }, []);
 
+  /** 所有编辑入口共用：改配置 + 标记待自动保存。 */
+  const mutate = (updater: (prev: StoreSourcesConfig) => StoreSourcesConfig) => {
+    setConfig(updater);
+    setDirty(true);
+    setSaved(false);
+  };
+
   const updateSource = (category: StoreCategory, id: string, patch: Partial<StoreSource>) => {
-    setConfig((prev) => ({
+    mutate((prev) => ({
       ...prev,
       [category]: prev[category].map((source) =>
         source.id === id ? { ...source, ...patch } : source,
       ),
     }));
-    setDirty(true);
-    setSaved(false);
   };
 
   const addSource = (category: StoreCategory) => {
-    setConfig((prev) => {
+    mutate((prev) => {
       // 空类别的第一个源自动成为默认（radio 必须有选中项）
       const source = prev[category].length === 0 ? { ...newSource(), default: true } : newSource();
       return { ...prev, [category]: [...prev[category], source] };
     });
-    setDirty(true);
-    setSaved(false);
   };
 
   const removeSource = (category: StoreCategory, id: string) => {
-    setConfig((prev) => {
+    mutate((prev) => {
       const remaining = prev[category].filter((source) => source.id !== id);
       // 删掉默认源后，剩余列表第一个补为默认
       const removed = prev[category].find((source) => source.id === id);
@@ -104,33 +122,28 @@ export function StoreSourcesPanel() {
       }
       return { ...prev, [category]: remaining };
     });
-    setDirty(true);
-    setSaved(false);
   };
 
   /** radio 选中默认源：同类别仅该源 default=true。 */
   const setDefaultSource = (category: StoreCategory, id: string) => {
-    setConfig((prev) => ({
+    mutate((prev) => ({
       ...prev,
       [category]: prev[category].map((source) => ({ ...source, default: source.id === id })),
     }));
-    setDirty(true);
-    setSaved(false);
   };
 
-  const handleSave = async () => {
-    if (!validateSources(config)) {
-      setError(t('storeSourceInvalidUrl'));
-      return;
-    }
+  const doSave = async (payload: StoreSourcesConfig, version: StoreSourcesConfig) => {
+    lastAttemptedRef.current = version;
     setSaving(true);
     setError('');
-    setSaved(false);
     try {
-      await saveStoreSourcesConfig(config);
-      setUsingDefaults(false);
-      setDirty(false);
-      setSaved(true);
+      await saveStoreSourcesConfig(payload);
+      // 保存期间无新修改才收口状态；有修改则保持 dirty，saving 翻转后 effect 会补存
+      if (configRef.current === version) {
+        setUsingDefaults(false);
+        setDirty(false);
+        setSaved(true);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('saveFailed'));
     } finally {
@@ -138,10 +151,39 @@ export function StoreSourcesPanel() {
     }
   };
 
+  // 修改即生效：dirty 且非保存中时 500ms 防抖自动保存；
+  // 校验不通过（非空白行 URL 无效）时提示并暂缓，修正后自动继续。
+  useEffect(() => {
+    if (!dirty || saving) return;
+    if (config === lastAttemptedRef.current) return;
+    const payload = stripDraftRows(config);
+    if (!validateSources(payload)) {
+      setInvalidHint(true);
+      return;
+    }
+    setInvalidHint(false);
+    const timer = setTimeout(() => {
+      void doSave(payload, config);
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- doSave/t 为稳定引用
+  }, [config, dirty, saving]);
+
+  const handleRetry = () => {
+    const payload = stripDraftRows(config);
+    if (!validateSources(payload)) {
+      setInvalidHint(true);
+      return;
+    }
+    setInvalidHint(false);
+    void doSave(payload, config);
+  };
+
   const handleReset = async () => {
     setSaving(true);
     setError('');
     setSaved(false);
+    setInvalidHint(false);
     try {
       await saveStoreSourcesConfig(null);
       setConfig(defaultStoreSources());
@@ -227,15 +269,7 @@ export function StoreSourcesPanel() {
           </Button>
         </section>
       ))}
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          size="sm"
-          disabled={saving || !dirty}
-          onClick={() => void handleSave()}
-        >
-          {saving ? t('saving') : t('save')}
-        </Button>
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="outline"
@@ -246,10 +280,21 @@ export function StoreSourcesPanel() {
           <RotateCcwIcon aria-hidden="true" />
           {t('storeSourceReset')}
         </Button>
-        {saved && !error && (
+        {saving && <span className="text-sm text-muted-foreground">{t('saving')}</span>}
+        {!saving && saved && !dirty && !error && (
           <span className="text-sm text-muted-foreground">{t('saved')}</span>
         )}
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <>
+            <p className="text-sm text-destructive">{error}</p>
+            <Button type="button" variant="outline" size="sm" disabled={saving} onClick={handleRetry}>
+              {t('retry')}
+            </Button>
+          </>
+        )}
+        {!error && invalidHint && (
+          <p className="text-xs text-muted-foreground">{t('storeSourceInvalidUrl')}</p>
+        )}
       </div>
     </div>
   );
