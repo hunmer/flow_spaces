@@ -6,8 +6,8 @@ Flow Spaces server 将内置 agent 工具（`packages/server/src/services/builti
 
 | URL | 说明 |
 |---|---|
-| `POST http://<host>:3110/mcp` | 使用默认（第一个）工作区 |
-| `POST http://<host>:3110/mcp/<workspaceId>` | 使用指定工作区 |
+| `POST http://<host>:3100/mcp` | 使用默认（第一个）工作区（默认端口 3100，可用 `PORT` 环境变量覆盖） |
+| `POST http://<host>:3100/mcp/<workspaceId>` | 使用指定工作区 |
 
 查询参数（可选）：
 
@@ -42,7 +42,7 @@ MCP 端点**固定只暴露 Workflow（执行 + 节点编辑）与 Mini-app 两�
   "mcpServers": {
     "flow-spaces": {
       "type": "http",
-      "url": "http://127.0.0.1:3110/mcp",
+      "url": "http://127.0.0.1:3100/mcp",
       "headers": {
         "Authorization": "Bearer <accessToken>"
       }

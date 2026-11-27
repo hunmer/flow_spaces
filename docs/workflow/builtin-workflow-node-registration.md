@@ -4,41 +4,37 @@
 
 ## 先看注册入口
 
-当前内置节点定义拆在：
+当前内置节点定义拆在 `apps/web/src/lib/workflow-nodes/definitions/` 下的 10 个分类文件：
 
-- `electron/services/nodes/flow-control.ts`
-- `electron/services/nodes/ai.ts`
-- `electron/services/nodes/display.ts`
+- `flow-control.ts`（流程/控制/变量）、`ai.ts`（AI/模型/Agent）、`display.ts`（展示/交互 UI/媒体）
+- 另有 `image.ts`、`knowledge-base.ts`、`miniapp.ts`、`sqlite.ts`、`string.ts`、`utils.ts`、`interaction.ts`
 
-统一入口是 `electron/services/nodes/index.ts`：
+统一入口是 `apps/web/src/lib/workflow-nodes/registry.ts`（`definitions/index.ts` 只做分类 re-export）：
 
 ```ts
-const allNodes: PluginWorkflowNode[] = [
+export const allNodeDefinitions: NodeTypeDefinition[] = [
   ...flowControlNodes,
   ...aiNodes,
+  ...interactionNodes,
   ...displayNodes,
+  // ...其余 6 个分类数组 + LOCAL_BRIDGE_WORKFLOW_NODES
 ]
-
-export const builtinNodeDefinitions: PluginWorkflowNode[] = allNodes.map((node) => ({
-  allowInputFields: true,
-  ...node,
-}))
 ```
 
 这意味着：
 
 - 新节点通常只需要加入对应分类文件的数组。
-- `allowInputFields` 默认会被设置为 `true`，节点属性面板会显示“输入字段”编辑区。
-- 如果某个节点不希望支持输入字段，可以在节点定义中显式写 `allowInputFields: false`，因为展开顺序是先给默认值，再展开节点自身字段。
-- `electron/services/builtin-nodes.ts` 只是转发入口，不要优先在里面直接追加节点。
+- 节点定义类型为 `NodeTypeDefinition`（`packages/shared/src/types/workflow.ts`），不是旧 Vue/Electron 时代的 `PluginWorkflowNode`。
+- 如果某个节点不希望支持输入字段，可以在节点定义中显式写 `allowInputFields: false`。
 
 ## 最小新增流程
 
-1. 根据节点用途选择文件：
+1. 根据节点用途选择 `apps/web/src/lib/workflow-nodes/definitions/` 下的分类文件：
    - 流程、控制、变量、画布辅助：`flow-control.ts`
    - AI 调用、模型、Agent：`ai.ts`
    - 展示、交互 UI、媒体和数据视图：`display.ts`
-2. 在对应 `PluginWorkflowNode[]` 数组末尾追加节点对象。
+   - 图片/知识库/Mini App/SQLite/字符串/工具/交互：`image.ts` / `knowledge-base.ts` / `miniapp.ts` / `sqlite.ts` / `string.ts` / `utils.ts` / `interaction.ts`
+2. 在对应 `NodeTypeDefinition[]` 数组末尾追加节点对象。
 3. 确保 `type` 全局唯一，使用稳定的 snake_case。
 4. 给出清晰的 `label`、`category`、`icon`、`description`。
 5. 用 `properties` 声明配置表单，用 `outputs` 声明下游可选择的输出结构。
@@ -362,13 +358,13 @@ manualCreate: false as any
 1. 在内置节点定义中注册 `properties`、`outputs` 和必要的 `customViewMinSize`。
 2. 在前端节点注册或 wrapper 中接入对应 `customView` / `customViewProps`。
 3. 如果运行时需要暂停等待用户操作，在后端执行器中发起 interaction。
-4. 在 `apps/web/src/lib/workflow-nodes/definitions/interaction.ts` 注册 UI interaction type。
+4. 交互节点无需额外注册 UI interaction type 白名单：`apps/web/src/stores/workflow-editor/interaction.ts` 直接监听 `workflow:interaction` WS 消息（历史版本曾按类型白名单注册，该机制已删除）。
 
 交互式节点参考 `docs/workflow/interactive-nodes.md`，表格展示节点是当前主要样例。
 
 ## 执行逻辑在哪里补
 
-只改 `electron/services/nodes/*.ts` 的效果是“注册节点定义”，主要影响：
+只改 `apps/web/src/lib/workflow-nodes/definitions/*.ts` 的效果是“注册节点定义”，主要影响：
 
 - 节点侧边栏和选择器。
 - 属性面板。

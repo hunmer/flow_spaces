@@ -20,21 +20,17 @@ runner 通过 `plugin-test-harness.ts` 加载插件目录下的 `actions.js`，�
 
 ## 基本命令
 
-从仓库根目录运行 fetch demo：
+> 商店拆仓后插件模板已迁至独立仓库 [flow-spaces-plugins](https://github.com/hunmer/flow-spaces-plugins)（本仓 `packages/templates` 不再内置 plugins/）。先把仓库 clone 到本地，示例命令中的 `<plugins-repo>` 即其本地路径。
+
+fetch demo 示例：
 
 ```bash
-pnpm test:plugin:fetch
-```
-
-等价于：
-
-```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts
 ```
 
 ## 参数
 
-- `--plugin <dir>`：插件目录，必填。
+- `--plugin <dir>`：插件目录，必填；指向 flow-spaces-plugins 仓库 clone 后的本地路径（如 `<plugins-repo>/plugins/fetch`）。
 - `--test <file>`：自定义测试文件。测试文件必须导出 `default(plugin)` 或 `run(plugin)`。
 - `--code <code>`：内联异步测试代码。代码里可以直接使用 `plugin` 变量。
 - `--config <json>`：模拟插件配置，必须是 JSON object。
@@ -86,7 +82,7 @@ export default async function run(plugin: LoadedPlugin) {
 简单校验可以直接传 `--code`：
 
 ```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --code "const r = await plugin.runAction('fetch_text', { url: 'https://example.com' }); if (!r.success) throw new Error('failed'); return r;"
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --code "const r = await plugin.runAction('fetch_text', { url: 'https://example.com' }); if (!r.success) throw new Error('failed'); return r;"
 ```
 
 ## 传插件配置
@@ -94,7 +90,7 @@ pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fe
 通过 `--config` 传 JSON object：
 
 ```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts --config "{\"defaultTimeout\":30000,\"userAgent\":\"workflow/1.0\"}"
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts --config "{\"defaultTimeout\":30000,\"userAgent\":\"workflow/1.0\"}"
 ```
 
 PowerShell 或复杂配置推荐写入 JSON 文件：
@@ -109,7 +105,7 @@ PowerShell 或复杂配置推荐写入 JSON 文件：
 然后用 `@file` 传入：
 
 ```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts --config @packages/server/src/dev/plugin-tests/fetch-config.json
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-text.test.ts --config @packages/server/src/dev/plugin-tests/fetch-config.json
 ```
 
 传入的配置会同时出现在：
@@ -133,13 +129,13 @@ export default {
 运行：
 
 ```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-mock.test.ts --config "{\"defaultTimeout\":1234}" --mock-api packages/server/src/dev/plugin-tests/fetch-mock-api.ts
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-mock.test.ts --config "{\"defaultTimeout\":1234}" --mock-api packages/server/src/dev/plugin-tests/fetch-mock-api.ts
 ```
 
 Windows/PowerShell 推荐：
 
 ```bash
-pnpm --filter @flow-spaces/server dev:plugin -- --plugin ../templates/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-mock.test.ts --config @packages/server/src/dev/plugin-tests/fetch-config.json --mock-api packages/server/src/dev/plugin-tests/fetch-mock-api.ts
+pnpm --filter @flow-spaces/server dev:plugin -- --plugin <plugins-repo>/plugins/fetch --test packages/server/src/dev/plugin-tests/fetch-mock.test.ts --config @packages/server/src/dev/plugin-tests/fetch-config.json --mock-api packages/server/src/dev/plugin-tests/fetch-mock-api.ts
 ```
 
 `--mock-api` 会覆盖默认 `createBuiltinPluginApi()` 中的同名方法，适合测试外部 HTTP、云服务、文件写入等行为。

@@ -103,7 +103,7 @@ WorkflowNode 右键菜单
   → useCanvasDomEvents
   → useWorkflowEditorCanvas.handleNodeDataUpdate
   → 更新 WorkflowNode 顶层字段
-  → useCanvasData 注入节点 data
+  → use-workflow-canvas-data 注入节点 data
   → WorkflowNode 渲染状态/断点 UI
 ```
 

@@ -54,5 +54,5 @@ graph LR
 ## 扫描状态
 
 - **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓 + 编辑器迁移 + 死代码清理）
-- **已扫描**: 全仓 tracked 文件清点（git ls-files 1628；死代码清理+图标精简后）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、编辑器迁移（CodeMirror 6 兼容层）、死代码审计与清理（A 档 12 文件 + locales 6 namespace + `AgentSpacesUI`→`FlowSpacesUI` 重命名，报告见 `docs/dead-code-audit/`）、flow-spaces-data 入库范围（19 文件）
+- **已扫描**: 全仓 tracked 文件清点（git ls-files 1628；死代码清理+图标精简后）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、编辑器迁移（CodeMirror 6 兼容层）、死代码审计与清理（A 档 12 文件 + locales 6 namespace + `AgentSpacesUI`→`FlowSpacesUI` 重命名，已于 2026-11-27 执行完毕，审计报告工作底稿已删）、flow-spaces-data 入库范围（19 文件）
 - **未深挖**: 各模块内部细节见各模块 claude/（server services、web components 为清单级）；`packages/sdk/demo/`（10 个演示页，2026-11-27 已逐一核对）

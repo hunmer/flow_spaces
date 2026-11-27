@@ -13,7 +13,7 @@
 
 - 删除 6 个 0 引用文件：`agents/agent-context.ts`（被 `persistent-agent-context.ts` 取代）、`services/command-process-manager.ts`、`services/command.ts`、`storage/command-store.ts`（三文件死链）、`services/database-vector.ts`、`storage/database-store.ts`（向量检索死链）。对应 `shared` 契约（command 域、DatabaseVector* 类型）同日删除。
 - `AgentSpacesUI` → `FlowSpacesUI` 全链重命名：`agent-prompt.ts` 八处文案、`mini-apps.ts` 模板、`mini-app-tools.ts` 工具名（`list_agent_spaces_ui_components` → `list_flow_spaces_ui_components`）与描述；`window.AgentSpacesUI` 保留兼容别名供存量 mini-app。
-- 审计报告：`docs/dead-code-audit/`；`pnpm typecheck` + `build:packages` 通过。
+- 审计报告工作底稿已于 2026-11-27 随清理执行删除；`pnpm typecheck` + `build:packages` 通过。
 ## 2026-11-27 — init-project 增量更新：商店拆仓
 
 - **商店内容迁出**: `packages/templates` 的 plugins/workflows/mini-app 目录与 `pack-mini-apps.mjs` 迁至独立 GitHub 仓库（hunmer/flow-spaces-plugins / flow-spaces-workflows / flow-spaces-mini-apps）；本地 `/agents-store` 静态路由（app.ts `resolveRuntimeDir('../templates')`）只分发 templates 剩余 6 类内容，plugins/workflows/mini-app 请求改由 web 端 `apps/web/src/lib/agent-store.ts` `resolveStoreUrl` 前缀路由直达外部仓库 raw（gh-proxy 默认代理）。

@@ -29,7 +29,7 @@
 - 纯 UI 面板
 - 必须运行在宿主客户端的能力
 
-Electron 本地 client 插件：
+Electron 本地 client 插件（Electron 宿主不在本仓，以下为兼容/历史运行目标）：
 
 - 开发态目录：`flow-spaces-plugins 仓库 `plugins/<plugin-id>`（本仓不再内置）`
 
@@ -414,7 +414,7 @@ module.exports = { tools: [] }
 插件 workflow node 可以通过 `customView` 替换默认节点主体。当前支持两种渲染模式：
 
 - `react`：`sourceCode` 需要 `export default` 一个 React 组件，组件 props 为 `{ nodeId, data }`
-- `html`：`sourceCode` 可以包含 HTML 和内联 `<script>`，脚本里可使用 `container`、`props`、`AgentSpacesUI`、`AgentSpaces`、`AgentSpacesAPI`
+- `html`：`sourceCode` 可以包含 HTML 和内联 `<script>`，脚本里可使用 `container`、`props`、`FlowSpacesUI`、`FlowSpaces`、`FlowSpacesAPI`（旧名 `AgentSpacesUI`/`AgentSpaces`/`AgentSpacesAPI` 仍以兼容别名注入）
 
 React 模式可以直接使用封装好的 UI 组件：
 

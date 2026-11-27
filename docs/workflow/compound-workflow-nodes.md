@@ -28,10 +28,10 @@
 
 相关公共类型在以下文件：
 
-- `shared/workflow-types.ts`
+- `packages/shared/src/types/workflow.ts`
 - `@flow-spaces/shared 中的 workflow 类型`
 - `shared/workflow-composite.ts`
-- `electron/services/plugin-types.ts`
+- `packages/shared/src/types/workflow-plugin.ts`
 
 ### 节点元数据
 
@@ -83,7 +83,6 @@
 循环节点定义位于：
 
 - 前端节点注册：`apps/web/src/lib/workflow-nodes/definitions/flow-control.ts`
-- 内建节点声明：`electron/services/builtin-nodes.ts`
 
 ### 结构关系
 
@@ -207,13 +206,10 @@
 - `apps/web/src/stores/workflow.ts`
 - `apps/web/src/hooks/use-workflow-editor.ts`
 - `apps/web/src/components/workflow/use-workflow-edge-operations.ts`
-- `apps/web/src/components/workflow/use-workflow-edge-operations.ts`
 - `apps/web/src/components/workflow/workflow-node.tsx`
 - `apps/web/src/components/workflow/workflow-node-sidebar.tsx`
 - `apps/web/src/components/workflow/workflow-node-select-dialog.tsx`
-- `apps/web/src/components/workflow/workflow-node-select-dialog.tsx`
 - `apps/web/src/components/workflow/workflow-properties-panel.tsx`
-- `apps/web/src/components/workflow/workflow-node-select-dialog.tsx`
 
 当前编辑器行为如下。
 
@@ -229,7 +225,7 @@
 
 ### 隐藏节点与隐藏边
 
-`useFlowCanvas.ts` 会过滤：
+`apps/web/src/hooks/use-workflow-editor.ts`（组合式 hook，旧名 `useFlowCanvas.ts`）会过滤：
 
 - `isHiddenWorkflowNode(node)`
 - `isHiddenWorkflowEdge(edge)`
@@ -367,10 +363,6 @@ export const retryBodyNode: NodeTypeDefinition = {
   manualCreate: false,
 }
 ```
-
-#### 步骤 3：同步到 Electron 内建节点声明
-
-如果是内建节点，还需要在 `electron/services/builtin-nodes.ts` 注册同样的定义，保证主进程侧也拿到一致的节点元数据。
 
 #### 步骤 4：确认是否需要额外 UI 接入
 
@@ -602,13 +594,12 @@ module.exports = {
 如果要继续扩展这套机制，建议优先阅读这些文件：
 
 - 类型与公共方法
-  - `shared/workflow-types.ts`
+  - `packages/shared/src/types/workflow.ts`
   - `@flow-spaces/shared 中的 workflow 类型`
   - `shared/workflow-composite.ts`
-  - `electron/services/plugin-types.ts`
+  - `packages/shared/src/types/workflow-plugin.ts`
 - 节点定义
   - `apps/web/src/lib/workflow-nodes/definitions/flow-control.ts`
-  - `electron/services/builtin-nodes.ts`
 - 画布与编辑器
   - `apps/web/src/stores/workflow.ts`
   - `apps/web/src/hooks/use-workflow-editor.ts`

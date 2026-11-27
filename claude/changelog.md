@@ -15,6 +15,12 @@
 
 > 仅保留最近 5 条。
 
+## 遗留事项（自 docs/init-project-report-2026-11-27.md §七 搬入，报告本体已删）
+
+1. 模块级 CodeGraph 索引（`codegraph init`）可补代码级符号导航。
+2. README.md 历史性叙述（Next.js 迁移背景）如需对外版可再整理。
+3. `packages/server/.env` 当前入库且免鉴权——仅限本地开发环境，勿写入生产密钥。
+
 ## 2026-11-27 — 死代码清理执行（A 档全量 + B 档裁决）
 
 - 删除 A 档 12 文件（审计报告 `docs/dead-code-audit/`，Lead 复验 0 引用）：server 6（`agents/agent-context.ts`、`command-process-manager.ts`→`command.ts`→`command-store.ts` 死链、`database-vector.ts`→`database-store.ts` 死链）；web 5（`shims/next/dynamic.tsx`、`shims/styled-jsx.d.ts`、`app/api/chat/route.ts` 371 行 Next.js 残留、`components/home/workflows-table.tsx`、`components/base/command-palette/`）；`scripts/copy-report.txt`。

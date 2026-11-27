@@ -12,11 +12,11 @@ backend execution-manager
   → 工作流暂停等待
 
 frontend
-  → ws-bridge 收到 interaction_required
-  → interaction.ts 检查 UI_INTERACTION_TYPES
-  → emit('interaction:ui_required', { interactionType, nodeId, schema })
+  → apps/web/src/stores/workflow-editor/interaction.ts 收到 interaction_required
+    （该 slice 直接监听 WS 消息 `workflow:interaction`）
   → store.pendingInteraction 被设置
-  → CustomNodeWrapper 检测到当前节点有 pending interaction
+  → workflow-node.tsx 渲染该节点的 customView（React 组件）
+  → 组件读取 store.pendingInteraction 判断当前节点是否处于交互等待态
   → customView 显示交互 UI（表格/表单/确认按钮等）
   → 用户操作后调用 resolveInteraction(data)
   → WS 发送 interaction_response 回后端
@@ -35,7 +35,7 @@ frontend
 
 ### 1. 定义 InteractionType
 
-`shared/ws-protocol.ts` — 添加类型和 schema：
+`packages/shared/src/types/workflow-ws.ts` — 添加类型和 schema：
 
 ```typescript
 export type InteractionType =
@@ -50,7 +50,7 @@ export interface YourNewInteractionSchema {
 
 ### 2. 注册内置节点
 
-`electron/services/builtin-nodes.ts` — 添加节点定义。
+`apps/web/src/lib/workflow-nodes/definitions/`（交互类节点在 `definitions/interaction.ts`）— 添加节点定义。
 
 ### 3. 后端执行逻辑
 
@@ -78,58 +78,36 @@ private async executeYourNode(session, node, resolvedData): Promise<any> {
 }
 ```
 
-### 4. 注册为 UI 交互类型
+### 4. 创建 customView 组件
 
-`apps/web/src/lib/workflow-nodes/definitions/interaction.ts`：
-
-```typescript
-const UI_INTERACTION_TYPES: Set<InteractionType> = new Set([
-  'table_confirm',
-  'your_new_type',  // 加这里
-])
-```
-
-### 5. 创建 customView 组件
-
-在 `apps/web/src/components/workflow/` 下创建 Vue 组件，支持以下 props：
+在 `apps/web/src/components/workflow/` 下创建 React 组件（TSX），组件由 `workflow-node.tsx` 以固定 props 挂载：
 
 | Prop | 类型 | 说明 |
 |------|------|------|
-| `interactive` | `boolean` | 是否处于交互等待状态 |
-| `onSubmit` | `(data) => void` | 用户确认后的回调（仅 interactive=true 时传入） |
+| `nodeId` | `string` | 节点 id |
+| `data` | `Record<string, unknown>` | 节点数据（执行后有运行结果覆盖） |
+| `isRunning` | `boolean` | 是否执行中 |
+| `isPreview` | `boolean` | 是否预览态 |
 
-组件决定交互态和非交互态的渲染差异。非交互态只展示数据，交互态显示操作控件（如 checkbox、提交按钮）。
+组件内部从 workflow-editor store 读取 `pendingInteraction` 判断是否处于交互等待态，并决定交互态和非交互态的渲染差异。非交互态只展示数据，交互态显示操作控件（如 checkbox、提交按钮）。
 
-### 6. 注册 customView
+### 5. 注册 customView
 
 `apps/web/src/lib/workflow-nodes/definitions/display.ts` — 或对应节点分类文件中注册。
 
-### 7. CustomNodeWrapper 接入
+### 6. 交互等待态与提交
 
-`apps/web/src/components/workflow/workflow-node.tsx` — 在 `customViewProps` computed 中添加分支：
+组件内（而非节点 wrapper）处理交互态：从 store 取 `pendingInteraction`，当 `pending.nodeId === nodeId` 且 `interactionType` 匹配时进入交互态；用户确认后调用 store 的 `resolveInteraction(result)`（内部经 WS 发送 `interaction_response` 并清空 pendingInteraction）：
 
 ```typescript
-if (definition.value?.type === 'your_node_type') {
-  const pending = store.pendingInteraction
-  const isPending = pending?.nodeId === props.id && pending?.interactionType === 'your_new_type'
-  const schema = isPending ? (pending.schema as YourNewInteractionSchema) : null
-
-  return {
-    // 从 schema（后端解析变量后的实际值）或静态配置取数据
-    yourData: schema?.yourField ?? props.data?.yourField ?? [],
-    interactive: !!isPending,
-    onSubmit: isPending
-      ? (result) => {
-          store.pendingInteraction = null
-          resolveInteraction(result)
-        }
-      : undefined,
-  }
-}
+const pending = useWorkflowEditorStore((s) => s.pendingInteraction)
+const resolveInteraction = useWorkflowEditorStore((s) => s.resolveInteraction)
+const isPending = pending?.nodeId === nodeId && pending?.interactionType === 'your_new_type'
+// isPending 时渲染操作控件，提交时调用 resolveInteraction(result)
 ```
 
 ## 插件节点
 
-插件注册的节点也可以使用交互机制。后端在 `BackendPluginRegistry` 中执行插件 handler 时，如果需要用户交互，按相同模式调用 `interactionManager.request()`，并将 interactionType 加入 `UI_INTERACTION_TYPES`。
+插件注册的节点也可以使用交互机制。后端执行插件 handler 时（`services/plugin.ts` 与 `execution-manager.ts` 的插件节点链路），如果需要用户交互，按相同模式调用 `interactionManager.request()`。
 
-前端侧需要在 `CustomNodeWrapper` 中为插件节点类型添加 customViewProps 分支，或提供通用的插件交互视图。
+前端侧为插件节点类型提供 customView（`workflow-node.tsx` 对插件 customView 走 `PluginWorkflowCustomView` 渲染），或提供通用的插件交互视图。
