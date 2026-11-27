@@ -31,8 +31,9 @@ Express 5 后端服务，REST API + WebSocket，SQLite 存储。核心能力：�
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-15（init-project 全量复核；上次深扫 2026-07-27）
+- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓；上次全量复核 2026-11-15）
+- **2026-11-27 增量**: 商店内容拆仓——`packages/templates` 的 plugins/workflows/mini-app 迁出至独立 GitHub 仓库（flow-spaces-plugins / flow-spaces-workflows / flow-spaces-mini-apps），本地 `/agents-store` 静态路由只分发 templates 剩余内容（agents/mcps/skills/output-styles/prompt/skillspackage）；mini-app 商店安装改为远端 `app.json` 文件级 md5 清单增量安装（`services/mini-apps.ts` `installFromStore`，支持任意 GitHub 仓库 URL）；运行时数据目录口径确认：`getDataDir()`（FLOW_SPACES_DATA_DIR/AGENT_SPACES_DATA_DIR → 默认 `~/.flow-spaces-data`，本仓 `.env` 指向 `packages/server/flow-spaces-data/`，PORT=3110）。
 - **已扫描**: package.json、app.ts（36 处 app.use）、routes 25 文件、services 74、storage 19、adapters 14 + agents 4（claude-code-runtime 子目录 / ai-sdk-chat / langchain-runtime / git.ts）、ws 11、dev 19、test 38；`RUNTIME_DESCRIPTORS` 20 个 id（9 独立 runtimeKind + 11 别名）
-- **本期变更**: 移除 Team 多 Agent 协作功能（`services/team*.ts` 8 文件、`routes/team.ts`、`builtin-tools/team-tools.ts` 及 `/api/teams` `/api/team-inbox` `/api/team-messages` 3 个挂载点、`claude/team-runtime.md` 文档删除；存量 `flow-spaces-data/team/` JSON 与旧 channel `teamIds` 字段保留并安全忽略）；新增 Gemini CLI 运行时（`adapters/gemini-cli-runtime.ts` 422 行）；下线 `/ws/lsp/typescript`；新增 `ws/mini-app-channels.ts`；`services/mini-app-services.ts` 新增 `startServicesWatcher`
+- **本期变更（2026-11-15）**: 移除 Team 多 Agent 协作功能（`services/team*.ts` 8 文件、`routes/team.ts`、`builtin-tools/team-tools.ts` 及 `/api/teams` `/api/team-inbox` `/api/team-messages` 3 个挂载点、`claude/team-runtime.md` 文档删除；存量 `flow-spaces-data/team/` JSON 与旧 channel `teamIds` 字段保留并安全忽略）；新增 Gemini CLI 运行时（`adapters/gemini-cli-runtime.ts` 422 行）；下线 `/ws/lsp/typescript`；新增 `ws/mini-app-channels.ts`；`services/mini-app-services.ts` 新增 `startServicesWatcher`
 - **2026-11-15 复核**: 文件级功能映射纳入根 `docs/feature_map.json/html`（server.* 节点，`scripts/gen-feature-map.py` 生成，全仓 4072 文件 100% 覆盖）
 - **跳过**: node_modules, dist, flow-spaces-data, public

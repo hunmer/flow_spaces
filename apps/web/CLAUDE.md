@@ -28,7 +28,8 @@ Vite + React 19 SPA 前端（自 flow-spaces Next.js 迁移）。三大界面域
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-15
+- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓）
+- **2026-11-27 增量**: 商店消费改外部仓库——`lib/agent-store.ts`（`resolveStoreUrl`/`REPO_ROUTES`/`parseGithubRepoUrl`，默认 gh-proxy raw，镜像存 localStorage `flow-spaces:store-api-base`，旧同源 `/agents-store` base 自动清除）成为 plugins/workflows/mini-app 三类商店索引的统一入口（消费点 6 处：mini-apps-page / workflows-page / workflow-plugins-dialog / agent-dialog-data / mcps-dialog / use-skills-data）；本地 `/agents-store` 仅剩 agents/mcps/skills 等无前缀内容。
 - **已扫描**: src/ 全子树结构、vite/tsconfig/AGENTS/boardui 配置、electron、路由表、入口链
 - **未深挖**: `components/ui/`（96 文件）与 `components/reui/` 逐件 API；`locales/` 逐命名空间内容
 - **下一步建议**: 需要时补扫 `components/workflow/display-node-views/`（自定义节点视图清单）

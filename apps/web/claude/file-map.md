@@ -29,7 +29,7 @@ apps/web/
 | `components/editor/` | Monaco 封装 |
 | `components/git|plugins/` | Git 面板、插件面板 |
 | `stores/` | 14+ zustand store（workflow-editor/、search-commands/ 为子目录） |
-| `lib/` | sdk.ts、ws.ts、auth、themes、routes、monaco-*、model-catalog、workflow-*、terminal-registry 等 43 文件 |
+| `lib/` | sdk.ts、ws.ts、agent-store（商店路由/镜像/旧 base 清除）、auth、themes、routes、monaco-*、model-catalog、workflow-*、terminal-registry 等 30 文件 |
 | `hooks/` | 9 个通用 hooks |
 | `locales/{en,zh}/` | 约 30 命名空间 ×2 语言 |
 | `shims/` | next 兼容层（next/dynamic|image|navigation、next-intl、styled-jsx） |

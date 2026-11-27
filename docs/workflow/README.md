@@ -1,8 +1,8 @@
 # Workflow 文档
 
-从 agent_spaces 仓库 `packages/web/docs` 迁移的工作流相关文档（本项目自 agent_spaces 拆分而来，见根目录 `MIGRATION-NOTES.md`）。
+从 agent_spaces 仓库 `packages/web/docs` 迁移的工作流相关文档（本项目自 agent_spaces 拆分而来；迁移笔记已不随仓分发）。
 
-> 说明：原目录中没有独立的 miniapp 文档（i18n / chat 文档中的 "mini" 仅为模型名与命名空间列表项），miniapp 相关说明见 `packages/server/flow-spaces-data/mini-apps/*/src/CLAUDE.md` 与根目录迁移笔记。`chat-capabilities.md`、`client-plugin-runtime.md`、`i18n-guide.md` 与工作流无关，未迁移。
+> 说明：原目录中没有独立的 miniapp 文档（i18n / chat 文档中的 "mini" 仅为模型名与命名空间列表项），miniapp 相关说明见 Mini App 商店仓库 [hunmer/flow-spaces-mini-apps](https://github.com/hunmer/flow-spaces-mini-apps)。`chat-capabilities.md`、`client-plugin-runtime.md`、`i18n-guide.md` 与工作流无关，未迁移。
 
 ## 文档索引
 
@@ -33,7 +33,7 @@
 | `src/types/workflow-node-factory.ts` | `apps/web/src/lib/workflow-nodes/registry.ts` |
 | `backend/workflow/execution-manager.ts` | `packages/server/src/services/execution-manager.ts` |
 | `backend/data/plugins/<id>`（用户安装插件） | 数据目录 `plugins/<id>`（默认 `~/.flow-spaces-data/plugins`，`FLOW_SPACES_DATA_DIR` 可覆盖；本地开发数据在 `packages/server/flow-spaces-data/plugins`） |
-| `resources/plugins/<id>`（开发内置插件） | `packages/templates/plugins/<id>` |
+| `resources/plugins/<id>`（开发内置插件） | 外部插件模板仓库 [hunmer/flow-spaces-plugins](https://github.com/hunmer/flow-spaces-plugins) 的 `<id>`（2026-11 自 `packages/templates/plugins/` 迁出） |
 | `src/dev/plugin-tests/...`（插件测试） | `packages/server/src/dev/plugin-tests/...` |
 | `@flow-spaces/server` | `@flow-spaces/server` |
 

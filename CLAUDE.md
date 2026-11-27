@@ -1,6 +1,13 @@
 # flow_spaces（monorepo）
 
-Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19 SPA（apps/web）+ Express 5 后端（packages/server）+ 共享类型/SDK/模板包。自 flow-spaces（Next.js）迁移而来，迁移记录见 `MIGRATION-NOTES.md`。
+Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19 SPA（apps/web）+ Express 5 后端（packages/server）+ 共享类型/SDK/模板包。自 flow-spaces（Next.js）迁移而来（迁移笔记 `MIGRATION-NOTES.md` 已不随本仓分发）。
+
+**2026-11 商店拆仓**：内置 plugins / workflows / mini-apps 内容已从 `packages/templates` 迁出至独立 GitHub 商店仓库，默认经 gh-proxy 按 raw 拉取，路由见 `apps/web/src/lib/agent-store.ts`：
+
+- https://github.com/hunmer/flow-spaces-plugins（插件模板）
+- https://github.com/hunmer/flow-spaces-workflows（工作流模板）
+- https://github.com/hunmer/flow-spaces-mini-apps（Mini App 商店源）
+- https://github.com/hunmer/game-asset-canvas（独立 mini-app 产品示例仓库）
 
 ## 快速导航
 
@@ -8,10 +15,10 @@ Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19
 |---|---|---|
 | `apps/web` | React 19 SPA（编辑器/Mini App/聊天/BoardUI） | [CLAUDE.md](apps/web/CLAUDE.md) |
 | `packages/server` | Express 5 + WS + SQLite + AI 运行时适配 + 运行时数据 | [CLAUDE.md](packages/server/CLAUDE.md) |
-| `packages/sdk` | 前端统一 API SDK（24 模块） | [CLAUDE.md](packages/sdk/CLAUDE.md) |
+| `packages/sdk` | 前端统一 API SDK（24 模块 + demo 页） | [CLAUDE.md](packages/sdk/CLAUDE.md) |
 | `packages/shared` | 前后端共享 TS 类型（27 域） | [CLAUDE.md](packages/shared/CLAUDE.md) |
-| `packages/templates` | Agent Store 内容（42 插件模板 + 10 Mini App） | [CLAUDE.md](packages/templates/CLAUDE.md) |
-| `packages/logs` | 运行日志（不入库） | — |
+| `packages/templates` | Agent Store 内容源（agents/mcps/skills/output-styles/prompt/skillspackage） | [CLAUDE.md](packages/templates/CLAUDE.md) |
+| `packages/logs/` | server 运行日志（运行时生成，不入库） | — |
 
 ## 根级详情
 
@@ -23,10 +30,10 @@ Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19
 | [入口与启动](claude/entrypoints.md) | 启动顺序、各模块入口 | 起服务 |
 | [对外接口](claude/public-interfaces.md) | 路由/端口/WS/包导出 | 对接 |
 | [依赖与配置](claude/dependencies-and-config.md) | 工具链、依赖图、env | 升级 |
-| [数据模型](claude/data-model.md) | SQLite+文件混合持久层 | 建模 |
+| [数据模型](claude/data-model.md) | SQLite+文件混合持久层、商店分发 | 建模 |
 | [测试与质量](claude/testing-and-quality.md) | 质量关卡、冒烟路径 | 提交前 |
 | [文件索引](claude/file-map.md) | 根目录速查 | 找文件 |
-| [FAQ](claude/faq.md) | build:packages/shims/mermaid 等常见坑 | 排错 |
+| [FAQ](claude/faq.md) | build:packages/shims/商店路由等常见坑 | 排错 |
 | [变更记录](claude/changelog.md) | 更新历史 | 了解变更 |
 
 ## 架构速览
@@ -37,13 +44,15 @@ graph LR
   WEB -.-> SHARED[pkg/shared 类型]
   SDK -.-> SHARED
   SERVER -.-> SHARED
-  SERVER --> TPL[pkg/templates] & DATA[flow-spaces-data]
+  SERVER --> TPL[pkg/templates] & DATA[flow-spaces-data 数据目录]
+  WEB --商店索引/安装--> STORES[独立商店仓库 x4]
 ```
 
-- 找功能代码：`docs/feature_map.html`（38 功能节点 / 4072 文件 / 100% 覆盖）或 CodeGraph。
+- 找功能代码：`rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
+- 商店内容（plugins/workflows/mini-app）默认从独立仓库 GitHub raw 拉取；本地 `/agents-store` 只分发 templates 包内剩余内容（agents/mcps/skills 等）。
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-15（init-project 全量扫描）
-- **已扫描**: 全仓 tracked 文件清点（git ls-files 4072）、六模块结构、根配置与脚本、docs 目录
-- **未深挖**: 各模块内部细节见各模块 claude/（server services 74 文件、web components 522 文件为清单级）
+- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓）
+- **已扫描**: 全仓 tracked 文件清点（git ls-files 2947）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、flow-spaces-data 入库范围（25 文件）
+- **未深挖**: 各模块内部细节见各模块 claude/（server services、web components 为清单级）；`packages/sdk/demo/`（41 个 HTML 演示页）未逐一核对

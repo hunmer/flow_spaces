@@ -70,5 +70,5 @@
 |---|---|
 | `/public/*` | `public/` 目录 |
 | `/static/*` | `public/` + `{DATA_DIR}/public/` |
-| `/agents-store/*` | `packages/templates/` |
+| `/agents-store/*` | `packages/templates/`（拆仓后仅本地 6 类内容：agents/mcps/skills/output-styles/prompt/skillspackage；plugins/workflows/mini-app 前缀由 web 端 `resolveStoreUrl` 路由到外部商店仓库 raw） |
 | `/*` (生产) | `web/` 静态导出（SPA fallback） |

@@ -2,6 +2,14 @@
 
 > 本文件只记录 Server 模块 AI 上下文的更新历史，最近 5 条倒序排列。
 
+## 2026-11-27 — init-project 增量更新：商店拆仓
+
+- **商店内容迁出**: `packages/templates` 的 plugins/workflows/mini-app 目录与 `pack-mini-apps.mjs` 迁至独立 GitHub 仓库（hunmer/flow-spaces-plugins / flow-spaces-workflows / flow-spaces-mini-apps）；本地 `/agents-store` 静态路由（app.ts `resolveRuntimeDir('../templates')`）只分发 templates 剩余 6 类内容，plugins/workflows/mini-app 请求改由 web 端 `apps/web/src/lib/agent-store.ts` `resolveStoreUrl` 前缀路由直达外部仓库 raw（gh-proxy 默认代理）。
+- **mini-app 商店安装机制**: `services/mini-apps.ts` `installFromStore({id, baseUrl, files: StoreFileEntry[]})` 按远端 `app.json` 的文件级 md5 清单增量安装（fetchStoreBuffer/md5Of/md5OfFile）；`storage/mini-app-store.ts` `MANIFEST_SKIP_DIRS`（node_modules/.git/.cache/.turbo/.parcel-cache/vendor）防巨仓库清单爆炸，vendor 内容仅经 `/src/file/*` 按需加载（game-asset-canvas ~90k 文件教训）；支持从任意 GitHub 仓库 URL（含 owner/repo 简写）安装。
+- **数据目录口径确认**: `storage/json-store.ts` `getDataDir()` = FLOW_SPACES_DATA_DIR || AGENT_SPACES_DATA_DIR（旧名回退）|| `~/.flow-spaces-data`；本仓 `packages/server/.env`：PORT=3110、FLOW_SPACES_DATA_DIR=./flow-spaces-data（cwd=packages/server），免鉴权模式。`flow-spaces-data/` 入库种子 25 文件，plugins/workflows/mini-apps 整目录不入库（`.gitignore` 顶部注释记录拆仓去向）。
+- **周边确认**: `packages/logs/`（`__logDir`=src 上两级）为运行时生成不入库；`resolveRuntimeDir(name)`（app.ts:103）优先 src 同级回落上级，用于 templates/web/logs 三个运行时目录定位。
+- 更新 `CLAUDE.md`（扫描状态 +2026-11-27 行）、`claude/public-interfaces.md`（/agents-store 行补注）。
+
 ## 2026-11-15 — init-project 复核
 
 - 全量清点（git ls-files）：routes 25 文件 / 36 app.use 挂载、services 74、storage 19、adapters 14 + agents 4、ws 11、dev 19、test 38；数字与文档对齐，`CLAUDE.md` 扫描状态更新。

@@ -22,7 +22,7 @@
 - **REST**：组件 → `lib/sdk.ts`（`createSDK()` 单例）→ server `/api/*`；错误经 `lib/api-error.ts` 归一。
 - **WS**：`lib/ws.ts` 长连接；工作流执行进度/聊天增量/终端输出走消息分片（`shared/types/events.ts`、`workflow-ws.ts`）。
 - **工作流文档**：节点/边 schema 在 `shared/types/workflow.ts`；画布序列化 helpers 在 `components/workflow/workflow-canvas-*.ts`；复合节点/执行态见 `workflow-composite.ts`、`workflow-execution.ts`。
-- **Mini App 运行态**：manifest（服务端 flow-spaces-data/mini-apps/*/manifest.json）+ 用户 JSX/JS 在 Babel standalone 沙箱动态编译渲染（components/mini-apps/react-renderer）。
+- **Mini App 运行态**：manifest（服务端 `flow-spaces-data/mini-apps/*/manifest.json`）+ 用户 JSX/JS 在 Babel standalone 沙箱动态编译渲染（components/mini-apps/react-renderer）。**来源**：商店安装——`lib/agent-store.ts` `resolveStoreUrl` 路由到外部仓库（hunmer/flow-spaces-mini-apps 等）→ `sdk.miniApp.installFromStore`（远端 app.json 文件级 md5 清单，server 增量拉取落盘）；也支持从任意 GitHub 仓库 URL 安装（`parseGithubRepoUrl`）。
 - **i18n**：`locales/{en,zh}/*.json` 命名空间，LocaleProvider 固定 locale。
 
 ## 本地持久化

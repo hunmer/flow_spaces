@@ -1,6 +1,6 @@
 # Flow Spaces
 
-Workflow 可视化编辑器 + Mini-Apps 平台。自 [flow-spaces](../agent_spaces)（Next.js 16 monorepo）迁移而来，现为独立 Vite 项目，位于 **`/Users/Zhuanz/Documents/flow_spaces`**（2026-11-08 自原仓库 `documents/flow_spaces` 迁出，见 [MIGRATION-NOTES.md](MIGRATION-NOTES.md) T7）。
+Workflow 可视化编辑器 + Mini-Apps 平台。自 flow-spaces（Next.js 16 monorepo）迁移而来，现为 pnpm workspace 独立项目（迁移笔记已不随仓分发）。
 
 ## 技术栈
 
@@ -9,7 +9,7 @@ Vite 7 + React 19 + TypeScript (strict) + Tailwind CSS v4；pnpm workspace：`ap
 ## 快速开始
 
 ```bash
-cd /Users/Zhuanz/Documents/flow_spaces
+cd flow_spaces
 pnpm install
 pnpm build          # 可选：shared→sdk→web 全量构建
 
@@ -21,5 +21,9 @@ pnpm dev            # 终端2：web   http://localhost:5173（/api /ws /public �
 
 ## 更多
 
-- 迁移过程与全部适配决策：[MIGRATION-NOTES.md](MIGRATION-NOTES.md)
-- 冒烟证据（curl/截图/WS 帧捕获）：[docs/smoke/](docs/smoke/)
+- AI 上下文索引（模块导航/约定/FAQ）：[CLAUDE.md](CLAUDE.md)
+- 商店内容仓库（插件/工作流/Mini App 模板，2026-11 自 `packages/templates` 拆出）：
+  - 插件模板：[hunmer/flow-spaces-plugins](https://github.com/hunmer/flow-spaces-plugins)
+  - 工作流模板：[hunmer/flow-spaces-workflows](https://github.com/hunmer/flow-spaces-workflows)
+  - Mini App 商店源：[hunmer/flow-spaces-mini-apps](https://github.com/hunmer/flow-spaces-mini-apps)
+  - 独立 Mini App 示例：[hunmer/game-asset-canvas](https://github.com/hunmer/game-asset-canvas)

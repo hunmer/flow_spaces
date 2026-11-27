@@ -2,7 +2,7 @@
 
 ## 定位
 
-`@flow-spaces/web` 是 flow-spaces 的 Web 前端：Vite + React 19 SPA，从 flow-spaces（Next.js App Router）迁移而来（迁移对照见仓库根 `MIGRATION-NOTES.md`）。承载三大界面域：
+`@flow-spaces/web` 是 flow-spaces 的 Web 前端：Vite + React 19 SPA，从 flow-spaces（Next.js App Router）迁移而来（迁移笔记已不随仓分发）。承载三大界面域：
 
 1. **工作流编辑器**（`/workflows/:id`）：基于 @xyflow/react 的可视化节点画布，126+ 文件，是本项目最重的业务模块。
 2. **Mini App 平台**（`/mini-apps`、`/mini-apps/:id`、`/mini-apps-preview`）：迷你应用的列表、编辑与运行预览；预览态在 Babel standalone 沙箱中渲染用户 JSX。

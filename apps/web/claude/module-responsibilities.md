@@ -29,7 +29,7 @@
 | `common/`（12） | 跨域通用组件 |
 | `home/`（5）+ `metrics-dashboard/`（3） | 首页（MarketingHome/HomePage）与仪表盘 |
 | `command-palette/`（2） | 全局命令面板（Cmd+K） |
-| 其余 | layout（theme/locale-provider/viewport-insets/dev-inspector）、git、plugins、settings、table、viewers、decorations、workflows（列表页）各 2–5 文件 |
+| 其余 | layout（theme/locale-provider/viewport-insets/dev-inspector）、git、plugins、settings、table、viewers、decorations、workflows（列表页，模板索引经 `lib/agent-store.ts` 路由到外部 flow-spaces-workflows 仓库）各 2–5 文件 |
 
 ## electron/
 

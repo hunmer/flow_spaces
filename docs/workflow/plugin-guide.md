@@ -792,22 +792,24 @@ exports.activate = (context) => {
    - `runtimeTargets`
    - `manifestUrl`（如果是 Web client）
 
-## 当前仓库里的参考实现
+## 插件模板仓库里的参考实现
+
+> 插件模板已迁至 [hunmer/flow-spaces-plugins](https://github.com/hunmer/flow-spaces-plugins)（2026-11 拆仓，原 `packages/templates/plugins/` / 更早的 `resources/plugins/`），以下为仓库内相对路径。
 
 ### Server 插件参考
 
-- `resources/plugins/jimeng`
-- `resources/plugins/fetch`
-- `resources/plugins/file-system`
-- `resources/plugins/fish-audio`
+- `jimeng/`
+- `fetch/`
+- `file-system/`
+- `fish-audio/`
 
 ### Electron Client 插件参考
 
-- `resources/plugins/window-manager`
+- `window-manager/`
 
 ### Web Client Manifest 参考
 
-- `resources/plugins/test-plugin/web-plugin.json`
-- `resources/plugins/test-plugin/web-client.js`
-- `resources/plugins/test-plugin/view.js`
+- `test-plugin/web-plugin.json`
+- `test-plugin/web-client.js`
+- `test-plugin/view.js`
 
