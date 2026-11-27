@@ -18,7 +18,7 @@ import type { PendingAskUserQuestion } from './message-parts.js';
 import { buildAgentPrompt, buildBuiltInTools } from './agent-prompt.js';
 import type { BuiltInToolContext } from './agent-prompt.js';
 import { wrapOnEventWithHooks } from '../services/hook-engine.js';
-import { getDataDir } from '../storage/json-store.js';
+import { getMiniAppsDir } from '../storage/json-store.js';
 import { getWorkspace } from '../storage/workspace-store.js';
 
 interface ActiveChannelRun {
@@ -697,7 +697,7 @@ function resolveMiniAppRuntimeContext(context: MiniAppMessageContext | undefined
 
   try {
     const project = miniAppService.getProject(projectId);
-    const projectDir = join(getDataDir(), 'mini-apps', project.id);
+    const projectDir = join(getMiniAppsDir(), project.id);
     if (!existsSync(projectDir) || !statSync(projectDir).isDirectory()) return null;
     return {
       projectId: project.id,

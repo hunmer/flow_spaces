@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import chokidar from 'chokidar';
 import { getProjectDir } from '../storage/mini-app-store.js';
 import * as miniAppStore from '../storage/mini-app-store.js';
-import { getDataDir } from '../storage/json-store.js';
+import { getMiniAppsDir } from '../storage/json-store.js';
 import { broadcastToWorkspace } from '../ws/connection-manager.js';
 import { listTasks } from './mini-app-tasks.js';
 
@@ -130,7 +130,7 @@ export function startServicesWatcher(): void {
   if (watcherStarted) return;
   watcherStarted = true;
 
-  const root = join(getDataDir(), 'mini-apps');
+  const root = getMiniAppsDir();
   if (!existsSync(root)) return;
 
   const scheduleReload = (projectId: string) => {

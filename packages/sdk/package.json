@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && node scripts/fix-esm-extensions.mjs",
+    "build": "pnpm --filter @flow-spaces/shared build && tsc && node scripts/fix-esm-extensions.mjs",
     "dev": "tsc --watch"
   },
   "dependencies": {

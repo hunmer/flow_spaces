@@ -5,7 +5,7 @@
 
 ## 一、核心变更（侦察结论）
 
-**商店拆仓**：`packages/templates` 中的 plugins/、workflows/、mini-app/ 三类内容整体迁出至独立 GitHub 仓库，本仓缩容 4072 → **2947 tracked 文件**（templates 包 393 → 316）。
+**商店拆仓 + 编辑器迁移**：`packages/templates` 中的 plugins/、workflows/、mini-app/ 三类内容整体迁出至独立 GitHub 仓库，且 Monaco 编辑器被替换为 CodeMirror 6；本仓缩容 4072 → **2750 tracked 文件**（templates 包 393 → 316，apps/web 2011 → 1827）。
 
 | 索引前缀 | 仓库（main 分支 raw） |
 |---|---|
@@ -36,29 +36,38 @@
 
 ## 四、功能依赖图谱（追加请求 2）
 
-重新生成 `docs/feature_map.json` + `docs/feature_map.html`（vis-network，767KB，可交互）：
+重新生成 `docs/feature_map.json` + `docs/feature_map.html`（vis-network，751KB，可交互）：
 
 | 指标 | 值 |
 |---|---|
 | 功能节点 | **33**（6 大类；上次 38，商店内容迁出后对应节点消失） |
-| 收录文件 | **2947 / 2947**（files 2878 + tests 69），覆盖率 **100%** |
+| 收录文件 | **2748 / 2748**（files 2679 + tests 69；另图谱产物 2 文件不自引用），覆盖率 **100%** |
 | vendored / unmapped / ghost | 0 / 0 / 0 |
 | 生成方式 | `scripts/gen-feature-map.py` 重建 JSON（PFX_RULES 语义规则）+ skill 脚本 render |
-| 校验 | JSON 引用文件 2947、ghost=0 missing=0 unmapped=0；HTML `node --check` 通过、占位符 0、seed 与 JSON 同步 |
-| git 状态 | **untracked 本地文件**，是否入库由维护者决定 |
+| 校验 | JSON 引用文件 2748、ghost=0 missing=0 unmapped=0；HTML `node --check` 通过、占位符 0、seed 与 JSON 同步 |
+| git 状态 | 已入库（8ca398b；Monaco→CodeMirror 迁移后重建，`gen-feature-map.py` 规则同步更新） |
 
 已登记：根 `CLAUDE.md`（找功能代码行）、`claude/` file-map / changelog / conventions / testing-and-quality / faq。
 
-## 五、覆盖率与缺口
+## 五、编辑器 Monaco → CodeMirror 6（追加请求 3）
 
-- 模块 5/5 已扫描（web 2011 / server 440 / sdk 83 / shared 44 / templates 316 文件）；tracked 2947/2947 清点完毕。
+迁移于 2026-11-27 16:32 完成（提交 6825f83 删文件 + 8ca398b 换依赖），文档同步更新：
+
+- 实现：`apps/web/src/components/editor/code-editor.tsx` 为 CodeMirror 6（@uiw/react-codemirror + 24 个 `@codemirror/*` 包），**兼容旧 Monaco props**（value/language/height/theme/options/onChange）；深层 Monaco API（模型缓存/动作注册/goto-definition）不再提供。
+- 删除：monaco-loader / monaco-models / monaco-action-registry 等旧文件与 `apps/web/public/monaco-themes/`（21 个主题 json）；全部走 bundle（vite manualChunks 拆 vendor-codemirror chunk），无 public 静态分发。
+- 历史命名兼容（非 Monaco）：消费方以 `CodeEditor as MonacoEditor` 别名导入（mcps-dialog / skill-edit-dialog / workflow-code-fullscreen-dialog）；`lib/ui-exports.ts` 保留 `MonacoCodeEditor` 导出名。
+- 图谱 `web.editor` 节点已由用户更新为 "CodeMirror 编辑器" 口径；本报告更新后图谱重建（2748 文件/33 节点/100%）。
+
+## 六、覆盖率与缺口
+
+- 模块 5/5 已扫描（web 1827 / server 440 / sdk 83 / shared 44 / templates 316 文件）；tracked 2750/2750 清点完毕。
 - 清单级未深挖：server services（74 文件）、web components（522 文件）内部细节维持各模块 claude/ 现状。
 - 未核对：`packages/sdk/demo/` 41 个 HTML 演示页。
 - CodeGraph 索引未建（`.codegraph` 不存在）；当前用 feature_map.html 或 rg/grep 定位代码。
 
-## 六、遗留事项与建议
+## 七、遗留事项与建议
 
-1. 图谱入库决策：`git add docs/feature_map.json docs/feature_map.html`（上次口径未提交生成物）。
+1. ~~图谱入库决策~~ 已完成（8ca398b 入库）。
 2. 模块级 CodeGraph 索引（`codegraph init`）可补代码级符号导航。
 3. README.md 历史性叙述（Next.js 迁移背景）如需对外版可再整理。
 4. `packages/server/.env` 当前入库且免鉴权——仅限本地开发环境，勿写入生产密钥。

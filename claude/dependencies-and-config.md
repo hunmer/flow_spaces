@@ -11,7 +11,7 @@
 - web → sdk → shared；web/server → shared；server → templates（`/agents-store` 静态分发）。
 - web 还直接 fetch 外部商店仓库（gh-proxy GitHub raw）：flow-spaces-plugins / flow-spaces-workflows / flow-spaces-mini-apps（见 `apps/web/src/lib/agent-store.ts`），不依赖本地包。
 - server 重依赖：@ai-sdk/*、@langchain/*（langgraph、mcp-adapters）、@modelcontextprotocol/sdk、better-sqlite3、node-pty、adm-zip 等。
-- web 重依赖：@xyflow/react、monaco、@tiptap/*、mermaid、react-aria、tailwindcss v4、@babel/standalone（mini-app 沙箱）。
+- web 重依赖：@xyflow/react、@uiw/react-codemirror + @codemirror/*、@tiptap/*、mermaid、react-aria、tailwindcss v4、@babel/standalone（mini-app 沙箱）。
 
 ## 根级配置文件
 

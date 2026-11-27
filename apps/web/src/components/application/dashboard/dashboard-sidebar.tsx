@@ -10,6 +10,7 @@ import {
   type ComponentType,
   type ReactNode,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   RiAsterisk,
   RiBankLine,
@@ -97,6 +98,7 @@ function NavItem({
   onClick?: () => void;
 }) {
   const localize = useTemplateCopy();
+  const navigate = useNavigate();
   return localize((
     <a
       href={href}
@@ -106,7 +108,22 @@ function NavItem({
               event.preventDefault();
               onClick();
             }
-          : undefined
+          : (event) => {
+              // SPA 客户端导航：拦截内部路径的整页跳转，避免路由切换闪白。
+              // 放行修饰键/非左键（保留新标签页打开等浏览器行为）与非内部路径。
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) {
+                return;
+              }
+              if (!href.startsWith("/")) return;
+              event.preventDefault();
+              navigate(href);
+            }
       }
       aria-current={isSelected ? "page" : undefined}
       aria-label={label}

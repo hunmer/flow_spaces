@@ -11,13 +11,13 @@ flow_spaces/
 ├── tsconfig.base.json      # ES2022 strict bundler
 ├── claude/                 # 根级详情文档（本目录，11 文件）
 ├── scripts/
-│   ├── gen-feature-map.py  # 功能图谱生成（重建 docs/feature_map.json；产物当前本地存在未入库）
+│   ├── gen-feature-map.py  # 功能图谱生成（重建 docs/feature_map.json；产物已入库）
 │   ├── check-locale-parity.mjs
 │   ├── audit-i18n-hardcode.mjs
 │   ├── copy-closure.mjs / verify-copy.mjs   # 迁移期 closure 复制校验
 ├── docs/
-│   ├── feature_map.json    # 功能依赖图谱数据（33 节点/2947 文件；本地生成，未入库）
-│   ├── feature_map.html    # 功能图谱可视化（vis-network；本地生成，未入库）
+│   ├── feature_map.json    # 功能依赖图谱数据（33 节点/2748 文件；已入库）
+│   ├── feature_map.html    # 功能图谱可视化（vis-network；已入库）
 │   ├── init-project-report-2026-11-27.md  # 本轮 init-project 执行报告
 │   ├── agent-tools-mcp.md  # agent-tools MCP 服务说明
 │   ├── workflow/           # 工作流开发指南 9 篇（plugin-guide、builtin 节点注册等）
@@ -35,4 +35,4 @@ flow_spaces/
 | github.com/hunmer/flow-spaces-mini-apps | Mini App 商店源（前缀 `mini-app/`，仓库根 app.json 清单） |
 | github.com/hunmer/game-asset-canvas | 独立 mini-app 产品示例（GitHub URL 安装） |
 
-注：`MIGRATION-NOTES.md`、`docs/smoke/` 已不随仓分发（原 README/docs 中的相关失效链接已于 2026-11-27 清理）；`docs/feature_map.json/html` 已于 2026-11-27 重新本地生成（git 不跟踪，是否入库由维护者决定）。
+注：`MIGRATION-NOTES.md`、`docs/smoke/` 已不随仓分发（原 README/docs 中的相关失效链接已于 2026-11-27 清理）；`docs/feature_map.json/html` 2026-11-27 重建（含 Monaco→CodeMirror 迁移后状态，已入库）。

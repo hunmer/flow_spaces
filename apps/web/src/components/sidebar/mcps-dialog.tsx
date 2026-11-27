@@ -40,7 +40,7 @@ import {
   Link2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
+import { CodeEditor } from '@/components/editor/code-editor';
 import { ImportButton, useFileImportPicker } from './import-button';
 import { ExternalImportDialog } from './external-import-dialog';
 
@@ -802,7 +802,7 @@ export function McpsDialog({ open, onOpenChange, standalone, selectable, selecte
             </div>
           </DialogHeader>
           <div className="flex-1 min-h-0 pt-2">
-            <MonacoEditor
+            <CodeEditor
               height="100%"
               language="json"
               value={editContent}

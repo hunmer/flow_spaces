@@ -37,7 +37,7 @@ import {
   clearAllAgentUsageRecords,
 } from '../storage/agent-store.js';
 import { getWorkspace, listWorkspaces } from '../storage/workspace-store.js';
-import { ensureDir, getDataDir, readJsonFile, writeJsonFile } from '../storage/json-store.js';
+import { ensureDir, getDataDir, getWorkflowsDir, readJsonFile, writeJsonFile } from '../storage/json-store.js';
 import { listModels, listProviders } from '../storage/llm-store.js';
 import { extractUsageFromOutput } from '../storage/usage.js';
 import { getToolDetail, listToolDetailsForMessage } from './tool-detail.js';
@@ -1379,7 +1379,7 @@ function resolveSessionFullPrompt(input: {
 }
 
 function findWorkflowExecutionSystemPrompt(agentSessionId: string): string | undefined {
-  const workflowsDir = join(getDataDir(), 'workflows');
+  const workflowsDir = getWorkflowsDir();
   if (!existsSync(workflowsDir)) return undefined;
 
   for (const workflowEntry of readdirSync(workflowsDir, { withFileTypes: true })) {

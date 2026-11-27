@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { FileIcon, FolderIcon, FolderOpenIcon, ChevronRightIcon, Loader2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
+import { CodeEditor } from '@/components/editor/code-editor';
 import type { SkillInfo } from './types';
 
 interface SkillFile {
@@ -298,7 +298,7 @@ export function SkillEditDialog({ skill, content: _content, onContentChange, onC
                   <Loader2 className="size-5 animate-spin text-muted-foreground" />
                 </div>
               ) : (
-                <MonacoEditor
+                <CodeEditor
                   height="100%"
                   language={language}
                   value={currentContent}
@@ -340,7 +340,7 @@ export function SkillEditDialog({ skill, content: _content, onContentChange, onC
                   <Loader2 className="size-5 animate-spin text-muted-foreground" />
                 </div>
               ) : (
-                <MonacoEditor
+                <CodeEditor
                   height="100%"
                   language={language}
                   value={currentContent}

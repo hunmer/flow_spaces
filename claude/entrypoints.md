@@ -2,7 +2,7 @@
 
 ## 开发环境启动顺序
 
-1. `pnpm install`（触发 better-sqlite3/esbuild/node-pty/protobufjs/sharp 构建白名单，见根 package.json `pnpm.onlyBuiltDependencies`；web postinstall 同步 monaco 到 public）。
+1. `pnpm install`（触发 better-sqlite3/esbuild/node-pty/protobufjs/sharp/electron 构建白名单，见 pnpm-workspace.yaml `allowBuilds`）。
 2. `pnpm build:packages` — shared → sdk 产出 dist（下游类型/运行时依赖）。
 3. `pnpm dev:server` — server 起在 3110（`tsx watch src/app.ts`，入口 `packages/server/src/app.ts`；`.env` 设 `PORT=3110`、`FLOW_SPACES_DATA_DIR=./flow-spaces-data`，免鉴权模式）。
 4. `pnpm dev` — web 起在 5173，vite 代理 `/api` `/ws` `/public` `/static` → 3110。

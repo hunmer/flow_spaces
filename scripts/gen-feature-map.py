@@ -15,7 +15,20 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # scripts/ -> repo root
 DOCS = os.path.join(ROOT, "docs")
-SKILL_TPL = os.path.expanduser("~/.dsh/skills/init-project/templates/feature_map.html")
+def _find_skill_tpl() -> str:
+    """init-project 技能模板：兼容 .dsh 与 .skills-manager 两处安装（含 " (2)" 重复安装目录）。"""
+    candidates = [
+        os.path.expanduser("~/.dsh/skills/init-project/templates/feature_map.html"),
+        os.path.expanduser("~/.dsh/skills/init-project (2)/templates/feature_map.html"),
+        os.path.expanduser("~/.skills-manager/skills/init-project/templates/feature_map.html"),
+        os.path.expanduser("~/.skills-manager/skills/init-project (2)/templates/feature_map.html"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return candidates[0]
+
+SKILL_TPL = _find_skill_tpl()
 
 PROJECT = "flow-spaces"
 HEAD = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"],

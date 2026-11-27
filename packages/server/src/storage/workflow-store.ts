@@ -3,7 +3,7 @@
 // Legacy flat-file workflows are auto-migrated on first access.
 
 import type { Workflow, WorkflowFolder } from '@flow-spaces/shared';
-import { ensureDir, readJsonFile, writeJsonFile, deleteFile, getDataDir } from './json-store.js';
+import { ensureDir, readJsonFile, writeJsonFile, deleteFile, getWorkflowsDir } from './json-store.js';
 import { existsSync, readdirSync, rmSync, unlinkSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { v4 as uuid } from 'uuid';
@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 // ---- Path helpers ----
 
 export function workflowsDir() {
-  return path.join(getDataDir(), 'workflows');
+  return getWorkflowsDir();
 }
 
 function workflowDir(workflowId: string) {

@@ -17,6 +17,7 @@ packages/logs/
 # 迁移验收过程产物（冒烟脚本/缓存）；截图在 docs/boardui-migration/ 单独入库
 .acl-recovery/
 .npm-cache/
+.tmp/
 
 # TS 增量构建缓存
 *.tsbuildinfo

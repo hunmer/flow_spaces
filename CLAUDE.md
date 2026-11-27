@@ -48,11 +48,11 @@ graph LR
   WEB --商店索引/安装--> STORES[独立商店仓库 x4]
 ```
 
-- 找功能代码：`docs/feature_map.html`（33 功能节点 / 2947 文件 / 100% 覆盖，2026-11-27 本地生成）或 `rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
+- 找功能代码：`docs/feature_map.html`（33 功能节点 / 2748 文件 / 100% 覆盖，2026-11-27 重建后已入库）或 `rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
 - 商店内容（plugins/workflows/mini-app）默认从独立仓库 GitHub raw 拉取；本地 `/agents-store` 只分发 templates 包内剩余内容（agents/mcps/skills 等）。
 
 ## 扫描状态
 
-- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓）
-- **已扫描**: 全仓 tracked 文件清点（git ls-files 2947）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、flow-spaces-data 入库范围（25 文件）
+- **更新时间**: 2026-11-27（init-project 增量更新：商店拆仓 + 编辑器 Monaco→CodeMirror 6）
+- **已扫描**: 全仓 tracked 文件清点（git ls-files 2750；Monaco 迁移删除后）、模块结构变化（templates 缩容、logs 移除）、商店路由机制（`agent-store.ts` REPO_ROUTES / `installFromStore` 清单安装）、编辑器迁移（`components/editor/code-editor.tsx` CodeMirror 6 兼容层）、flow-spaces-data 入库范围（25 文件）
 - **未深挖**: 各模块内部细节见各模块 claude/（server services、web components 为清单级）；`packages/sdk/demo/`（41 个 HTML 演示页）未逐一核对

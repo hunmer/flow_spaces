@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Chip } from '@/components/base/badges/chip';
-import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
+import { CodeEditor } from '@/components/editor/code-editor';
 
 function getCodeEditorOptions(readOnly: boolean) {
   return {
@@ -98,7 +98,7 @@ export function WorkflowCodeFullscreenDialog({
           </div>
         </DialogHeader>
         <div className="min-h-0 flex-1">
-          <MonacoEditor
+          <CodeEditor
             height="100%"
             language={language}
             value={draft}

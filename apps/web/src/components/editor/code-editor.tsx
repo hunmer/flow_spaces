@@ -23,10 +23,10 @@ import { languageExtension } from "@/lib/code-languages";
 import { useTheme } from "@/components/layout/theme-provider";
 
 /**
- * CodeMirror 6 编辑器（Monaco 替代品）。
+ * CodeMirror 6 代码编辑器。
  *
- * 兼容旧 Monaco 用法的 props（value/language/height/theme/options/onChange），
- * 深层 Monaco API（模型缓存/动作注册/goto-definition）不再提供。
+ * 提供旧编辑器的常用 props（value/language/height/theme/options/onChange）；
+ * 深层编辑器 API（模型缓存/动作注册/goto-definition）不再提供。
  */
 
 export type CodeEditorTheme = "light" | "dark" | "vs" | "vs-dark";
@@ -40,7 +40,7 @@ export interface CodeEditorOptions {
   folding?: boolean;
   renderLineHighlight?: "none" | "line" | "gutter" | "all";
   padding?: { top?: number; bottom?: number };
-  /** Monaco 兼容：以下常见选项被接受但忽略。 */
+  /** 兼容旧选项：以下常见选项被接受但忽略。 */
   minimap?: unknown;
   scrollBeyondLastLine?: boolean;
   domReadOnly?: boolean;
@@ -95,7 +95,7 @@ export interface CodeEditorProps {
   onMount?: (handle: CodeEditorHandle) => void;
 }
 
-/** pendingJump 命中时的短暂高亮（对齐 Monaco symbolHighlight 视觉）。 */
+/** pendingJump 命中时的短暂高亮（跳转定位反馈）。 */
 const flashEffect = StateEffect.define<{ from: number; to: number } | null>();
 
 const flashField = StateField.define<DecorationSet>({

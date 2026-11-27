@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
+import { CodeEditor } from '@/components/editor/code-editor';
 import { WorkflowCodeFullscreenDialog } from './workflow-code-fullscreen-dialog';
 
 function getCodeEditorOptions(readOnly: boolean) {
@@ -45,7 +45,7 @@ export function CodePropertyEditor({
   return (
     <>
       <div className="relative overflow-hidden rounded-md border">
-        <MonacoEditor
+        <CodeEditor
           height="160px"
           language={language}
           value={value}

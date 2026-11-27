@@ -1,5 +1,5 @@
 import type { NodeTypeDefinition, PluginConfigField, PluginMeta } from '@flow-spaces/shared';
-import { ensureDir, getDataDir, readJsonFile, writeJsonFile } from '../storage/json-store.js';
+import { ensureDir, getPluginsDir, readJsonFile, writeJsonFile } from '../storage/json-store.js';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -163,7 +163,7 @@ function templatesPluginsDir(): string {
 }
 
 function pluginsDir(): string {
-  return path.join(getDataDir(), 'plugins');
+  return getPluginsDir();
 }
 
 function pluginDir(pluginId: string): string {

@@ -67,7 +67,7 @@ export function normalizeLanguageId(input: string | undefined | null): string {
   return LANGUAGE_ALIASES[id] ?? id;
 }
 
-/** 根据文件路径推断语言 id（沿用原 Monaco 语言映射）。 */
+/** 根据文件路径推断语言 id（沿用原语言映射）。 */
 export function getLanguage(path: string): string {
   const ext = path.split('.').pop()?.toLowerCase();
   const map: Record<string, string> = {

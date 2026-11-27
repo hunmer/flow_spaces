@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, renameSync, statSync } from 'node:fs';
 import { join, dirname, resolve, sep } from 'node:path';
 import type { WorkflowAgentTimelineItem } from '@flow-spaces/shared';
-import { readJsonFile, writeJsonFile, ensureDir, getDataDir } from './json-store.js';
+import { readJsonFile, writeJsonFile, ensureDir, getMiniAppsDir } from './json-store.js';
 
 export interface MiniAppProject {
   id: string;
@@ -32,7 +32,7 @@ export interface MiniAppProject {
 }
 
 function baseDir(): string {
-  return join(getDataDir(), 'mini-apps');
+  return getMiniAppsDir();
 }
 
 function indexPath(): string {

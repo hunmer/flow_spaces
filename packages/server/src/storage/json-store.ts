@@ -11,6 +11,18 @@ export function getDataDir(): string {
   return resolve(process.env.FLOW_SPACES_DATA_DIR || process.env.AGENT_SPACES_DATA_DIR || DEFAULT_DATA_DIR);
 }
 
+export function getPluginsDir(): string {
+  return resolve(process.env.FLOW_SPACES_PLUGINS_DIR || join(getDataDir(), 'plugins'));
+}
+
+export function getWorkflowsDir(): string {
+  return resolve(process.env.FLOW_SPACES_WORKFLOWS_DIR || join(getDataDir(), 'workflows'));
+}
+
+export function getMiniAppsDir(): string {
+  return resolve(process.env.FLOW_SPACES_MINI_APPS_DIR || join(getDataDir(), 'mini-apps'));
+}
+
 export function ensureDir(dir: string): void {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
