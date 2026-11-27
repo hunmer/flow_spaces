@@ -176,10 +176,6 @@ export type ServerEventMap = {
   'workflow.deleted': { workflowId: string };
   'notification.created': AppNotification;
   'notification.cleared': null;
-  'worktree.created': import('./worktree.js').WorktreeInfo;
-  'worktree.deleted': { id: string; workspaceId: string };
-  'worktree.pr_created': import('./worktree.js').WorktreeInfo;
-  'worktree.merged': import('./worktree.js').WorktreeInfo;
   'workflow:execute:result': { executionId: string; status?: string };
   'workflow:execute:error': { error: string };
   'workflow:pause:result': unknown;

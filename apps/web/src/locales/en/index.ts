@@ -6,7 +6,6 @@ import common from './common.json';
 import composer from './composer.json';
 import editor from './editor.json';
 import folderPicker from './folderPicker.json';
-import git from './git.json';
 import home from './home.json';
 import importNs from './import.json';
 import knowledgeBase from './knowledgeBase.json';
@@ -37,7 +36,6 @@ const messages = {
   composer,
   editor,
   folderPicker,
-  git,
   home,
   import: importNs,
   knowledgeBase,

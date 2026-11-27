@@ -12,7 +12,6 @@
  *
  *   // 调用
  *   const workspaces = await sdk.workspace.list();
- *   const status = await sdk.git.status(wsId);
  *
  *   // 调试开关（运行时切换）
  *   sdk.setDebug(true);

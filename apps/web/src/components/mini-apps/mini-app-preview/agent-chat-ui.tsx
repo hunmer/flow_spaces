@@ -237,8 +237,6 @@ function MiniAppAgentFilesDialog({ projectId, open, onOpenChange }: { projectId:
                 activeContent={activeContent}
                 mediaType={null}
                 mediaUrl={null}
-                isCommitDiff={false}
-                commitDiffData={null}
                 pendingJump={null}
                 onChange={handleChange}
                 onSave={handleSave}

@@ -5,24 +5,17 @@ import "@/components/editor/code-editor-clipboard";
 import { Code, Eye, FileText, AlignLeft, Binary } from "lucide-react";
 import { useTheme } from "@/components/layout/theme-provider";
 import { useTranslations } from "next-intl";
-import { CommitDiffViewer } from "@/components/git/commit-diff-viewer";
 import type { MediaType, OpenFile } from "@/stores/editor";
 import { EditorMenuBar } from "./code-editor-menu-bar";
 import { getLanguage } from "@/lib/code-languages";
 import { CodeEditor, type CodeEditorHandle, type CodeEditorOptions } from "./code-editor";
 import { Markdown } from "@/components/ui/markdown";
 import { MermaidPreview } from "@/components/ui/mermaid-preview";
-import type { GitDiffResult } from "@flow-spaces/shared";
 
 function getDefaultReadOnly() {
   if (typeof window === "undefined") return false;
   return window.innerWidth < 768;
 }
-
-type CommitDiffData = {
-  diffs: GitDiffResult[];
-  message: string;
-} | null;
 
 export interface PendingEditorJump {
   path: string;
@@ -38,8 +31,6 @@ interface CommonCodeEditorProps {
   activeContent: string;
   mediaType: MediaType | null;
   mediaUrl: string | null;
-  isCommitDiff: boolean;
-  commitDiffData: CommitDiffData;
   pendingJump: PendingEditorJump | null;
   workspaceIdForMarkdown?: string;
   tabs?: React.ReactNode;
@@ -100,8 +91,6 @@ export function CommonCodeEditor({
   activeContent,
   mediaType,
   mediaUrl,
-  isCommitDiff,
-  commitDiffData,
   pendingJump,
   workspaceIdForMarkdown,
   tabs,
@@ -163,10 +152,10 @@ export function CommonCodeEditor({
   }, []);
 
   useEffect(() => {
-    if (!activeFilePath || !activeFile || activeFile.modified || isCommitDiff) return;
+    if (!activeFilePath || !activeFile || activeFile.modified) return;
     const timer = setInterval(onRefreshActiveFile, 3000);
     return () => clearInterval(timer);
-  }, [activeFile, activeFilePath, activeFile?.modified, isCommitDiff, onRefreshActiveFile]);
+  }, [activeFile, activeFilePath, activeFile?.modified, onRefreshActiveFile]);
 
   useEffect(() => {
     if (!pendingJump || !activeFilePath || pendingJump.path !== activeFilePath) return;
@@ -246,9 +235,7 @@ export function CommonCodeEditor({
         }}
       />
       <div className="relative flex-1 min-h-0 bg-background">
-        {isCommitDiff && commitDiffData ? (
-          <CommitDiffViewer diffs={commitDiffData.diffs} message={commitDiffData.message} />
-        ) : isPreviewable && showPreview && (mediaUrl || mediaType === "markdown" || mediaType === "mermaid") ? (
+        {isPreviewable && showPreview && (mediaUrl || mediaType === "markdown" || mediaType === "mermaid") ? (
           <div className="relative flex justify-center h-full bg-muted/20 overflow-auto">
             {isCodePreviewToggle && (
               <button
@@ -306,7 +293,7 @@ export function CommonCodeEditor({
           </div>
         )}
       </div>
-      {activeFile && !isCommitDiff && (
+      {activeFile && (
         <EditorStatusBar file={activeFile} content={activeContent} t={t} />
       )}
     </div>
