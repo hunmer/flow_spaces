@@ -12,7 +12,7 @@ const ROWS = [
 
 /**
  * The gallery tile: the palette's panel at rest, drawn statically (a live
- * one is a modal). Surface, rows and footer mirror components/base/command-palette.
+ * one is a modal). Surface, rows and footer mirror components/command-palette.
  */
 export function CommandPalettePreviewCard() {
   return (
