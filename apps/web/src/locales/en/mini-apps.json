@@ -2,7 +2,7 @@
   "page": {
     "title": "Mini Apps",
     "subtitle": "Create and manage mini apps — lightweight interactive apps for your workflows.",
-    "storeMode": "Store Mode",
+    "storeTab": "Store",
     "importZip": "Import ZIP",
     "create": "New",
     "searchPlaceholder": "Search pages...",

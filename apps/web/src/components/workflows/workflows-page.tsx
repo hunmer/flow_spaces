@@ -306,27 +306,24 @@ export function WorkflowsPage() {
     <div className="p-6 h-full overflow-y-auto">
       <div className="hidden md:flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-baseline gap-3">
-            <h2 className="text-lg font-semibold">{t('page.title')}</h2>
-            {/* h2 右侧链接式切换：【工作流 / 商店】 */}
-            <div className="flex items-baseline gap-1.5 text-sm">
-              <button
-                type="button"
-                onClick={() => setStoreMode(false)}
-                className={storeMode ? 'text-muted-foreground hover:text-foreground cursor-pointer' : 'font-medium text-foreground underline underline-offset-4 cursor-pointer'}
-              >
-                {t('page.title')}
-              </button>
-              <span className="text-muted-foreground/60">/</span>
-              <button
-                type="button"
-                onClick={() => setStoreMode(true)}
-                className={storeMode ? 'font-medium text-foreground underline underline-offset-4 cursor-pointer' : 'text-muted-foreground hover:text-foreground cursor-pointer'}
-              >
-                {t('page.storeTab')}
-              </button>
-            </div>
-          </div>
+          {/* 本地 / 商店 链接式切换代替 h2 标题 */}
+          <h2 className="text-lg font-semibold flex items-baseline gap-2">
+            <button
+              type="button"
+              onClick={() => setStoreMode(false)}
+              className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-muted-foreground font-normal hover:text-foreground' : 'text-foreground underline'}`}
+            >
+              {t('page.title')}
+            </button>
+            <span className="text-muted-foreground/60 font-normal">/</span>
+            <button
+              type="button"
+              onClick={() => setStoreMode(true)}
+              className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-foreground underline' : 'text-muted-foreground font-normal hover:text-foreground'}`}
+            >
+              {t('page.storeTab')}
+            </button>
+          </h2>
           <p className="text-sm text-muted-foreground">
             {storeMode ? t('templates.description') : t('page.subtitle')}
           </p>
@@ -344,7 +341,11 @@ export function WorkflowsPage() {
       <div className="hidden md:flex items-center gap-2 mb-4">
         {storeMode ? (
           <>
-            <div className="relative flex-1 min-w-[140px] max-w-xs">
+            <Button variant="outline" onClick={handleImport}>
+              <Upload className="h-4 w-4 mr-1" /> {t('page.import')}
+            </Button>
+            {/* 搜索栏固定在最右侧 */}
+            <div className="relative ml-auto min-w-[140px] max-w-xs">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder={t('templates.searchPlaceholder')}
@@ -353,19 +354,26 @@ export function WorkflowsPage() {
                 className="pl-8 h-8 text-sm"
               />
             </div>
-            <Button variant="outline" onClick={handleImport}>
-              <Upload className="h-4 w-4 mr-1" /> {t('page.import')}
-            </Button>
           </>
         ) : (
           <>
-            <WorkflowFilterToolbar state={filters} />
+            <WorkflowFilterToolbar state={filters} showSearch={false} />
             <Button
               variant={selectionMode ? 'default' : 'outline'}
               onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
             >
               <CheckSquare className="h-4 w-4 mr-1" /> {t('page.selectMode')}
             </Button>
+            {/* 搜索栏固定在最右侧 */}
+            <div className="relative ml-auto min-w-[140px] max-w-xs">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder={t('page.searchPlaceholder')}
+                value={filters.search}
+                onChange={(e) => filters.setSearch(e.target.value)}
+                className="pl-8 h-8 text-sm"
+              />
+            </div>
           </>
         )}
       </div>

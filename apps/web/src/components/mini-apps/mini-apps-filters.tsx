@@ -132,6 +132,8 @@ function FilterPopover({
 export interface MiniAppFilterToolbarProps {
   state: MiniAppFiltersState;
   className?: string;
+  /** 是否显示搜索框。默认 true；主列表页传 false 以便把搜索框自渲染到工具栏最右侧。 */
+  showSearch?: boolean;
   /** 是否显示类型过滤（react/html/all）。默认 true。 */
   showTypeFilter?: boolean;
   /** 是否显示标签过滤。默认 true（无标签时自动隐藏）。 */
@@ -144,6 +146,7 @@ export interface MiniAppFilterToolbarProps {
 export function MiniAppFilterToolbar({
   state,
   className,
+  showSearch = true,
   showTypeFilter = true,
   showTagsFilter = true,
 }: MiniAppFilterToolbarProps) {
@@ -186,15 +189,17 @@ export function MiniAppFilterToolbar({
           </div>
         </FilterPopover>
       ) : null}
-      <div className="relative flex-1 min-w-[140px] max-w-xs">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-        <Input
-          placeholder={t('page.searchPlaceholder')}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-8 h-8 text-sm"
-        />
-      </div>
+      {showSearch ? (
+        <div className="relative flex-1 min-w-[140px] max-w-xs">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            placeholder={t('page.searchPlaceholder')}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-8 h-8 text-sm"
+          />
+        </div>
+      ) : null}
       <FilterPopover
         trigger={
           <>

@@ -384,11 +384,6 @@ export function CommandPalette() {
                   }
                 }}
               />
-              <Button size="sm" variant="outline" className="mb-1 gap-1.5" onClick={() => handleAskAI()}>
-                <Sparkles />
-                <span className="hidden sm:inline">{t('footer.ask')}</span>
-                <Kbd className="font-sans">Tab</Kbd>
-              </Button>
             </div>
             <CommandPanel>
               <CommandEmpty>

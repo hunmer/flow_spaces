@@ -2,7 +2,7 @@
   "page": {
     "title": "Mini App",
     "subtitle": "创建并管理你的 Mini App，为工作流定制可交互的轻量应用。",
-    "storeMode": "商店模式",
+    "storeTab": "商店",
     "importZip": "导入 ZIP",
     "create": "新建",
     "searchPlaceholder": "搜索页面…",

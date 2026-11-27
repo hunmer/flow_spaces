@@ -8,8 +8,7 @@ import { sdk } from '@/lib/sdk';
 import { pluginApi } from '@/lib/workflow-plugin-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Plus, Upload, FileQuestion, Globe, Download, CheckSquare } from 'lucide-react';
+import { Plus, Upload, FileQuestion, Globe, Download, CheckSquare, Search } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
 import { MiniAppDetail } from './mini-apps-store-detail';
@@ -263,21 +262,29 @@ function MiniAppListPage() {
       {/* Header */}
       <div className="hidden md:flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold">{t('page.title')}</h2>
+          {/* 本地 / 商店 链接式切换代替 h2 标题 */}
+          <h2 className="text-lg font-semibold flex items-baseline gap-2">
+            <button
+              type="button"
+              onClick={() => toggleStoreMode(false)}
+              className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-muted-foreground font-normal hover:text-foreground' : 'text-foreground underline'}`}
+            >
+              {t('page.title')}
+            </button>
+            <span className="text-muted-foreground/60 font-normal">/</span>
+            <button
+              type="button"
+              onClick={() => toggleStoreMode(true)}
+              className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-foreground underline' : 'text-muted-foreground font-normal hover:text-foreground'}`}
+            >
+              {t('page.storeTab')}
+            </button>
+          </h2>
           <p className="text-sm text-muted-foreground">
             {storeMode ? t('store.description') : t('page.subtitle')}
           </p>
         </div>
         <div className="flex gap-2 items-center">
-          {!storeMode && (
-            <Button variant="outline" onClick={openPicker}>
-              <CheckSquare className="h-4 w-4 mr-2" />
-              {t('page.select')}
-            </Button>
-          )}
-          <Switch checked={storeMode} onCheckedChange={toggleStoreMode}>
-            {t('page.storeMode')}
-          </Switch>
           <Button variant="outline" onClick={handleImport}>
             <Upload className="h-4 w-4 mr-2" />
             {t('page.importZip')}
@@ -291,20 +298,28 @@ function MiniAppListPage() {
 
       {/* Mobile header */}
       <div className="md:hidden mb-4">
-        <h2 className="text-lg font-semibold">{t('page.title')}</h2>
+        {/* 本地 / 商店 链接式切换代替 h2 标题 */}
+        <h2 className="text-lg font-semibold flex items-baseline gap-2">
+          <button
+            type="button"
+            onClick={() => toggleStoreMode(false)}
+            className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-muted-foreground font-normal hover:text-foreground' : 'text-foreground underline'}`}
+          >
+            {t('page.title')}
+          </button>
+          <span className="text-muted-foreground/60 font-normal">/</span>
+          <button
+            type="button"
+            onClick={() => toggleStoreMode(true)}
+            className={`cursor-pointer underline-offset-4 ${storeMode ? 'text-foreground underline' : 'text-muted-foreground font-normal hover:text-foreground'}`}
+          >
+            {t('page.storeTab')}
+          </button>
+        </h2>
         <p className="text-sm text-muted-foreground mb-3">
           {storeMode ? t('store.description') : t('page.subtitle')}
         </p>
         <div className="flex gap-2 flex-wrap items-center">
-          {!storeMode && (
-            <Button variant="outline" size="sm" onClick={openPicker}>
-              <CheckSquare className="h-4 w-4 mr-2" />
-              {t('page.select')}
-            </Button>
-          )}
-          <Switch checked={storeMode} onCheckedChange={toggleStoreMode}>
-            {t('page.storeMode')}
-          </Switch>
           <Button variant="outline" size="sm" onClick={handleImport}>
             <Upload className="h-4 w-4 mr-2" />
             {t('page.importZip')}
@@ -356,7 +371,23 @@ function MiniAppListPage() {
           {githubError && <p className="text-xs text-destructive mb-4">{githubError}</p>}
         </>
       ) : (
-        <MiniAppFilterToolbar state={filters} className="mb-4" />
+        <div className="flex items-center gap-2 mb-4">
+          <MiniAppFilterToolbar state={filters} showSearch={false} />
+          <Button variant="outline" size="sm" className="shrink-0" onClick={openPicker}>
+            <CheckSquare className="h-4 w-4 mr-2" />
+            {t('page.select')}
+          </Button>
+          {/* 搜索栏固定在最右侧 */}
+          <div className="relative ml-auto min-w-[140px] max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder={t('page.searchPlaceholder')}
+              value={filters.search}
+              onChange={(e) => filters.setSearch(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
+          </div>
+        </div>
       )}
 
       {/* Content */}
