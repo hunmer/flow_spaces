@@ -6,7 +6,6 @@ import type { WorkflowTemplate, WorkflowNode } from '@flow-spaces/shared';
 import { useWorkflowStore } from '@/stores/workflow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Chip } from '@/components/base/badges/chip';
 import { Plus, Plug, CheckSquare, Download, Trash2, Search, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -307,23 +306,32 @@ export function WorkflowsPage() {
     <div className="p-6 h-full overflow-y-auto">
       <div className="hidden md:flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold">{t('page.title')}</h2>
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-lg font-semibold">{t('page.title')}</h2>
+            {/* h2 右侧链接式切换：【工作流 / 商店】 */}
+            <div className="flex items-baseline gap-1.5 text-sm">
+              <button
+                type="button"
+                onClick={() => setStoreMode(false)}
+                className={storeMode ? 'text-muted-foreground hover:text-foreground cursor-pointer' : 'font-medium text-foreground underline underline-offset-4 cursor-pointer'}
+              >
+                {t('page.title')}
+              </button>
+              <span className="text-muted-foreground/60">/</span>
+              <button
+                type="button"
+                onClick={() => setStoreMode(true)}
+                className={storeMode ? 'font-medium text-foreground underline underline-offset-4 cursor-pointer' : 'text-muted-foreground hover:text-foreground cursor-pointer'}
+              >
+                {t('page.storeTab')}
+              </button>
+            </div>
+          </div>
           <p className="text-sm text-muted-foreground">
             {storeMode ? t('templates.description') : t('page.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {!storeMode && (
-            <Button
-              variant={selectionMode ? 'default' : 'outline'}
-              onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
-            >
-              <CheckSquare className="h-4 w-4 mr-1" /> {t('page.selectMode')}
-            </Button>
-          )}
-          <Switch checked={storeMode} onCheckedChange={(checked) => setStoreMode(checked)}>
-            {t('page.storeMode')}
-          </Switch>
           <Button variant="outline" onClick={() => setPluginsOpen(true)}>
             <Plug className="h-4 w-4 mr-1" /> {t('page.plugins')}
           </Button>
@@ -350,7 +358,15 @@ export function WorkflowsPage() {
             </Button>
           </>
         ) : (
-          <WorkflowFilterToolbar state={filters} />
+          <>
+            <WorkflowFilterToolbar state={filters} />
+            <Button
+              variant={selectionMode ? 'default' : 'outline'}
+              onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
+            >
+              <CheckSquare className="h-4 w-4 mr-1" /> {t('page.selectMode')}
+            </Button>
+          </>
         )}
       </div>
 

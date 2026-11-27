@@ -63,7 +63,7 @@ def is_test(path: str) -> bool:
 PFX_RULES = [
     # --- docs / 工程基建（先于模块规则，处理跨模块文档）---
     ("infra.docs",  re.compile(r"^(docs/|claude/|CLAUDE\.md$|packages/[^/]+/claude/|packages/[^/]+/CLAUDE\.md$|apps/web/claude/|apps/web/CLAUDE\.md$|\.agentspace/claude\.md$|apps/web/src/locales/\.claude/)")),
-    ("infra.scripts", re.compile(r"^(scripts/|procm-commands\.json$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|tsconfig\.base\.json$|\.gitignore$|i18n-workset\.txt$|MIGRATION-NOTES\.md$|README\.md$|AGENTS\.md$|\.flow-spaces-leftover-report\.md$|\.unused-report\.md$|\.review/)")),
+    ("infra.scripts", re.compile(r"^(scripts/|procm-commands\.json$|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|tsconfig\.base\.json$|\.gitignore$|MIGRATION-NOTES\.md$|README\.md$|AGENTS\.md$|\.flow-spaces-leftover-report\.md$|\.unused-report\.md$|\.review/)")),
     ("infra.logs",  re.compile(r"^packages/logs/")),
     # --- sdk / shared ---
     ("sdk.api",     re.compile(r"^packages/sdk/")),

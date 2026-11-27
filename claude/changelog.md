@@ -1,3 +1,9 @@
+## 2026-11-27 — agent-spaces 迁移残留清理
+
+- 删迁移期脚本：`scripts/copy-closure.mjs`、`scripts/verify-copy.mjs`（T2 复制校验，指向已废弃旧仓）与 `i18n-workset.txt`、`scripts/audit-i18n-hardcode.mjs`（i18n 硬编码审计退役，`check-locale-parity.mjs` 保留）。
+- web 删 Flutter/Tauri 原生壳残留：`native-notification.ts` 只留 Web 通知分支（公开导出签名不变）；`navigate.ts` 简化为纯客户端路由（删 `toStaticHref`/`tauriNavigate`，`login-form`/`workflow-node-execution-log` 调用点同步）；`theme-provider.tsx` 删 `AgentSpacesStatusBar` 桥；`viewport-insets.tsx` 删 `__agentSpacesNativeInsets` 读取（`--app-top-inset` 回落 CSS 默认 0）。
+- 文档同步：conventions / testing-and-quality / file-map / faq 移除退役脚本引用。
+
 ## 2026-11-27 — 文件图标集精简 + 功能图谱重建
 
 - `apps/web/public/icons/` 870→20（vscode 文件图标集全量精简为 20 种基础类型图标，`file-icon.tsx` 映射同步）。

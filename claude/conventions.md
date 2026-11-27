@@ -22,8 +22,8 @@
 
 ## i18n 流程
 
-- 文案源在 `apps/web/src/locales/{en,zh}/`；`i18n-workset.txt` 为工作集清单。
-- 校验：`node scripts/check-locale-parity.mjs`（双语 key 对齐）、`node scripts/audit-i18n-hardcode.mjs`（硬编码审计）。
+- 文案源在 `apps/web/src/locales/{en,zh}/`。
+- 校验：`node scripts/check-locale-parity.mjs`（双语 key 对齐）。
 
 ## Git 边界（.gitignore 要点）
 

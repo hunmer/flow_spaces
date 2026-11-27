@@ -22,7 +22,6 @@ function createWebSDK(): SDK {
       removeToken();
       if (typeof window !== 'undefined' && !isLoginPath(window.location.pathname)) {
         // Vite SPA：直跳 /login 路由（spa fallback 回 index.html）。
-        // 不能经 toStaticHref —— 会拼出不存在的 /login.html（同 lib/auth.ts 401 分支）。
         window.location.replace(loginHrefWithRef());
       }
     },

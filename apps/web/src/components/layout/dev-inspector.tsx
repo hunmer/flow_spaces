@@ -25,11 +25,11 @@ type ReactFiber = {
   _debugOwner?: ReactFiber | null;
 };
 
-type FiberElement = HTMLElement & {
+type FiberElement = Element & {
   [key: string]: ReactFiber | undefined;
 };
 
-function getFiber(element: HTMLElement | null): ReactFiber | undefined {
+function getFiber(element: Element | null): ReactFiber | undefined {
   if (!element) return undefined;
 
   const fiberKey = Object.keys(element).find(
@@ -42,16 +42,17 @@ function getFiber(element: HTMLElement | null): ReactFiber | undefined {
   return getFiber(element.parentElement);
 }
 
-function getCodeInfo(element: HTMLElement) {
-  const sourceElement = element.closest<HTMLElement>(
+function getCodeInfo(element: Element) {
+  const sourceElement = element.closest(
     "[data-inspector-relative-path]"
   );
 
-  if (sourceElement?.dataset.inspectorRelativePath) {
+  const relativePath = sourceElement?.getAttribute("data-inspector-relative-path");
+  if (relativePath) {
     return {
-      relativePath: sourceElement.dataset.inspectorRelativePath,
-      lineNumber: sourceElement.dataset.inspectorLine ?? "1",
-      columnNumber: sourceElement.dataset.inspectorColumn ?? "1",
+      relativePath,
+      lineNumber: sourceElement?.getAttribute("data-inspector-line") ?? "1",
+      columnNumber: sourceElement?.getAttribute("data-inspector-column") ?? "1",
     };
   }
 
@@ -90,7 +91,7 @@ export function DevInspector() {
       event.stopPropagation();
 
       const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
+      if (!(target instanceof Element)) return;
 
       const codeInfo = getCodeInfo(target);
       setActive(false);
@@ -126,6 +127,8 @@ export function DevInspector() {
       />
       <button
         type="button"
+        // React Aria Modal 会将弹窗外元素设为 inert，顶层标记保留定位入口。
+        data-react-aria-top-layer=""
         onClick={() => setActive((value) => !value)}
         aria-pressed={active}
         title={`Inspect React component source (${hotkey})`}

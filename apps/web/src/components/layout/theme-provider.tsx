@@ -29,15 +29,6 @@ const THEME_COLORS = {
   dark: '#0f1117',
 } as const;
 
-declare global {
-  interface Window {
-    AgentSpacesStatusBar?: {
-      setTheme: (theme: 'light' | 'dark') => void;
-      getTopInset?: () => number;
-    };
-  }
-}
-
 function getSystemTheme(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light';
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -60,7 +51,6 @@ function applyNativeTheme(resolved: 'light' | 'dark') {
     document.head.appendChild(themeColor);
   }
   themeColor.content = THEME_COLORS[resolved];
-  window.AgentSpacesStatusBar?.setTheme(resolved);
 }
 
 export function ThemeProvider({
@@ -78,7 +68,7 @@ export function ThemeProvider({
     <script
       key="theme-init"
       dangerouslySetInnerHTML={{
-        __html: `(function(){try{var t=localStorage.getItem('${STORAGE_KEY}');var d=t==='dark'||((!t||t==='system')&&matchMedia('(prefers-color-scheme:dark)').matches);var r=d?'dark':'light';document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=d?'${THEME_COLORS.dark}':'${THEME_COLORS.light}';if(window.AgentSpacesStatusBar){window.AgentSpacesStatusBar.setTheme(r)}var f=localStorage.getItem('${FONT_STORAGE_KEY}');document.documentElement.dataset.customFont=f?'true':'false';if(f){var ff=f;try{var c=JSON.parse(localStorage.getItem('${CUSTOM_FONTS_KEY}')||'[]');var cf=Array.isArray(c)&&c.find(function(x){return x&&x.name===f});if(cf&&cf.url){ff=f.replace(/\\.\\w+$/,'');var id='font-'+f.replace(/[^a-zA-Z0-9]/g,'-');if(!document.getElementById(id)){var s=document.createElement('style');s.id=id;s.textContent='@font-face { font-family: "'+ff.replace(/"/g,'\\\\22 ')+'"; src: url("'+String(cf.url).replace(/"/g,'\\\\22 ')+'"); }';document.head.appendChild(s)}}}catch(e){}var v=ff==='system-ui'||ff==='monospace'?ff:'"'+ff.replace(/"/g,'\\\\22 ')+'"';['--font-app','--font-sans','--font-heading','--font-mid','--font-mono'].forEach(function(k){document.documentElement.style.setProperty(k,v)})}}catch(e){}})()`,
+        __html: `(function(){try{var t=localStorage.getItem('${STORAGE_KEY}');var d=t==='dark'||((!t||t==='system')&&matchMedia('(prefers-color-scheme:dark)').matches);var r=d?'dark':'light';document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=d?'${THEME_COLORS.dark}':'${THEME_COLORS.light}';var f=localStorage.getItem('${FONT_STORAGE_KEY}');document.documentElement.dataset.customFont=f?'true':'false';if(f){var ff=f;try{var c=JSON.parse(localStorage.getItem('${CUSTOM_FONTS_KEY}')||'[]');var cf=Array.isArray(c)&&c.find(function(x){return x&&x.name===f});if(cf&&cf.url){ff=f.replace(/\\.\\w+$/,'');var id='font-'+f.replace(/[^a-zA-Z0-9]/g,'-');if(!document.getElementById(id)){var s=document.createElement('style');s.id=id;s.textContent='@font-face { font-family: "'+ff.replace(/"/g,'\\\\22 ')+'"; src: url("'+String(cf.url).replace(/"/g,'\\\\22 ')+'"); }';document.head.appendChild(s)}}}catch(e){}var v=ff==='system-ui'||ff==='monospace'?ff:'"'+ff.replace(/"/g,'\\\\22 ')+'"';['--font-app','--font-sans','--font-heading','--font-mid','--font-mono'].forEach(function(k){document.documentElement.style.setProperty(k,v)})}}catch(e){}})()`,
       }}
     />
   ));

@@ -9,7 +9,7 @@
 
 1. `pnpm build:packages` 通过（shared/sdk 编译）。
 2. `pnpm typecheck` 通过。
-3. i18n：`node scripts/check-locale-parity.mjs`（en/zh key 对齐）+ 按需 `audit-i18n-hardcode.mjs`。
+3. i18n：`node scripts/check-locale-parity.mjs`（en/zh key 对齐）。
 4. 涉及路由/页面改动：浏览器人工核对（历史冒烟截图先例在 `docs/boardui-migration/`；`docs/smoke/` 已不随仓分发）。
 
 ## 冒烟路径（人工）

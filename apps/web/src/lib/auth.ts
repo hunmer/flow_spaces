@@ -62,7 +62,6 @@ export async function fetchWithAuth(input: string, init?: RequestInit) {
     removeToken();
     if (typeof window !== 'undefined' && !isLoginPath(window.location.pathname)) {
       // Vite SPA：直跳 /login 路径（spa fallback 回 index.html）。
-      // 不能经 toStaticHref —— 会拼出不存在的 /login.html。
       window.location.replace(loginHrefWithRef());
     }
   }

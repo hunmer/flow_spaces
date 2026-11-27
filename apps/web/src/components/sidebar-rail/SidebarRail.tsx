@@ -440,7 +440,6 @@ function Profile({ collapsed, reduce }: { collapsed: boolean; reduce: boolean })
   }, [load]);
 
   // 客户端路由跳登录页（带 ref）：Vite SPA 无静态导出产物，
-  // 不能经 toStaticHref（会拼出不存在的 /login.html）。
   const handleSignOut = () => {
     removeToken();
     navigate(loginHrefWithRef(), { replace: true });

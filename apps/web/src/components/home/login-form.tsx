@@ -15,7 +15,7 @@ import {
 import { setToken } from "@/lib/auth"
 import { loginRedirectUrl } from "@/lib/routes"
 import { sdk } from "@/lib/sdk"
-import { tauriNavigate } from "@/lib/navigate"
+import { nativeNavigate } from "@/lib/navigate"
 import {
   type ServerConfig,
   loadServers,
@@ -46,7 +46,7 @@ export function LoginForm({
     try {
       const data = await sdk.auth.login(password)
       setToken(data.token)
-      tauriNavigate(router, loginRedirectUrl(searchParams.toString()))
+      nativeNavigate(router, loginRedirectUrl(searchParams.toString()))
     } catch (err) {
       console.error("[login] network error", err)
       setError(err instanceof Error ? err.message : t("networkError"))

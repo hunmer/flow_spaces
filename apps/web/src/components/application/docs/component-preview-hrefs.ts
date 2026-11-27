@@ -31,8 +31,8 @@ export const PREVIEW_HREFS = [
   "/components/earnings-chart-card",
   "/components/file-upload",
   // Charts
-  "/components/orders-chart-card",
-  "/components/revenue-chart-card",
+  "/components/usage-period-chart-card",
+  "/components/usage-trend-chart-card",
   "/components/line-chart-card",
   "/components/sleep-score-card",
   "/components/steps-card",

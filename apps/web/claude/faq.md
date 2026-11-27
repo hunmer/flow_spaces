@@ -10,7 +10,7 @@ vendor chunk 分组被改动导致 mermaid 簇被切断。看 `vite.config.ts` �
 优先 `components/base/`、`components/application/`（BoardUI）；其次 `components/ui/`；业务件按域在 `components/<domain>/`。dev 模式点组件可直接跳源码（react-dev-inspector）。
 
 **Q: 新增文案不生效/语言不全？**
-文案必须进 `src/locales/{en,zh}/*.json`；跑 `scripts/check-locale-parity.mjs`（缺 key 报错）与 `scripts/audit-i18n-hardcode.mjs`（硬编码审计）。LocaleProvider 经 next-intl shim 读取。
+文案必须进 `src/locales/{en,zh}/*.json`；跑 `scripts/check-locale-parity.mjs`（缺 key 报错）。LocaleProvider 经 next-intl shim 读取。
 
 **Q: 编辑器页面高度塌了？**
 `#root` 高度链依赖 `ViewportInsets` 维护的 `--app-content-height`（`styles/app-root.css`）。检查该组件是否在入口 Provider 树中、`index.html` 静态 class 是否被改动。

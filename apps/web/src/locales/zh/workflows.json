@@ -2,7 +2,7 @@
   "page": {
     "title": "工作流",
     "subtitle": "管理 Workflow 模板",
-    "storeMode": "商店模式",
+    "storeTab": "商店",
     "import": "导入",
     "plugins": "插件管理",
     "create": "新建工作流",

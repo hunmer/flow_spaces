@@ -14,6 +14,6 @@
 ## 质量风险与建议
 
 - 大多数业务组件无测试；改 workflow 画布逻辑时优先补 `workflow-canvas-*.ts` 纯函数用例。
-- i18n 双语一致性：提交前跑根 `scripts/check-locale-parity.mjs` 与 `scripts/audit-i18n-hardcode.mjs`（硬编码文案审计）。
+- i18n 双语一致性：提交前跑根 `scripts/check-locale-parity.mjs`。
 - vendor chunk 分组改动必须本地 `pnpm build` 验证无 TDZ/circular chunk 警告（历史坑见 vite.config 注释）。
 - 视觉回归无自动化；BoardUI 组件升级后重点回归暗色模式与 RTL（DirectionProvider）。

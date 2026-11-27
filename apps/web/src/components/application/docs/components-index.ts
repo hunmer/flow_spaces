@@ -108,7 +108,7 @@ const blocks: Entry[] = [
 ];
 
 const charts: Entry[] = [
-  { name: "Revenue Chart", href: "/components/revenue-chart-card", description: "This year against last, area over a dashed line.", tier: "free", status: "shipped", isNew: true },
+  { name: "Usage Trend Chart", href: "/components/usage-trend-chart-card", description: "Invocations per hour over the last 24 hours.", tier: "free", status: "shipped", isNew: true },
   { name: "Activity Rings", href: "/components/activity-rings-card", description: "Concentric progress rings, Apple style.", tier: "pro", status: "shipped" },
   { name: "Area Chart", href: "/components/area-chart-card", description: "Stacked, overlapping or 100% area series.", tier: "pro", status: "shipped", isNew: true },
   { name: "Bar List", href: "/components/bar-list-card", description: "Ranked breakdown rows with share bars and tabs.", tier: "pro", status: "shipped", isNew: true },

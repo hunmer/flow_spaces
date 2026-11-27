@@ -1,49 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { isNativeEnvironment } from "@/lib/native-notification";
-
-declare global {
-  interface Window {
-    __agentSpacesNativeInsets?: {
-      top?: number;
-      keyboard?: number;
-    };
-  }
-}
-
-function getAndroidNativeTopInset() {
-  if (!isNativeEnvironment()) return 0;
-  if (!/Android/i.test(navigator.userAgent)) return 0;
-
-  return window.__agentSpacesNativeInsets?.top ?? 0;
-}
-
-function getAndroidNativeKeyboardInset() {
-  if (!isNativeEnvironment()) return 0;
-  if (!/Android/i.test(navigator.userAgent)) return 0;
-
-  return window.__agentSpacesNativeInsets?.keyboard ?? 0;
-}
 
 function updateViewportInsets() {
   const root = document.documentElement;
   const viewport = window.visualViewport;
-  const topInset = getAndroidNativeTopInset();
   const visualViewportHeight = viewport?.height ?? window.innerHeight;
   const visualKeyboardHeight = viewport
     ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
     : 0;
-  const keyboardHeight = Math.max(visualKeyboardHeight, getAndroidNativeKeyboardInset());
+  const keyboardHeight = visualKeyboardHeight;
   const viewportHeight = visualKeyboardHeight > 0
     ? visualViewportHeight
     : Math.max(0, window.innerHeight - keyboardHeight);
-  const contentHeight = Math.max(0, viewportHeight - topInset);
+  const contentHeight = viewportHeight;
 
   root.style.setProperty("--app-viewport-height", `${viewportHeight}px`);
   root.style.setProperty("--app-content-height", `${contentHeight}px`);
   root.style.setProperty("--keyboard-inset-height", `${keyboardHeight}px`);
-  root.style.setProperty("--app-top-inset", `${topInset}px`);
 }
 
 function isEditableTarget(target: EventTarget | null) {
@@ -77,7 +51,6 @@ export function ViewportInsets() {
     viewport?.addEventListener("scroll", updateViewportInsets);
     window.addEventListener("resize", updateViewportInsets);
     window.addEventListener("orientationchange", updateViewportInsets);
-    window.addEventListener("flow-spaces-native-insets", updateViewportInsets);
     document.addEventListener("focusin", handleFocusIn);
 
     return () => {
@@ -85,7 +58,6 @@ export function ViewportInsets() {
       viewport?.removeEventListener("scroll", updateViewportInsets);
       window.removeEventListener("resize", updateViewportInsets);
       window.removeEventListener("orientationchange", updateViewportInsets);
-      window.removeEventListener("flow-spaces-native-insets", updateViewportInsets);
       document.removeEventListener("focusin", handleFocusIn);
     };
   }, []);

@@ -10,8 +10,8 @@ import { AgentChat } from "@/components/application/agent-chat/agent-chat";
 import { AuthCard } from "@/components/application/auth/auth-card";
 import { NotificationCenterDemo } from "@/components/application/notification-center/notification-center-demo";
 import { SettingsGeneral } from "@/components/application/settings/settings-general";
-import { OrdersChartCard } from "@/components/application/dashboard/orders-chart-card";
-import { RevenueChartCard } from "@/components/application/dashboard/revenue-chart-card";
+import { UsagePeriodChartCard } from "@/components/application/dashboard/usage-period-chart-card";
+import { UsageTrendChartCard } from "@/components/application/dashboard/usage-trend-chart-card";
 import { StatCards } from "@/components/application/dashboard/stat-cards";
 import { Announcement } from "@/components/base/announcement/announcement";
 import { Avatar } from "@/components/base/avatar/avatar";
@@ -817,12 +817,12 @@ export const FREE_PREVIEW_OPTIONS: Record<string, PreviewOptions> = {
   "/components/date-picker": { fade: true },
   // Scaled chart cards, all taller than the preview area,
   "/components/stat-cards": { fade: true },
-  "/components/orders-chart-card": {
+  "/components/usage-period-chart-card": {
     fade: true,
     className: "max-sm:h-[294px]",
     previewClassName: "max-sm:h-[192px]",
   },
-  "/components/revenue-chart-card": {
+  "/components/usage-trend-chart-card": {
     fade: true,
     className: "max-sm:h-[294px]",
     previewClassName: "max-sm:h-[192px]",
@@ -853,14 +853,14 @@ export const FREE_COMPONENT_PREVIEWS: Partial<Record<PreviewHref, () => React.Re
   "/components/file-upload": FileUploadPreview,
 
   // ——— charts: one card each, not the landing's marquees ———,
-  "/components/orders-chart-card": () => (
+  "/components/usage-period-chart-card": () => (
     <Scaled width={560}>
-      <OrdersChartCard />
+      <UsagePeriodChartCard />
     </Scaled>
   ),
-  "/components/revenue-chart-card": () => (
+  "/components/usage-trend-chart-card": () => (
     <Scaled width={560}>
-      <RevenueChartCard />
+      <UsageTrendChartCard />
     </Scaled>
   ),
   "/components/color": () => (

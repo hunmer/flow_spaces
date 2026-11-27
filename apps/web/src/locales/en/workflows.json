@@ -2,7 +2,7 @@
   "page": {
     "title": "Workflows",
     "subtitle": "Manage Workflow templates",
-    "storeMode": "Store Mode",
+    "storeTab": "Store",
     "import": "Import",
     "plugins": "Plugins",
     "create": "New Workflow",

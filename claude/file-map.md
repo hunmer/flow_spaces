@@ -5,7 +5,6 @@ flow_spaces/
 ├── AGENTS.md               # 工程师规则（中文、最小改动、rg 优先）
 ├── CLAUDE.md               # AI 上下文索引（本目录 claude/ 的入口）
 ├── README.md               # 项目简介（部分路径仍指向旧机器/旧文件，以本索引为准）
-├── i18n-workset.txt        # i18n 翻译工作集清单
 ├── procm-commands.json     # procm 命令：dev/dev:server/build/build:packages/preview/typecheck
 ├── pnpm-workspace.yaml     # packages/* + apps/*，allowBuilds
 ├── tsconfig.base.json      # ES2022 strict bundler
@@ -13,8 +12,6 @@ flow_spaces/
 ├── scripts/
 │   ├── gen-feature-map.py  # 功能图谱生成（重建 docs/feature_map.json；产物已入库）
 │   ├── check-locale-parity.mjs
-│   ├── audit-i18n-hardcode.mjs
-│   ├── copy-closure.mjs / verify-copy.mjs   # 迁移期 closure 复制校验
 ├── docs/
 │   ├── feature_map.json    # 功能依赖图谱数据（33 节点/2728 文件；已入库）
 │   ├── feature_map.html    # 功能图谱可视化（vis-network；已入库）
