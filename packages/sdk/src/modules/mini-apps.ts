@@ -11,6 +11,8 @@ export interface MiniAppProject {
   tags?: string[];
   extensions?: 'workspace'[];
   enabledPlugins?: string[];
+  /** 依赖的工作流（本地 workflow id 或 name，也支持商店模板 id/name），预览页据此核查缺失并提示一键安装 */
+  enabledWorkflows?: string[];
   pluginConfigSchemes?: Record<string, string>;
   agentPermissions?: string[];
   agentConfigId?: string;
@@ -142,7 +144,7 @@ export function createMiniAppApi(http: HttpClient) {
     installFromStore: (data: {
       id: string;
       baseUrl: string;
-      manifest?: { name?: string; type?: 'react' | 'html'; description?: string; version?: string; tags?: string[]; icon?: string; enabledPlugins?: string[]; mainFile?: string };
+      manifest?: { name?: string; type?: 'react' | 'html'; description?: string; version?: string; tags?: string[]; icon?: string; enabledPlugins?: string[]; enabledWorkflows?: string[]; mainFile?: string };
       files: Array<{ path: string; md5: string }>;
       storeUrl?: string;
       storeChecksum?: string;

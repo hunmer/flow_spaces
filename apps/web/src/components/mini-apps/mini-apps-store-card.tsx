@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Check, Download, RefreshCw } from 'lucide-react';
+import { Check, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/base/badges/chip';
 import { AgentIcon } from '@/components/common/agent-icon';
@@ -31,23 +31,11 @@ interface MiniAppStoreCardProps {
   item: MiniAppIndexItem;
   /** 三态：未安装 / 有更新（商店 version ≠ 已安装 version）/ 已导入 */
   status: MiniAppInstallStatus;
-  /** 某项正在安装时禁用全部按钮 */
-  disabled?: boolean;
-  /** 当前卡片正在安装 */
-  importing?: boolean;
-  onInstall: (item: MiniAppIndexItem) => void;
   onOpenDetail: (item: MiniAppIndexItem) => void;
 }
 
-/** 商店模式卡片：复用本地 MiniAppCard 的 FeatureCard 视觉，底部为三态安装按钮 */
-export function MiniAppStoreCard({
-  item,
-  status,
-  disabled,
-  importing,
-  onInstall,
-  onOpenDetail,
-}: MiniAppStoreCardProps) {
+/** 商店模式卡片：复用本地 MiniAppCard 的 FeatureCard 视觉，底部为「查看详情」按钮；已安装时右上角展示角标，安装/更新入口移入详情对话框 */
+export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCardProps) {
   const t = useTranslations('mini-apps');
 
   return (
@@ -74,6 +62,16 @@ export function MiniAppStoreCard({
         </Chip>
       </div>
 
+      {/* Installed badge (top-right) */}
+      {status === 'installed' && (
+        <div className="absolute top-2.5 right-3 z-10">
+          <Chip variant="caption" color="lime" className="gap-1">
+            <Check className="size-3" />
+            {t('store.installed')}
+          </Chip>
+        </div>
+      )}
+
       {/* Bottom glass panel */}
       <div className="mt-auto">
         <div className="rounded-t-xl p-3 bg-background/80 dark:bg-background/60 backdrop-blur-sm border-t text-card-foreground">
@@ -82,33 +80,16 @@ export function MiniAppStoreCard({
             {item.description || '—'}
           </p>
           <Button
-            variant={status === 'installed' ? 'secondary' : status === 'updatable' ? 'default' : 'outline'}
+            variant="default"
             size="sm"
             className="w-full h-7"
-            disabled={disabled || status === 'installed'}
             onClick={(e) => {
               e.stopPropagation();
-              onInstall(item);
+              onOpenDetail(item);
             }}
           >
-            {importing ? (
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            ) : status === 'installed' ? (
-              <>
-                <Check className="size-3.5 mr-1" />
-                {t('store.installed')}
-              </>
-            ) : status === 'updatable' ? (
-              <>
-                <RefreshCw className="size-3.5 mr-1" />
-                {t('store.update')}
-              </>
-            ) : (
-              <>
-                <Download className="size-3.5 mr-1" />
-                {t('store.import')}
-              </>
-            )}
+            <Eye className="size-3.5 mr-1" />
+            {t('store.viewDetail')}
           </Button>
         </div>
       </div>

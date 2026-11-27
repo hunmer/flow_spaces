@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Upload, FileQuestion, Globe, Download, CheckSquare, Search } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
-import { MiniAppDetail } from './mini-apps-store-detail';
+import { MiniAppStoreDetailDialog } from './mini-apps-store-detail';
 import { MiniAppStoreCard, type MiniAppIndexItem } from './mini-apps-store-card';
 import { MiniAppListDialog } from './mini-apps-list-dialog';
 import {
@@ -57,7 +57,7 @@ function MiniAppListPage() {
   const [storeTemplates, setStoreTemplates] = useState<MiniAppIndexItem[]>([]);
   const [storeLoading, setStoreLoading] = useState(false);
   const [storeImportingId, setStoreImportingId] = useState<string | null>(null);
-  // 当前查看详情的商店条目；null = 列表视图，非 null = 详情视图
+  // 当前查看详情的商店条目；null = 关闭详情对话框
   const [selectedStoreItem, setSelectedStoreItem] = useState<MiniAppIndexItem | null>(null);
   // 从 GitHub 地址安装独立 mini-app 仓库
   const [githubUrl, setGithubUrl] = useState('');
@@ -392,9 +392,7 @@ function MiniAppListPage() {
 
       {/* Content */}
       {storeMode ? (
-        selectedStoreItem ? (
-          <MiniAppDetail item={selectedStoreItem} onBack={() => setSelectedStoreItem(null)} />
-        ) : storeLoading ? (
+        storeLoading ? (
           <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
             {t('store.loading')}
           </div>
@@ -410,9 +408,6 @@ function MiniAppListPage() {
                 key={item.id}
                 item={item}
                 status={getInstallStatus(item)}
-                importing={storeImportingId === item.id}
-                disabled={storeImportingId !== null}
-                onInstall={handleInstallStoreItem}
                 onOpenDetail={(it) => setSelectedStoreItem(it)}
               />
             ))}
@@ -451,6 +446,14 @@ function MiniAppListPage() {
         </div>
       )}
 
+      <MiniAppStoreDetailDialog
+        item={selectedStoreItem}
+        status={selectedStoreItem ? getInstallStatus(selectedStoreItem) : 'not-installed'}
+        importing={!!selectedStoreItem && storeImportingId === selectedStoreItem.id}
+        disabled={storeImportingId !== null}
+        onInstall={handleInstallStoreItem}
+        onClose={() => setSelectedStoreItem(null)}
+      />
       <MiniAppCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
       <MiniAppListDialog
         open={pickerOpen}

@@ -6,6 +6,7 @@ import { useParams, useSearchParams, type ReadonlyURLSearchParams } from 'next/n
 import { sdk } from '@/lib/sdk';
 import type { MiniAppProject } from '@flow-spaces/sdk';
 import { MiniAppPreview } from '@/components/mini-apps/mini-app-preview';
+import { MiniAppDependencyGuard } from '@/components/mini-apps/mini-app-dependency-guard';
 import { useMiniAppHostApi } from '@/components/mini-apps/use-mini-app-host-api';
 import { isSkippableAsset } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
@@ -61,6 +62,9 @@ export default function MiniAppPreviewPageClient() {
   const [runtimeContext, setRuntimeContext] = useState<MiniAppRuntimeContext>(() => readRuntimeContextFromSearchParams(searchParams));
   const runtimeContextRef = useRef<MiniAppRuntimeContext>(runtimeContext);
   const loadProjectInFlightRef = useRef<{ projectId: string; promise: Promise<void> } | null>(null);
+  // 依赖守卫：声明了插件/工作流依赖时先核查，缺失展示一键安装空态（MiniAppDependencyGuard），
+  // 通过（齐全/安装完成/用户跳过）后才渲染真正的预览
+  const [depsReady, setDepsReady] = useState(false);
 
   const host = useMiniAppHostApi(projectId, runtimeContext);
 
@@ -119,6 +123,9 @@ export default function MiniAppPreviewPageClient() {
 
   useEffect(() => { void loadProject(); }, [loadProject]);
 
+  // 切换项目时重置依赖守卫，重新核查
+  useEffect(() => { setDepsReady(false); }, [projectId]);
+
   // 打开预览即记录一次「最后启动时间」（后端集中存于 mini-apps/launch-times.json）
   useEffect(() => {
     if (!projectId) return;
@@ -176,27 +183,34 @@ export default function MiniAppPreviewPageClient() {
     return <div className="flex items-center justify-center h-screen text-muted-foreground">Project not found</div>;
   }
 
+  // 声明了插件/工作流依赖才走守卫核查；未声明的项目直接渲染（避免多一帧核查 loading）
+  const hasDeclaredDeps = Boolean(project.enabledPlugins?.length || project.enabledWorkflows?.length);
+
   return (
     <div className={`h-screen flex flex-col ${embedded ? 'overflow-auto' : 'overflow-hidden'}`}>
       {host}
       <div className={`flex-1 min-h-0 ${embedded ? 'overflow-auto' : 'overflow-hidden'}`}>
-        <MiniAppPreview
-          type={project.type}
-          sourceCode={sourceCode}
-          error={error}
-          onError={setError}
-          projectId={project.id}
-          projectName={project.name}
-          hideHeader={embedded}
-          onReload={loadProject}
-          enabledPlugins={project.enabledPlugins}
-          enableAgents={project.enableAgents}
-          agentChatPlacement={project.agentChatPlacement}
-          devices={project.devices}
-          files={allFiles}
-          mainFile={project.mainFile}
-          allowScroll={embedded}
-        />
+        {depsReady || !hasDeclaredDeps ? (
+          <MiniAppPreview
+            type={project.type}
+            sourceCode={sourceCode}
+            error={error}
+            onError={setError}
+            projectId={project.id}
+            projectName={project.name}
+            hideHeader={embedded}
+            onReload={loadProject}
+            enabledPlugins={project.enabledPlugins}
+            enableAgents={project.enableAgents}
+            agentChatPlacement={project.agentChatPlacement}
+            devices={project.devices}
+            files={allFiles}
+            mainFile={project.mainFile}
+            allowScroll={embedded}
+          />
+        ) : (
+          <MiniAppDependencyGuard project={project} onPass={() => setDepsReady(true)} />
+        )}
       </div>
     </div>
   );

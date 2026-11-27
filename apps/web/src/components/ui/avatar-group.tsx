@@ -40,9 +40,14 @@ interface AvatarGroupProps {
   size?: AvatarSize;
   /** hover 某个 avatar 时渲染的悬浮卡片；提供后不再展开默认名称 */
   renderHoverCard?: (index: number) => ReactNode;
+  /**
+   * Mini App 兼容：传入 <Avatar/> 子元素时按子元素渲染（忽略 avatarUrls）。
+   * 旧 shadcn 用法为 <AvatarGroup><Avatar>…</Avatar></AvatarGroup>。
+   */
+  children?: ReactNode;
 }
 
-const AvatarGroup = ({ className, avatarUrls = [], size = 'md', renderHoverCard }: AvatarGroupProps) => {
+const AvatarGroup = ({ className, avatarUrls = [], size = 'md', renderHoverCard, children }: AvatarGroupProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const s = sizeMap[size];
@@ -79,7 +84,9 @@ const AvatarGroup = ({ className, avatarUrls = [], size = 'md', renderHoverCard 
       ref={containerRef}
       className={cn('z-10 flex rtl:space-x-reverse', s.space, className)}
     >
-      {avatarUrls.map((avatar, index) => {
+      {children
+        ? children
+        : avatarUrls.map((avatar, index) => {
         const isHovered = hoveredIndex === index;
         const showName = isHovered && !renderHoverCard;
 

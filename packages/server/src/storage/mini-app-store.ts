@@ -13,6 +13,8 @@ export interface MiniAppProject {
   tags?: string[];
   extensions?: 'workspace'[];
   enabledPlugins?: string[];
+  /** 依赖的工作流（本地 workflow id 或 name，也支持商店模板 id/name），预览页据此核查缺失并提示一键安装 */
+  enabledWorkflows?: string[];
   pluginConfigSchemes?: Record<string, string>;
   agentPermissions?: string[];
   agentConfigId?: string;
@@ -422,6 +424,8 @@ export function upsertStoreProject(input: {
   version?: string;
   tags?: string[];
   enabledPlugins?: string[];
+  /** 依赖的工作流声明（manifest.enabledWorkflows），随商店安装/导入透传 */
+  enabledWorkflows?: string[];
   mainFile?: string;
   icon?: string;
   storeUrl?: string;
@@ -464,6 +468,7 @@ export function upsertStoreProject(input: {
     type: input.type ?? 'react',
     tags: input.tags ?? [],
     enabledPlugins: normalizePluginIds(input.enabledPlugins),
+    enabledWorkflows: input.enabledWorkflows,
     mainFile: input.mainFile ?? 'index.jsx',
     icon: input.icon,
     createdAt: now,
@@ -543,6 +548,7 @@ export function importFromDir(extractDir: string, manifest: Partial<MiniAppProje
     type: manifest.type,
     tags: manifest.tags ?? [],
     enabledPlugins: normalizePluginIds(manifest.enabledPlugins),
+    enabledWorkflows: manifest.enabledWorkflows,
     agentPermissions: manifest.agentPermissions,
     agentConfigId: manifest.agentConfigId,
     enableAgents: manifest.enableAgents,

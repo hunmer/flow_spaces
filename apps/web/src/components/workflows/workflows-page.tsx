@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import type { WorkflowTemplate, WorkflowNode } from '@flow-spaces/shared';
+import type { WorkflowTemplate } from '@flow-spaces/shared';
 import { useWorkflowStore } from '@/stores/workflow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import type { WorkflowTemplatePreset } from '@/components/workflows/workflow-tem
 import { fetchStoreIndex, resolveStoreUrl } from '@/lib/agent-store';
 import { sdk } from '@/lib/sdk';
 import { workflowApi } from '@/lib/workflow-api';
+import { installWorkflowTemplate } from '@/lib/workflow-template-install';
 import { buildWorkflowPrompt } from '@/lib/workflow-prompt';
 import { pluginApi } from '@/lib/workflow-plugin-api';
 import { nativeNavigate } from '@/lib/navigate';
@@ -130,54 +131,10 @@ export function WorkflowsPage() {
     input.click();
   }, [loadWorkflows]);
 
+  // 模板落库（agents 去重 + agentConfigId 重映射）已提取至 lib/workflow-template-install，供依赖一键安装复用
   const handleImportTemplate = useCallback(
     async (templateData: WorkflowTemplatePreset['data'], targetWorkflowId?: string) => {
-      const { name, description, nodes, edges, agents } = templateData;
-      const idMap: Record<string, string> = {};
-
-      // 获取已有 agent，按 templateId 去重
-      const existingAgents = await sdk.agent.listPresets();
-      const byTemplateId = new Map<string, string>();
-      for (const agent of existingAgents) {
-        if (agent.templateId) {
-          byTemplateId.set(agent.templateId, agent.id);
-        }
-      }
-
-      if (agents) {
-        for (const [oldId, agentConfig] of Object.entries(agents)) {
-          // 已有同 templateId 的 agent 则复用，不重复创建
-          if (agentConfig.templateId && byTemplateId.has(agentConfig.templateId)) {
-            idMap[oldId] = byTemplateId.get(agentConfig.templateId)!;
-            continue;
-          }
-          const { id: _oldId, enabled: _en, ...createBody } = agentConfig;
-          try {
-            const created = await sdk.agent.createPreset(createBody);
-            idMap[oldId] = created.id;
-          } catch { /* ignore */ }
-        }
-      }
-
-      const remappedNodes = nodes.map((n) => ({
-        ...n,
-        data: {
-          ...n.data,
-          agentConfigId: idMap[n.data.agentConfigId as string] ?? n.data.agentConfigId,
-        },
-      }));
-
-      // 已安装（更新）：覆盖同名工作流的节点/边/描述；未安装（导入）：新建工作流
-      if (targetWorkflowId) {
-        await workflowApi.update(targetWorkflowId, {
-          name,
-          description,
-          nodes: remappedNodes as unknown as WorkflowNode[],
-          edges,
-        });
-      } else {
-        await sdk.workflow.create({ name, description, nodes: remappedNodes as unknown as WorkflowNode[], edges });
-      }
+      await installWorkflowTemplate(templateData, targetWorkflowId);
       loadWorkflows();
     },
     [loadWorkflows],

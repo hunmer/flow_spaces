@@ -68,13 +68,13 @@
     "import": "导入",
     "installed": "已导入",
     "update": "更新",
+    "viewDetail": "查看详情",
     "githubPlaceholder": "https://github.com/owner/repo（仓库根需含 app.json 清单）",
     "githubInstall": "安装",
     "githubInvalid": "无效的 GitHub 仓库地址",
     "githubFailed": "安装失败：请确认仓库根存在 app.json（元数据 + 文件 md5 清单）"
   },
   "detail": {
-    "back": "返回列表",
     "loading": "加载中…",
     "error": "加载失败",
     "empty": "暂无介绍",
@@ -111,6 +111,18 @@
     "infoEmpty": "暂无信息",
     "pluginsMissing": "未安装 {count} 个",
     "pluginsMissingTip": "以下插件未安装：{ids}"
+  },
+  "dependency": {
+    "title": "缺少运行依赖",
+    "description": "该 mini-app 依赖以下插件 / 工作流，尚未安装。可一键安装后再预览：",
+    "pluginsLabel": "插件（{count}）",
+    "workflowsLabel": "工作流（{count}）",
+    "installAll": "一键安装（{count} 项）",
+    "installing": "安装中 {done}/{total}…",
+    "installed": "依赖安装完成",
+    "installPartialFailed": "{count} 项安装失败：{failed}",
+    "storeUnavailable": "商店索引拉取失败，请检查网络后重试",
+    "skip": "仍要预览"
   },
   "chat": {
     "assistantPrompt": "请作为 Workflow UI 项目 \"{name}\" 的开发助手。",

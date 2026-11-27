@@ -68,13 +68,13 @@
     "import": "Import",
     "installed": "Installed",
     "update": "Update",
+    "viewDetail": "View Details",
     "githubPlaceholder": "https://github.com/owner/repo (app.json manifest at repo root)",
     "githubInstall": "Install",
     "githubInvalid": "Invalid GitHub repository URL",
     "githubFailed": "Install failed: make sure app.json (manifest + md5 file list) exists at repo root"
   },
   "detail": {
-    "back": "Back",
     "loading": "Loading...",
     "error": "Failed to load",
     "empty": "No introduction",
@@ -111,6 +111,18 @@
     "infoEmpty": "No info available",
     "pluginsMissing": "{count} not installed",
     "pluginsMissingTip": "The following plugins are not installed: {ids}"
+  },
+  "dependency": {
+    "title": "Missing dependencies",
+    "description": "This mini-app depends on the following plugins / workflows, which are not installed yet. Install them in one click before previewing:",
+    "pluginsLabel": "Plugins ({count})",
+    "workflowsLabel": "Workflows ({count})",
+    "installAll": "Install all ({count})",
+    "installing": "Installing {done}/{total}…",
+    "installed": "Dependencies installed",
+    "installPartialFailed": "{count} item(s) failed to install: {failed}",
+    "storeUnavailable": "Failed to fetch store index, check your network and retry",
+    "skip": "Preview anyway"
   },
   "chat": {
     "assistantPrompt": "Please act as the development assistant for Workflow UI project \"{name}\".",

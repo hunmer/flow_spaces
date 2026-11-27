@@ -387,6 +387,7 @@ export async function importZip(
       mainFile,
       tags: projectManifest.tags,
       enabledPlugins: projectManifest.enabledPlugins,
+      enabledWorkflows: projectManifest.enabledWorkflows,
       enableAgents: projectManifest.enableAgents,
       agents: projectManifest.agents,
       agentPermissions: projectManifest.agentPermissions,
@@ -469,6 +470,8 @@ export async function installFromStore(input: {
     icon?: string;
     /** 商店清单（index.json / app.json 顶层）可直接携带，免去再拉磁盘 manifest */
     enabledPlugins?: string[];
+    /** 依赖的工作流声明（模板 id/name），预览页核查缺失用 */
+    enabledWorkflows?: string[];
     mainFile?: string;
   };
   files: StoreFileEntry[];
@@ -507,6 +510,7 @@ export async function installFromStore(input: {
     version: manifest.version ?? remoteManifest.version,
     tags: manifest.tags ?? remoteManifest.tags,
     enabledPlugins: manifest.enabledPlugins ?? remoteManifest.enabledPlugins,
+    enabledWorkflows: manifest.enabledWorkflows ?? remoteManifest.enabledWorkflows,
     mainFile,
     icon: manifest.icon ?? remoteManifest.icon,
     storeUrl: input.storeUrl ?? base,

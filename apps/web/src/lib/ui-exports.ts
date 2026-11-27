@@ -32,6 +32,10 @@ export { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, C
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from '@/components/ui/table';
 export { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+export { Drawer, DrawerTrigger, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+export { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+export { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+export { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
 export { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 export { Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator } from '@/components/ui/command';
 export { NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuPositioner } from '@/components/ui/navigation-menu';
@@ -73,6 +77,85 @@ export { ShinyBadge, shinyBadgeVariants } from '@/components/ui/shiny-badge';
 export type { ShinyBadgeProps } from '@/components/ui/shiny-badge';
 export { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle } from '@/components/ui/chart';
 export type { ChartConfig } from '@/components/ui/chart';
+// Mini App 运行时兼容层：存量 mini-app 无法 import 'lucide-react'（react-renderer
+// 的 resolveExternalModule 不支持该包），约定从 window.AgentSpacesUI / @flow-spaces/ui
+// 解构图标。列表 = 商店仓全量 mini-app 源码审计出的实际使用名，新增图标需在此补登记。
+export {
+  AlertCircle,
+  ArrowDownWideNarrow,
+  ArrowLeft,
+  Bot,
+  Check,
+  CheckSquare,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Clock,
+  Copy,
+  Database,
+  Download,
+  ExternalLink,
+  FileAudio,
+  FileCode,
+  FileText,
+  FileVideo,
+  Filter,
+  Folder,
+  Heart,
+  History,
+  ImageOff,
+  ImagePlus,
+  Inbox,
+  Layers,
+  LayoutGrid,
+  LayoutPanelLeft,
+  Library,
+  List,
+  ListMusic,
+  Loader2,
+  Maximize2,
+  Menu,
+  Monitor,
+  Moon,
+  MoreHorizontal,
+  Music,
+  Palette,
+  Pause,
+  Pencil,
+  PencilLine,
+  Play,
+  Plus,
+  PlusCircle,
+  RefreshCw,
+  Repeat,
+  Repeat1,
+  RotateCcw,
+  Rss,
+  Scissors,
+  Search,
+  Settings,
+  Settings2,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+  Smile,
+  Sparkles,
+  Square,
+  Star,
+  Sticker,
+  Sun,
+  Trash2,
+  Type,
+  Upload,
+  Volume1,
+  Volume2,
+  VolumeX,
+  Wand2,
+  WandSparkles,
+  Workflow,
+  X,
+} from 'lucide-react';
 export { MermaidPreview } from '@/components/ui/mermaid-preview';
 export { DiffViewer } from '@/components/viewers/diff-viewer';
 export { CodeEditor } from '@/components/editor/code-editor';

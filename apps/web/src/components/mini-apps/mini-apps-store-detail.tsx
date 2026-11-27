@@ -3,11 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Check, Download, RefreshCw } from 'lucide-react';
 import { resolveStoreUrl } from '@/lib/agent-store';
 import { AgentIcon } from '@/components/common/agent-icon';
 import { Markdown } from '@/components/ui/markdown';
-import type { MiniAppIndexItem } from './mini-apps-store-card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import type { MiniAppIndexItem, MiniAppInstallStatus } from './mini-apps-store-card';
 
 function formatLocalDate(iso?: string): string {
   if (!iso) return '';
@@ -26,7 +32,28 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function MiniAppDetail({ item, onBack }: { item: MiniAppIndexItem; onBack: () => void }) {
+interface MiniAppStoreDetailDialogProps {
+  /** 当前查看的商店条目；null 时不渲染 */
+  item: MiniAppIndexItem | null;
+  /** 三态安装状态（与商店卡片一致） */
+  status: MiniAppInstallStatus;
+  /** 当前条目正在安装 */
+  importing?: boolean;
+  /** 某项正在安装时禁用按钮 */
+  disabled?: boolean;
+  onInstall: (item: MiniAppIndexItem) => void;
+  onClose: () => void;
+}
+
+/** 商店条目详情对话框：左 1/4 应用信息 + 安装按钮，右 3/4 README 介绍 */
+export function MiniAppStoreDetailDialog({
+  item,
+  status,
+  importing,
+  disabled,
+  onInstall,
+  onClose,
+}: MiniAppStoreDetailDialogProps) {
   const t = useTranslations('mini-apps');
   const [intro, setIntro] = useState<{ loading: boolean; content: string; error: boolean }>({
     loading: false,
@@ -34,15 +61,18 @@ export function MiniAppDetail({ item, onBack }: { item: MiniAppIndexItem; onBack
     error: false,
   });
 
+  const itemId = item?.id;
+  const itemHasIntro = item?.hasIntro ?? false;
+
   useEffect(() => {
-    if (!item.hasIntro) {
+    if (!itemId || !itemHasIntro) {
       setIntro({ loading: false, content: '', error: false });
       return;
     }
     const controller = new AbortController();
     setIntro({ loading: true, content: '', error: false });
     // 介绍内容直接读 app 目录的 README.md（源目录即商店内容，无 intro 产物目录）
-    fetch(resolveStoreUrl(`mini-app/${item.id}/README.md`), { signal: controller.signal })
+    fetch(resolveStoreUrl(`mini-app/${itemId}/README.md`), { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`);
         return res.text();
@@ -55,58 +85,94 @@ export function MiniAppDetail({ item, onBack }: { item: MiniAppIndexItem; onBack
         setIntro({ loading: false, content: '', error: true });
       });
     return () => controller.abort();
-  }, [item.id, item.hasIntro]);
+  }, [itemId, itemHasIntro]);
+
+  if (!item) return null;
 
   return (
-    <div className="flex flex-col gap-4 pb-2">
-      <Button variant="ghost" size="sm" className="self-start" onClick={onBack}>
-        <ArrowLeft className="size-4 mr-1" />
-        {t('detail.back')}
-      </Button>
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* 左栏：插件信息 */}
-        <aside className="w-full lg:w-60 lg:shrink-0 flex flex-col items-center text-center gap-3 rounded-xl border border-border bg-background p-4 lg:self-start">
-          <AgentIcon
-            name={item.name}
-            avatarUrl={item.iconUrl ? resolveStoreUrl(item.iconUrl) : undefined}
-            icon={item.icon}
-            className="size-16 rounded"
-          />
-          <span className="font-semibold text-base break-all">{item.name}</span>
-          {item.description && (
-            <p className="text-xs text-muted-foreground break-all">{item.description}</p>
-          )}
-          <div className="w-full border-t my-1" />
-          <Meta label={t('detail.type')} value={item.type || '-'} />
-          <Meta label={t('detail.version')} value={item.version || '-'} />
-          <Meta
-            label={t('detail.tags')}
-            value={Array.isArray(item.tags) && item.tags.length ? item.tags.join(', ') : '-'}
-          />
-          <Meta label={t('detail.updatedAt')} value={formatLocalDate(item.updatedAt) || '-'} />
-        </aside>
-        {/* 右栏：Markdown 介绍 */}
-        <div className="flex-1 min-w-0">
-          {item.hasIntro ? (
-            intro.loading ? (
-              <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
-                <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                {t('detail.loading')}
-              </div>
-            ) : intro.error ? (
-              <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
-                {t('detail.error')}
-              </div>
+    <Dialog
+      open
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+    >
+      <DialogContent className="sm:max-w-4xl p-0 gap-0 h-[75vh]">
+        <DialogHeader className="px-6 pt-5 pb-4 pe-12 border-b shrink-0">
+          <DialogTitle className="truncate">{item.name}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col sm:flex-row min-h-0 flex-1">
+          {/* 左栏（1/4）：应用信息 + 安装按钮 */}
+          <aside className="sm:w-1/4 shrink-0 border-b sm:border-b-0 sm:border-e p-4 flex flex-col items-center text-center gap-3 overflow-y-auto">
+            <AgentIcon
+              name={item.name}
+              avatarUrl={item.iconUrl ? resolveStoreUrl(item.iconUrl) : undefined}
+              icon={item.icon}
+              className="size-16 rounded"
+            />
+            <span className="font-semibold text-base break-all">{item.name}</span>
+            {item.description && (
+              <p className="text-xs text-muted-foreground break-all">{item.description}</p>
+            )}
+            <div className="w-full border-t my-1" />
+            <Meta label={t('detail.type')} value={item.type || '-'} />
+            <Meta label={t('detail.version')} value={item.version || '-'} />
+            <Meta
+              label={t('detail.tags')}
+              value={Array.isArray(item.tags) && item.tags.length ? item.tags.join(', ') : '-'}
+            />
+            <Meta label={t('detail.updatedAt')} value={formatLocalDate(item.updatedAt) || '-'} />
+            <Button
+              variant={
+                status === 'installed' ? 'secondary' : status === 'updatable' ? 'default' : 'outline'
+              }
+              size="sm"
+              className="w-full h-8 mt-1"
+              disabled={disabled || importing || status === 'installed'}
+              onClick={() => onInstall(item)}
+            >
+              {importing ? (
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : status === 'installed' ? (
+                <>
+                  <Check className="size-3.5 mr-1" />
+                  {t('store.installed')}
+                </>
+              ) : status === 'updatable' ? (
+                <>
+                  <RefreshCw className="size-3.5 mr-1" />
+                  {t('store.update')}
+                </>
+              ) : (
+                <>
+                  <Download className="size-3.5 mr-1" />
+                  {t('store.import')}
+                </>
+              )}
+            </Button>
+          </aside>
+          {/* 右栏（3/4）：README 介绍 */}
+          <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6">
+            {item.hasIntro ? (
+              intro.loading ? (
+                <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+                  <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  {t('detail.loading')}
+                </div>
+              ) : intro.error ? (
+                <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+                  {t('detail.error')}
+                </div>
+              ) : (
+                <Markdown content={intro.content} />
+              )
             ) : (
-              <Markdown content={intro.content} />
-            )
-          ) : (
-            <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
-              {t('detail.empty')}
-            </div>
-          )}
+              <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+                {t('detail.empty')}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
