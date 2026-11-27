@@ -88,13 +88,6 @@ export function listCommands(agentId: string): AgentCommand[] {
   return readCommandsFromDir(getCommandsDir(agentId), agentId);
 }
 
-function resolveCommandPath(agentId: string, name: string, group?: string): string {
-  if (group) {
-    return join(getCommandsDir(agentId), group, `${name}.md`);
-  }
-  return join(getCommandsDir(agentId), `${name}.md`);
-}
-
 function findCommandPath(agentId: string, name: string, group?: string): string | null {
   if (group) {
     const p = join(getCommandsDir(agentId), group, `${name}.md`);

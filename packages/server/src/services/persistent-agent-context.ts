@@ -65,15 +65,6 @@ export function buildPersistentAgentContextDetails(
   };
 }
 
-function buildInstructionFileContext(
-  workingDir: string,
-  boundDirs?: string[],
-  options: Pick<PersistentAgentContextOptions, 'excludeNativeClaudeMd'> = {},
-): string {
-  const files = collectInstructionFiles(workingDir, boundDirs, options);
-  return buildInstructionFileContextFromFiles(files);
-}
-
 function buildInstructionFileContextFromFiles(files: InstructionFile[]): string {
   if (files.length === 0) return '';
 

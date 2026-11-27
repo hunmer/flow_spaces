@@ -30,10 +30,6 @@ function getAgentData(node: WorkflowNode): LegacyAgentData | null {
   return node.data as unknown as LegacyAgentData;
 }
 
-function getLabel(node: WorkflowNode): string {
-  return (node.data as Record<string, unknown>).label as string || node.label;
-}
-
 // ---- DAG Validation ----
 
 function topologicalSort(nodes: WorkflowNode[], edges: WorkflowEdge[]): string[] | null {

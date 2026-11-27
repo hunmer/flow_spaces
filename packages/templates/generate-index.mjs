@@ -45,24 +45,6 @@ function getLatestMtime(dir) {
   return latest > 0 ? new Date(latest).toISOString() : undefined;
 }
 
-// 枚举插件目录下实际存在的文件（相对路径，POSIX 分隔符，排除 node_modules/.git）。
-// 写入 index.json 的 files 字段，供前端按清单逐个下载。
-function listDirFiles(dir) {
-  const out = [];
-  function walk(d, rel) {
-    for (const file of readdirSync(d)) {
-      if (file === 'node_modules' || file === '.git') continue;
-      const fullPath = join(d, file);
-      const relPath = rel ? `${rel}/${file}` : file;
-      const stat = statSync(fullPath);
-      if (stat.isDirectory()) walk(fullPath, relPath);
-      else out.push(relPath);
-    }
-  }
-  walk(dir, '');
-  return out;
-}
-
 function loadExistingIndex(indexPath) {
   if (!existsSync(indexPath)) return new Map();
   try {
@@ -306,84 +288,6 @@ function collectDirFiles(dir, prefix) {
     else out.push({ rel, fullPath });
   }
   return out;
-}
-
-function writeZip(files, outPath) {
-  // files: Array<{ rel: string, data: Buffer }>
-  const localParts = [];
-  const central = [];
-  let offset = 0;
-  for (const f of files) {
-    const nameBuf = Buffer.from(f.rel, 'utf-8');
-    // 选择压缩方式：大于 1KB 且非二进制 zip 尝试 deflate，否则 store
-    const isAlreadyZip = f.rel.toLowerCase().endsWith('.zip');
-    let compMethod = 0;
-    let fileData = f.data;
-    if (!isAlreadyZip && f.data.length > 1024) {
-      const deflated = deflateRawSync(f.data);
-      if (deflated.length < f.data.length) {
-        compMethod = 8;
-        fileData = deflated;
-      }
-    }
-    const crc = crc32(f.data);
-    const compSize = fileData.length;
-    const uncompSize = f.data.length;
-
-    // Local file header
-    const lh = Buffer.alloc(30);
-    lh.writeUInt32LE(0x04034b50, 0);
-    lh.writeUInt16LE(20, 4);            // version needed
-    lh.writeUInt16LE(0, 6);             // flags
-    lh.writeUInt16LE(compMethod, 8);
-    lh.writeUInt16LE(0, 10);            // mod time
-    lh.writeUInt16LE(0, 12);            // mod date
-    lh.writeUInt32LE(crc, 14);
-    lh.writeUInt32LE(compSize, 18);
-    lh.writeUInt32LE(uncompSize, 22);
-    lh.writeUInt16LE(nameBuf.length, 26);
-    lh.writeUInt16LE(0, 28);            // extra len
-    localParts.push(lh, nameBuf, fileData);
-
-    // Central directory header
-    const ch = Buffer.alloc(46);
-    ch.writeUInt32LE(0x02014b50, 0);
-    ch.writeUInt16LE(20, 4);            // version made by
-    ch.writeUInt16LE(20, 6);            // version needed
-    ch.writeUInt16LE(0, 8);             // flags
-    ch.writeUInt16LE(compMethod, 10);
-    ch.writeUInt16LE(0, 12);            // mod time
-    ch.writeUInt16LE(0, 14);            // mod date
-    ch.writeUInt32LE(crc, 16);
-    ch.writeUInt32LE(compSize, 20);
-    ch.writeUInt32LE(uncompSize, 24);
-    ch.writeUInt16LE(nameBuf.length, 28);
-    ch.writeUInt16LE(0, 30);            // extra len
-    ch.writeUInt16LE(0, 32);            // comment len
-    ch.writeUInt16LE(0, 34);            // disk number
-    ch.writeUInt16LE(0, 36);            // internal attrs
-    ch.writeUInt32LE(0, 38);            // external attrs
-    ch.writeUInt32LE(offset, 42);       // local header offset
-    central.push(ch, nameBuf);
-
-    offset += lh.length + nameBuf.length + fileData.length;
-  }
-
-  const centralBuf = Buffer.concat(central);
-  const cdOffset = offset;
-  const cdSize = centralBuf.length;
-
-  const eocd = Buffer.alloc(22);
-  eocd.writeUInt32LE(0x06054b50, 0);
-  eocd.writeUInt16LE(0, 4);
-  eocd.writeUInt16LE(0, 6);
-  eocd.writeUInt16LE(files.length, 8);
-  eocd.writeUInt16LE(files.length, 10);
-  eocd.writeUInt32LE(cdSize, 12);
-  eocd.writeUInt32LE(cdOffset, 16);
-  eocd.writeUInt16LE(0, 20);
-
-  writeFileSync(outPath, Buffer.concat([...localParts, centralBuf, eocd]));
 }
 
 function scanSkillsPackageStore() {

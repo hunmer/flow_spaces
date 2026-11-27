@@ -186,10 +186,6 @@ export class HookEngine {
     this.load();
   }
 
-  getHooks(): HookConfig[] {
-    return this.hooks;
-  }
-
   async executeHooks(
     phase: ClaudeHookEventName,
     matcherValue: string,

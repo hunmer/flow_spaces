@@ -50,18 +50,6 @@ export class WorkflowTriggerService {
     return Array.from(this.hookIndex.get(hookName) ?? []);
   }
 
-  getHookConflicts(hookName: string, excludeWorkflowId?: string): { conflictWorkflowIds: string[] } {
-    const bindings = this.hookIndex.get(hookName) ?? new Set();
-    const ids = Array.from(bindings)
-      .map(b => b.workflowId)
-      .filter(id => id !== excludeWorkflowId);
-    return { conflictWorkflowIds: [...new Set(ids)] };
-  }
-
-  getHookUrl(hookName: string): string {
-    return `http://localhost:${this.port}/api/workflows/hook/${hookName}`;
-  }
-
   validateCron(cronExpr: string): { valid: boolean; nextRuns: string[]; error?: string } {
     if (!nodeCron.validate(cronExpr)) {
       return { valid: false, nextRuns: [], error: 'Invalid cron expression' };

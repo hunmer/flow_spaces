@@ -303,14 +303,6 @@ export class ExecutionManager {
     return this.executionGraphScope.getStore()?.config ?? session.context.__config__ ?? {};
   }
 
-  getRunningSessionCount(): number {
-    let count = 0;
-    for (const session of this.sessions.values()) {
-      if (session.status === 'running' || session.status === 'paused') count++;
-    }
-    return count;
-  }
-
   /** 首页等处展示的"正在运行/暂停中"执行会话摘要（不含已结束会话）。 */
   listActiveExecutions(): ActiveWorkflowExecution[] {
     const result: ActiveWorkflowExecution[] = [];

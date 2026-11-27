@@ -204,11 +204,7 @@ export class LangChainRuntime implements AgentRuntime {
             emptyAiChunkStart = 0;
             emptyAiChunkLastId = '';
           }
-          // if (isAiToken || toolCallCount > 0) {
-          //   d(`stream ai | ${summarizeStreamTokenForLog(token, text, reasoning, tokenUsage)} step=${messageMeta?.langgraph_step ?? '-'} node=${messageMeta?.langgraph_node ?? '-'}`);
-          // }
           if (!isAiToken) {
-            // d(`stream token skipped | ${summarizeStreamTokenForLog(token, '', '', tokenUsage)}`);
             continue;
           }
 
@@ -800,31 +796,6 @@ export function createThrottledRuntimeEventSink(onEvent: AgentRunOptions['onEven
   };
 
   return { emit, flush };
-}
-
-function summarizeStreamTokenForLog(
-  token: Record<string, unknown>,
-  text: string,
-  reasoning: string,
-  usage: AgentRunResult['usage'] | undefined,
-): string {
-  const contentBlocks = Array.isArray(token.contentBlocks) ? token.contentBlocks : [];
-  return summarizeForLog(removeUndefined({
-    type: getMessageType(token) ?? token.type,
-    role: token.role,
-    id: token.id,
-    contentBlockTypes: contentBlocks
-      .map((block) => isRecord(block) ? block.type : typeof block)
-      .filter(Boolean),
-    textChars: text.length,
-    textPreview: text ? truncateForLog(text, 160) : undefined,
-    reasoningChars: reasoning.length,
-    reasoningPreview: reasoning ? truncateForLog(reasoning, 160) : undefined,
-    usage,
-    toolCallCount: countToolCalls(token) || undefined,
-    invalidToolCallCount: Array.isArray(token.invalid_tool_calls) ? token.invalid_tool_calls.length : undefined,
-    finishReason: extractFinishReason(token),
-  }), 500);
 }
 
 function splitLangChainStreamChunk(chunk: unknown): { mode?: string; payload: unknown } {
