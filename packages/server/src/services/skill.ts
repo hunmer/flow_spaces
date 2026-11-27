@@ -1,10 +1,11 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
-import { basename, join, relative, resolve, sep } from 'node:path';
+import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { ensureDir, getDataDir } from '../storage/json-store.js';
 import { listTemplates } from './agent.js';
+import { walkDir } from '../utils.js';
 import type { AgentConfig } from '@flow-spaces/shared';
 
 export interface SkillInfo {
@@ -400,24 +401,14 @@ export function listSkillFiles(name: string): Array<{ name: string; path: string
   const folderPath = join(skillsDir, name);
   if (!existsSync(folderPath) || !statSync(folderPath).isDirectory()) return [];
 
-  function walk(dir: string, prefix: string): Array<{ name: string; path: string; isDirectory: boolean }> {
-    const entries = readdirSync(dir, { withFileTypes: true });
-    const result: Array<{ name: string; path: string; isDirectory: boolean }> = [];
-    for (const entry of entries) {
-      if (entry.name.startsWith('_') || entry.name === '.DS_Store') continue;
-      const fullPath = join(dir, entry.name);
-      const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        result.push({ name: entry.name, path: relativePath, isDirectory: true });
-        result.push(...walk(fullPath, relativePath));
-      } else {
-        result.push({ name: entry.name, path: relativePath, isDirectory: false });
-      }
-    }
-    return result;
-  }
-
-  return walk(folderPath, '');
+  const result: Array<{ name: string; path: string; isDirectory: boolean }> = [];
+  walkDir(folderPath, {
+    skip: (entryName) => entryName.startsWith('_') || entryName === '.DS_Store',
+    visit: (fullPath, relPath, isDirectory) => {
+      result.push({ name: basename(fullPath), path: relPath, isDirectory });
+    },
+  });
+  return result;
 }
 
 export function readSkillFile(name: string, filePath: string): string | null {
@@ -451,31 +442,26 @@ export function importSkillsFromGit(gitUrl: string): Array<{ name: string; conte
 
     const results: Array<{ name: string; content: string }> = [];
 
-    function walk(dir: string): void {
-      const entries = readdirSync(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
-        const full = join(dir, entry.name);
-        if (entry.isDirectory()) {
-          walk(full);
-        } else if (entry.name === SKILL_FILE || entry.name.endsWith('.md')) {
-          const folderName = basename(dir);
-          if (folderName === basename(cloneDir)) continue; // skip repo root
-          const existing = results.find((r) => r.name === folderName);
-          // Prefer SKILL.md over generic .md
-          if (!existing || (entry.name === SKILL_FILE && existing.content)) {
-            const content = readFileSync(full, 'utf-8');
-            if (!existing) {
-              results.push({ name: folderName, content });
-            } else {
-              existing.content = content;
-            }
+    walkDir(cloneDir, {
+      skip: (entryName) => entryName.startsWith('.') || entryName === 'node_modules',
+      visit: (full, _relPath, isDir) => {
+        if (isDir) return;
+        const entryName = basename(full);
+        if (entryName !== SKILL_FILE && !entryName.endsWith('.md')) return;
+        const folderName = basename(dirname(full));
+        if (folderName === basename(cloneDir)) return; // skip repo root
+        const existing = results.find((r) => r.name === folderName);
+        // Prefer SKILL.md over generic .md
+        if (!existing || (entryName === SKILL_FILE && existing.content)) {
+          const content = readFileSync(full, 'utf-8');
+          if (!existing) {
+            results.push({ name: folderName, content });
+          } else {
+            existing.content = content;
           }
         }
-      }
-    }
-
-    walk(cloneDir);
+      },
+    });
     return results;
   } finally {
     rmSync(cloneDir, { recursive: true, force: true });

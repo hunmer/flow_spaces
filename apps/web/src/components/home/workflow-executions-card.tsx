@@ -14,20 +14,15 @@ import { useTranslations } from "next-intl";
 import { RiFlowChart, RiRefreshLine } from "@remixicon/react";
 
 import { sdk } from "@/lib/sdk";
+import { formatDurationHms } from "@/lib/format";
 import type { ExecutionLog } from "@flow-spaces/shared";
 
 /** 首次加载条数（手动刷新时也按此拉取）。 */
 const LIST_LIMIT = 20;
 
-function formatDuration(ms?: number) {
+function formatExecDuration(ms?: number) {
   if (!ms || ms < 0) return null;
-  const totalSeconds = Math.floor(ms / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  if (minutes > 0) return `${minutes}m ${seconds}s`;
-  return `${seconds}s`;
+  return formatDurationHms(ms);
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -138,7 +133,7 @@ export function WorkflowExecutionsCard() {
                       : t("timePlaceholder")}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2.5 text-text-tertiary">
-                    {formatDuration(
+                    {formatExecDuration(
                       typeof log.finishedAt === "number" && typeof log.startedAt === "number"
                         ? log.finishedAt - log.startedAt
                         : undefined,

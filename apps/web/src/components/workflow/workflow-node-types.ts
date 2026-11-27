@@ -93,8 +93,4 @@ export const NODE_COLOR_MAP: Record<string, string> = {
   indigo: '#6366f1',
 };
 
-export function formatDuration(start: number, end?: number): string {
-  const ms = Math.max(0, (end || Date.now()) - start);
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
-}
+export { formatElapsedMs as formatDuration } from '@/lib/format';

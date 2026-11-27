@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, writeFileSync, existsSync, unlinkSync, statS
 import { join, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { inflateRawSync, deflateRawSync, crc32 } from 'node:zlib';
+import { inflateRawSync } from 'node:zlib';
 
 const agentsDir = fileURLToPath(new URL('.', import.meta.url));
 

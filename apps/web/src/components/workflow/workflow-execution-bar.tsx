@@ -18,6 +18,7 @@ import {
   Circle, Clock, Copy, Loader2, MoreHorizontal, Pause, Play, Square, Trash2, XCircle,
 } from 'lucide-react';
 import { JsonViewer } from '@/components/viewers/json-viewer';
+import { formatElapsedMs } from '@/lib/format';
 import { cn, copyToClipboard } from '@/lib/utils';
 import { executionLogApi } from '@/lib/workflow-api';
 import { ExecutionInputDialog } from './workflow-execution-input-dialog';
@@ -61,12 +62,6 @@ function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString('zh-CN', {
     hour: '2-digit', minute: '2-digit', second: '2-digit',
   });
-}
-
-function formatDuration(start: number, end?: number): string {
-  const ms = Math.max(0, (end || Date.now()) - start);
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(1)}s`;
 }
 
 export function WorkflowExecutionBar({
@@ -146,7 +141,7 @@ export function WorkflowExecutionBar({
   const completedSteps = steps.filter(s => s.status === 'completed').length;
   const errorSteps = steps.filter(s => s.status === 'error').length;
   const progressText = displayLog ? `${completedSteps}/${steps.length}` : '';
-  const elapsedText = displayLog ? formatDuration(displayLog.startedAt, displayLog.finishedAt) : '';
+  const elapsedText = displayLog ? formatElapsedMs(displayLog.startedAt, displayLog.finishedAt) : '';
 
   // Build a summary of step statuses per log for the card display
   const logStepSummary = useMemo(() => {
@@ -390,7 +385,7 @@ export function WorkflowExecutionBar({
                   <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                     <span className="flex items-center gap-0.5">
                       <Clock className="h-2.5 w-2.5" />
-                      {formatDuration(item.startedAt, item.finishedAt)}
+                      {formatElapsedMs(item.startedAt, item.finishedAt)}
                     </span>
                     <span>{t('execution.nodes', { count: item.steps.length })}</span>
                   </div>

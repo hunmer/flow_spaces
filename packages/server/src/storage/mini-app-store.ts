@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, renameSyn
 import { join, dirname, resolve, sep } from 'node:path';
 import type { WorkflowAgentTimelineItem } from '@flow-spaces/shared';
 import { readJsonFile, writeJsonFile, ensureDir, getMiniAppsDir } from './json-store.js';
+import { walkDir } from '../utils.js';
 
 export interface MiniAppProject {
   id: string;
@@ -297,18 +298,13 @@ export function getFileManifest(projectId: string): MiniAppFileEntry[] {
   if (!existsSync(dir)) return [];
 
   const files: MiniAppFileEntry[] = [];
-  function walk(d: string, prefix: string) {
-    for (const entry of readdirSync(d, { withFileTypes: true })) {
-      if (entry.isDirectory() && MANIFEST_SKIP_DIRS.has(entry.name)) continue;
-      const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        walk(join(d, entry.name), rel);
-      } else {
-        files.push({ path: rel, mtimeMs: statSync(join(d, entry.name)).mtimeMs });
-      }
-    }
-  }
-  walk(dir, '');
+  walkDir(dir, {
+    skip: (name, isDir) => isDir && MANIFEST_SKIP_DIRS.has(name),
+    visit: (fullPath, relPath, isDir) => {
+      if (isDir) return;
+      files.push({ path: relPath, mtimeMs: statSync(fullPath).mtimeMs });
+    },
+  });
   return files;
 }
 
@@ -368,21 +364,17 @@ export function listConfigs(projectId: string): Record<string, unknown> {
   const root = join(projectDir(projectId), 'configs');
   const result: Record<string, unknown> = {};
   if (!existsSync(root)) return result;
-  function walk(d: string, prefix: string) {
-    for (const entry of readdirSync(d, { withFileTypes: true })) {
-      const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        walk(join(d, entry.name), rel);
-      } else if (entry.name.endsWith('.json')) {
-        try {
-          result[rel] = JSON.parse(readFileSync(join(d, entry.name), 'utf-8'));
-        } catch {
-          /* skip malformed config */
-        }
+  walkDir(root, {
+    visit: (fullPath, relPath, isDir) => {
+      if (isDir) return;
+      if (!relPath.endsWith('.json')) return;
+      try {
+        result[relPath] = JSON.parse(readFileSync(fullPath, 'utf-8'));
+      } catch {
+        /* skip malformed config */
       }
-    }
-  }
-  walk(root, '');
+    },
+  });
   return result;
 }
 

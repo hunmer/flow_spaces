@@ -118,7 +118,7 @@ session 内存态（`ExecutionSession`）：含 nodes/edges/groups/variables 快
 ### 触发器（WorkflowTriggerService）
 
 - **cron**：`node-cron.schedule(expr, fn, { timezone })`，到点调用 `executionManager.execute({ workflowId }, '__cron__')`
-- **hook**：`hookName → Set<{workflowId, triggerId}>`，外部 `POST /api/workflows/hook/:hookName` 触发；`getHookConflicts` 检测多工作流冲突
+- **hook**：`hookName → Set<{workflowId, triggerId}>`，外部 `POST /api/workflows/hook/:hookName` 触发
 - `start()` 启动时全量注册，`reloadWorkflow` / `removeWorkflow` 增量维护
 
 ### command 节点（executeCommandNode）

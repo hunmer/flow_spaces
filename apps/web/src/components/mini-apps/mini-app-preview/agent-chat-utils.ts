@@ -1,6 +1,7 @@
 import type { MiniAppChatMessage } from '@flow-spaces/sdk';
 import type { FileNode, WorkflowAgentTimelineItem } from '@flow-spaces/shared';
 import type { ChatMessage, ChatPanelMentionFile } from '@/components/ui/chat-panel';
+import { walkTree } from '@/lib/tree';
 
 /** 从 fetch SSE Response 解析 event:/data: 帧，逐帧回调。 */
 export async function consumeSse(response: Response, onEvent: (event: string, data: unknown) => void) {
@@ -90,12 +91,8 @@ export function markAskUserQuestionAnswered(
 
 export function flattenAgentFiles(nodes: FileNode[]): ChatPanelMentionFile[] {
   const files: ChatPanelMentionFile[] = [];
-  const walk = (items: FileNode[]) => {
-    for (const item of items) {
-      if (item.type === 'file') files.push({ path: item.path, name: item.name });
-      if (item.children) walk(item.children);
-    }
-  };
-  walk(nodes);
+  walkTree(nodes, (item) => item.children, (item) => {
+    if (item.type === 'file') files.push({ path: item.path, name: item.name });
+  });
   return files;
 }

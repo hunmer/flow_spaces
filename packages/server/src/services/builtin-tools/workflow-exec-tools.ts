@@ -6,6 +6,7 @@ import * as agentService from '../agent.js';
 import { executePluginTool, getPluginTools } from '../plugin.js';
 import { createBuiltinPluginApi } from '../plugin-runtime-api.js';
 import * as workflowService from '../workflow.js';
+import { sleep } from '../../utils.js';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -609,8 +610,4 @@ function objectKeys(value: unknown): string[] {
 
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import type { FileNode } from '@flow-spaces/shared';
 import { sdk } from '@/lib/sdk';
+import { walkTree } from '@/lib/tree';
 import { copyToClipboard } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -168,13 +169,9 @@ function MiniAppAgentFilesDialog({ projectId, open, onOpenChange }: { projectId:
     searchFiles: async (query: string) => {
       const lower = query.toLowerCase();
       const results: FileNode[] = [];
-      const walk = (nodes: FileNode[]) => {
-        for (const node of nodes) {
-          if (node.name.toLowerCase().includes(lower)) results.push(node);
-          if (node.children) walk(node.children);
-        }
-      };
-      walk(tree);
+      walkTree(tree, (node) => node.children, (node) => {
+        if (node.name.toLowerCase().includes(lower)) results.push(node);
+      });
       return results;
     },
     saveEmptyFile: async (path: string) => {

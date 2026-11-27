@@ -10,6 +10,7 @@ import { AgentIcon } from '@/components/common/agent-icon';
 import { useAgentStore } from '@/stores/agent';
 import { useUserAvatar } from '@/hooks/use-user-avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { formatDurationHms } from '@/lib/format';
 import { MemberHoverCard } from './member-hover-card';
 import { AgentEditor } from '@/components/sidebar/agent-editor';
 import { normalizeAgent } from '@/components/sidebar/agent-shared';
@@ -164,7 +165,7 @@ export function MessageItem({ message, workspaceId, agent: fallbackAgent, onConf
                   <>
                     <Clock className="h-3 w-3 text-muted-foreground" />
                     <span className="text-[10px] text-muted-foreground">
-                      {formatDuration(elapsed)}
+                      {formatDurationHms(elapsed)}
                       {isStreaming && <span className="animate-pulse ml-0.5">...</span>}
                     </span>
                   </>
@@ -309,14 +310,4 @@ function MessageRepliesPopover({
       </PopoverContent>
     </Popover>
   );
-}
-
-function formatDuration(ms: number): string {
-  const s = Math.floor(ms / 1000);
-  if (s < 60) return `${s}s`;
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  if (m < 60) return `${m}m ${sec}s`;
-  const h = Math.floor(m / 60);
-  return `${h}h ${m % 60}m`;
 }

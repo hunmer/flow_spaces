@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/base/skeleton/skeleton";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { useMobilePanelStore } from "@/stores/mobile-panel";
 import { sdk } from '@/lib/sdk';
+import { walkTree, findTreeNode as findNodeInTree } from '@/lib/tree';
 
 type FilePanelApi = {
   tree: FileNode[];
@@ -78,41 +79,31 @@ function filterHiddenTree(nodes: FileNode[]): FileNode[] {
 
 function collectAllDirPaths(nodes: FileNode[]): string[] {
   const paths: string[] = [];
-  const walk = (list: FileNode[]) => {
-    for (const node of list) {
-      if (node.type === 'directory') {
-        paths.push(node.path);
-        if (node.children) walk(node.children);
-      }
-    }
-  };
-  walk(nodes);
+  walkTree(
+    nodes,
+    (node) => (node.type === 'directory' ? node.children : undefined),
+    (node) => {
+      if (node.type === 'directory') paths.push(node.path);
+    },
+  );
   return paths;
 }
 
 function buildFileSizeMap(nodes: FileNode[]): Record<string, number> {
   const map: Record<string, number> = {};
-  const walk = (list: FileNode[]) => {
-    for (const node of list) {
-      if (node.type === 'file' && node.size != null) {
-        map[node.path] = node.size;
-      }
-      if (node.children) walk(node.children);
+  walkTree(nodes, (node) => node.children, (node) => {
+    if (node.type === 'file' && node.size != null) {
+      map[node.path] = node.size;
     }
-  };
-  walk(nodes);
+  });
   return map;
 }
 
 function collectAllFiles(nodes: FileNode[]): FileNode[] {
   const files: FileNode[] = [];
-  const walk = (list: FileNode[]) => {
-    for (const node of list) {
-      if (node.type === 'file') files.push(node);
-      if (node.children) walk(node.children);
-    }
-  };
-  walk(nodes);
+  walkTree(nodes, (node) => node.children, (node) => {
+    if (node.type === 'file') files.push(node);
+  });
   return files;
 }
 
@@ -500,19 +491,9 @@ export function CommonEditorPanel({
     loadTree(); setMoveDialog(p => ({ ...p, open: false }));
   }, [api, moveDialog, loadTree, boundDir, workspaceId]);
 
-  const findTreeNode = useCallback((path: string): FileNode | undefined => {
-    const walk = (nodes: FileNode[]): FileNode | undefined => {
-      for (const node of nodes) {
-        if (node.path === path) return node;
-        if (node.children) {
-          const found = walk(node.children);
-          if (found) return found;
-        }
-      }
-      return undefined;
-    };
-    return walk(tree);
-  }, [tree]);
+  const findTreeNode = useCallback((path: string): FileNode | undefined => (
+    findNodeInTree(tree, (node) => node.children, (node) => node.path === path)
+  ), [tree]);
 
   const getParentDir = useCallback((path: string) => {
     const index = path.lastIndexOf('/');

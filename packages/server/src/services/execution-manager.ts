@@ -33,6 +33,7 @@ import * as workflowStore from '../storage/workflow-store.js';
 import { getWorkflowSettings } from '../storage/workflow-settings-store.js';
 import * as pluginService from './plugin.js';
 import { getNestedValue, normalizeVariablePath, setNestedValue } from './execution-value-access.js';
+import { sleep } from '../utils.js';
 import {
   clone,
   normalizeNodeResult,
@@ -2409,10 +2410,6 @@ function resolveSnapshotDataForTest(value: any, config: WorkflowPluginConfigTree
     );
   }
   return value;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function formatErrorWithStack(error: unknown): string {

@@ -13,6 +13,7 @@ import * as miniAppStore from '../../storage/mini-app-store.js';
 import * as kbService from '../knowledge-base.js';
 import { getWorkflowExecutionManager } from './workflow-exec-tools.js';
 import { registerRuntime, unregisterRuntime } from '../mini-app-tasks.js';
+import { sleep } from '../../utils.js';
 
 type JsonRecord = Record<string, unknown>;
 type MiniAppAgentPreset = AgentConfig;
@@ -420,10 +421,6 @@ function formatWorkflowSteps(log: any, nodes: Array<{ id: string; type: string }
       error: step.error,
       logs: step.logs,
     }));
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function executeWorkflowSyncForMiniApp(args: Record<string, any>) {

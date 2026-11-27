@@ -152,6 +152,4 @@ export function getMcpServerNames(value: unknown): string[] {
   return Object.keys(servers as Record<string, unknown>);
 }
 
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+export { sleep } from '../../../utils.js';

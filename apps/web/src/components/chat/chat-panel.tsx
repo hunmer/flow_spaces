@@ -24,6 +24,7 @@ import { AgentIcon } from '@/components/common/agent-icon';
 import { AgentEditor } from '@/components/sidebar/agent-editor';
 import { normalizeAgent } from '@/components/sidebar/agent-shared';
 import { sdk } from '@/lib/sdk';
+import { walkTree } from '@/lib/tree';
 import { CommonEditorPanel } from '@/components/editor/editor-panel';
 
 import { useMobilePanelStore } from '@/stores/mobile-panel';
@@ -544,13 +545,9 @@ function MiniAppAgentFilesPopover({ directory }: { directory: { projectId: strin
     searchFiles: async (query: string) => {
       const lower = query.toLowerCase();
       const results: FileNode[] = [];
-      const walk = (nodes: FileNode[]) => {
-        for (const node of nodes) {
-          if (node.name.toLowerCase().includes(lower)) results.push(node);
-          if (node.children) walk(node.children);
-        }
-      };
-      walk(tree);
+      walkTree(tree, (node) => node.children, (node) => {
+        if (node.name.toLowerCase().includes(lower)) results.push(node);
+      });
       return results;
     },
     saveEmptyFile: async (path: string) => {

@@ -18,6 +18,7 @@ import { createOutputStyle } from './output-style.js';
 import { importMcps } from './mcp.js';
 import { createCommand } from './agent-commands.js';
 import { createPreset } from './agent.js';
+import { walkDir } from '../utils.js';
 
 export type ExternalImportKind = 'skills' | 'commands' | 'mcps' | 'output-styles' | 'agents';
 export type ExternalImportMode = 'copy' | 'symlink';
@@ -144,15 +145,19 @@ function scanMarkdownRoot(
   root: { provider: ExternalImportSource['provider']; path: string },
 ): ExternalImportSource[] {
   const out: ExternalImportSource[] = [];
-  walk(root.path, (file) => {
-    if (!isImportTextFile(file)) return;
-    const rel = toSlash(relative(root.path, file));
-    const name = basename(file, extname(file));
-    const content = readTextPreview(file);
-    out.push({
-      ...makeSource(kind, root, file, name, false, content),
-      group: rel.includes('/') ? rel.split('/').slice(0, -1).join('/') : undefined,
-    });
+  walkDir(root.path, {
+    skip: (name) => name.startsWith('.'),
+    visit: (file, _relPath, isDir) => {
+      if (isDir) return;
+      if (!isImportTextFile(file)) return;
+      const rel = toSlash(relative(root.path, file));
+      const name = basename(file, extname(file));
+      const content = readTextPreview(file);
+      out.push({
+        ...makeSource(kind, root, file, name, false, content),
+        group: rel.includes('/') ? rel.split('/').slice(0, -1).join('/') : undefined,
+      });
+    },
   });
   return out;
 }
@@ -317,15 +322,6 @@ function parseFrontmatter(content: string): { name?: string; description?: strin
     if (kv) out[kv[1].toLowerCase() as 'name' | 'description'] = kv[2].trim().replace(/^"|"$/g, '');
   }
   return out;
-}
-
-function walk(dir: string, visit: (file: string) => void): void {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith('.')) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, visit);
-    else visit(full);
-  }
 }
 
 function readTextPreview(file: string): string {
