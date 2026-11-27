@@ -80,3 +80,11 @@ test('changed or empty installation manifests are rejected', async () => {
   const { request } = mockFetch({ [update.manifestUrl]: { id: 'app', md5: oldMd5, files: [] } });
   await assert.rejects(loadMiniAppUpdate(update, request), /Invalid or changed/);
 });
+
+test('linked local apps are skipped without fetching remote updates', async () => {
+  const { request, calls } = mockFetch({});
+  const result = await checkMiniAppUpdates([project('local', { localPath: '/local/app' })], storeBase, request);
+  assert.equal(result.skipped, 1);
+  assert.equal(result.failed, 0);
+  assert.deepEqual(calls, []);
+});

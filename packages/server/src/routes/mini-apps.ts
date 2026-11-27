@@ -31,6 +31,15 @@ router.post('/', (req: Request, res: Response) => {
   }
 });
 
+router.post('/local', (req: Request, res: Response) => {
+  const { path } = req.body ?? {};
+  if (typeof path !== 'string' || !path.trim()) { res.status(400).json({ error: 'path is required' }); return; }
+  try { res.json(svc.store.addLocalProject(path.trim())); }
+  catch (error: any) {
+    res.status(error instanceof DuplicateNameError ? 409 : 400).json({ error: error.message });
+  }
+});
+
 router.get('/:id', (req: Request<{ id: string }>, res: Response) => {
   try { res.json(svc.getProject(req.params.id)); }
   catch (error: any) { res.status(error.message.includes('not found') ? 404 : 500).json({ error: error.message }); }

@@ -2,7 +2,8 @@
 // 本文件分两阶段落地：Task 2 只含纯函数校验；Task 3 追加连接管理与执行。
 import Database from 'better-sqlite3';
 import { join, resolve, sep, dirname } from 'node:path';
-import { ensureDir, getMiniAppsDir } from './json-store.js';
+import { ensureDir } from './json-store.js';
+import { getProjectDir } from './mini-app-store.js';
 import { MAX_ROWS, type SqlParams } from './sql-safety.js';
 // 重新导出纯校验函数，保持 mini-app-db 既有公开 API（validateDbName/checkSql/bindArgs）
 // 不破坏下游 import；真相源在 sql-safety。
@@ -15,9 +16,9 @@ type ExecMode = 'all' | 'get' | 'run' | 'exec';
 // 连接池：按 `projectId/dbName` 复用，避免每次请求重开文件。
 const POOL = new Map<string, DbConnection>();
 
-// 解析 db 文件绝对路径，越界保护（不依赖 store，避免循环依赖；与 store.baseDir 同源）。
+// 使用项目实际目录，让本地关联应用继续使用其原有数据库。
 function dbFilePath(projectId: string, dbName: string): string {
-  const root = resolve(join(getMiniAppsDir(), projectId, 'data', 'db'));
+  const root = resolve(join(getProjectDir(projectId), 'data', 'db'));
   const target = resolve(root, `${dbName}.sqlite`);
   if (target !== root && !target.startsWith(root + sep)) {
     throw new Error(`Path escapes project db directory: ${dbName}`);

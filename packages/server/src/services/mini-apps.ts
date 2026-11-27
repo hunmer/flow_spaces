@@ -311,7 +311,7 @@ export async function exportZip(projectId: string): Promise<Buffer> {
   archive.on('data', (chunk: Buffer) => chunks.push(chunk));
 
   // Add manifest (strip internal fields)
-  const { id, createdAt, ...manifest } = project;
+  const { id, createdAt, localPath, ...manifest } = project;
   archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
 
   // Add source files

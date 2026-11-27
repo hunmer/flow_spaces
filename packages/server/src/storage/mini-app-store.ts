@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, renameSync, statSync } from 'node:fs';
-import { join, dirname, resolve, sep } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, rmSync, readdirSync, renameSync, statSync, realpathSync } from 'node:fs';
+import { join, dirname, resolve, sep, isAbsolute, basename } from 'node:path';
 import type { WorkflowAgentTimelineItem } from '@flow-spaces/shared';
 import { readJsonFile, writeJsonFile, ensureDir, getMiniAppsDir } from './json-store.js';
 import { walkDir } from '../utils.js';
@@ -30,6 +30,8 @@ export interface MiniAppProject {
   avatarUrl?: string;
   backgroundUrl?: string;
   createdAt: string;
+  /** 直接关联的本地项目目录，删除列表项时不删除该目录 */
+  localPath?: string;
   storeUrl?: string;
   storeChecksum?: string;
   /** 更新时保留开发版源码安装模式 */
@@ -45,7 +47,7 @@ function indexPath(): string {
 }
 
 function projectDir(projectId: string): string {
-  return join(baseDir(), projectId);
+  return getProject(projectId)?.localPath ?? join(baseDir(), projectId);
 }
 
 export function getProjectDir(projectId: string): string {
@@ -153,9 +155,9 @@ export function rebuildIndex(): MiniAppProject[] {
   if (!existsSync(root)) return [];
 
   const registered = new Map(listProjects().map(project => [project.id, project]));
-  const onDisk: MiniAppProject[] = [];
+  const onDisk: MiniAppProject[] = [...registered.values()].filter(project => !!project.localPath);
   for (const entry of readdirSync(root, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
+    if (!entry.isDirectory() || registered.get(entry.name)?.localPath) continue;
     const manifest = readJsonFile<MiniAppProject & { updatedAt?: string }>(manifestPath(entry.name));
     if (manifest && manifest.id === entry.name) {
       // 迁移：旧 manifest 带 updatedAt 时就地重写去掉
@@ -218,6 +220,40 @@ export function getProject(projectId: string): MiniAppProject | null {
   return listProjects().find(p => p.id === projectId) ?? null;
 }
 
+/** 只登记已有目录，源项目的 manifest 和文件保持原样。 */
+export function addLocalProject(directory: string): MiniAppProject {
+  if (!directory || !isAbsolute(directory)) throw new Error('An absolute project directory is required');
+  const localPath = realpathSync(directory);
+  if (!statSync(localPath).isDirectory()) throw new Error('Project path must be a directory');
+  const projects = listProjects();
+  const linked = projects.find(project => project.localPath === localPath);
+  if (linked) return linked;
+  const manifest = readJsonFile<Partial<MiniAppProject>>(join(localPath, 'manifest.json'));
+  if (!manifest || typeof manifest.name !== 'string' || !manifest.name.trim()
+    || (manifest.type !== 'react' && manifest.type !== 'html')) {
+    throw new Error('manifest.json must contain a name and a valid type (react/html)');
+  }
+  const mainFile = manifest.mainFile ?? (manifest.type === 'react' ? 'index.jsx' : 'index.html');
+  if (typeof mainFile !== 'string' || isAbsolute(mainFile)) throw new Error('Invalid mainFile');
+  const srcRoot = resolve(localPath, 'src');
+  const entryPath = resolve(srcRoot, mainFile);
+  if (!entryPath.startsWith(srcRoot + sep) || !existsSync(entryPath) || !statSync(entryPath).isFile()) {
+    throw new Error('mainFile must point to an existing file inside src/');
+  }
+  const id = safeNameId(typeof manifest.id === 'string' ? manifest.id : basename(localPath));
+  if (getProject(id) || existsSync(join(baseDir(), id))) throw new DuplicateNameError(manifest.name);
+  assertNameUnique(manifest.name);
+  const project: MiniAppProject = stripLegacyTimestamps({
+    ...manifest,
+    id, name: manifest.name, type: manifest.type, mainFile,
+    version: manifest.version ?? '1.0.0',
+    createdAt: manifest.createdAt ?? new Date().toISOString(),
+    localPath,
+  });
+  writeJsonFile(indexPath(), [...projects, project]);
+  return project;
+}
+
 export function createProject(input: {
   name: string;
   description?: string;
@@ -269,19 +305,23 @@ export function updateProject(projectId: string, updates: Partial<Pick<MiniAppPr
   const updated = {
     ...projects[index],
     ...updates,
+    localPath: projects[index].localPath,
   };
   projects[index] = updated;
   writeJsonFile(indexPath(), projects);
-  writeJsonFile(manifestPath(projectId), updated);
+  const { localPath: _localPath, ...manifest } = updated;
+  writeJsonFile(manifestPath(projectId), manifest);
   return updated;
 }
 
 export function deleteProject(projectId: string): void {
+  const project = getProject(projectId);
   const projects = listProjects().filter(p => p.id !== projectId);
   writeJsonFile(indexPath(), projects);
   clearLaunchTime(projectId);
 
-  const dir = projectDir(projectId);
+  if (project?.localPath) return;
+  const dir = join(baseDir(), projectId);
   if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
 }
 
@@ -443,6 +483,7 @@ export function upsertStoreProject(input: {
 }): MiniAppProject {
   const id = safeNameId(input.id);
   const existing = getProject(id);
+  if (existing?.localPath) throw new Error('Cannot overwrite a linked local mini-app');
 
   if (existing) {
     const updated: MiniAppProject = {
@@ -510,6 +551,7 @@ export function importFromDir(extractDir: string, manifest: Partial<MiniAppProje
   }
   const contentRoot = resolveContentRoot(extractDir, manifest.mainFile);
   const existing = getProject(id);
+  if (existing?.localPath) throw new Error('Cannot overwrite a linked local mini-app');
 
   if (existing) {
     // ---- 更新模式：覆盖源码，保留用户配置字段，刷新模板版本标记 ----

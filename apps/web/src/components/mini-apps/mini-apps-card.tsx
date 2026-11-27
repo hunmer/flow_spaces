@@ -101,7 +101,7 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteOpen(true)}>
-                <Trash2 className="h-3.5 w-3.5 mr-2" /> {t('card.delete')}
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> {t(project.localPath ? 'card.unlink' : 'card.delete')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportZip}>
                 <Download className="h-3.5 w-3.5 mr-2" /> {t('card.exportZip')}
@@ -195,15 +195,15 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('card.deleteTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t(project.localPath ? 'card.unlinkTitle' : 'card.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('card.deleteConfirm', { name: project.name })}
+              {t(project.localPath ? 'card.unlinkConfirm' : 'card.deleteConfirm', { name: project.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('card.cancel')}</AlertDialogCancel>
             <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90" onClick={() => onDelete(project.id)}>
-              {t('card.delete')}
+              {t(project.localPath ? 'card.unlink' : 'card.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

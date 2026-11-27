@@ -39,6 +39,7 @@ export async function checkMiniAppUpdates(projects: MiniAppProject[], storeBase:
   let failed = 0;
   let skipped = 0;
   await Promise.all(projects.map(async (project) => {
+    if (project.localPath) { skipped++; return; }
     // 旧 ZIP 商店地址已退役，改从当前商店来源检查。
     const savedUrl = project.storeUrl?.endsWith('.zip') ? undefined : project.storeUrl?.replace(/\/+$/, '');
     const standalone = savedUrl?.endsWith('/app.json') || /\/raw\/refs\/heads\/[^/]+$/.test(savedUrl ?? '');

@@ -1,5 +1,6 @@
 {
   "page": {
+    "addLocal": "Add local app",
     "title": "Mini Apps",
     "subtitle": "Create and manage mini apps — lightweight interactive apps for your workflows.",
     "storeTab": "Store",
@@ -43,6 +44,9 @@
     "selected": "{count} selected"
   },
   "card": {
+    "unlink": "Remove",
+    "unlinkTitle": "Remove local app",
+    "unlinkConfirm": "Remove {name} from the list? Its original folder and files will be kept.",
     "edit": "Edit",
     "duplicate": "Duplicate",
     "delete": "Delete",
@@ -52,6 +56,15 @@
     "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
     "cancel": "Cancel",
     "revealFolder": "Reveal in File Manager"
+  },
+  "localImport": {
+    "title": "Add local app",
+    "description": "Choose a project folder containing manifest.json. The app uses this folder directly; edits are saved there.",
+    "submit": "Add",
+    "adding": "Adding…",
+    "cancel": "Cancel",
+    "duplicate": "An app with the same name or ID already exists. Remove it from the list before adding this folder.",
+    "failed": "Could not add app. Check manifest.json and the entry file under src/."
   },
   "create": {
     "title": "Create Custom Page",

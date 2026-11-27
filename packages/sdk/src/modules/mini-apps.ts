@@ -29,6 +29,8 @@ export interface MiniAppProject {
   createdAt: string;
   /** 最后启动时间（预览页打开时记录，集中存于后端 mini-apps/launch-times.json，不在 manifest.json 中）。 */
   lastLaunchAt?: string;
+  /** 直接关联的本地项目目录，删除列表项时不删除该目录 */
+  localPath?: string;
   storeUrl?: string;
   storeChecksum?: string;
   /** 更新时保留开发版源码安装模式 */
@@ -139,6 +141,10 @@ export function createMiniAppApi(http: HttpClient) {
 
     uploadAgentFiles: (id: string, formData: FormData): Promise<{ ok: true; files: { path: string; size: number }[] }> =>
       http.upload(`/api/mini-apps/${encodeURIComponent(id)}/agent-files/upload`, formData),
+
+    /** 关联服务器上的已有目录，不复制项目文件 */
+    addLocal: (path: string): Promise<MiniAppProject> =>
+      http.post('/api/mini-apps/local', { path }),
 
     importZip: (data: { zip: string; name?: string; type?: 'react' | 'html'; description?: string; id?: string; storeUrl?: string; storeChecksum?: string }): Promise<MiniAppProject> =>
       http.post('/api/mini-apps/import', data),

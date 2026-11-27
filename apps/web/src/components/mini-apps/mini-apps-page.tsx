@@ -9,11 +9,12 @@ import { pluginApi } from '@/lib/workflow-plugin-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Button as UpdateButton } from '@/components/base/buttons/button';
-import { RiRefreshLine } from '@remixicon/react';
+import { RiFolderAddLine, RiRefreshLine } from '@remixicon/react';
 import { checkMiniAppUpdates, loadMiniAppUpdate, type MiniAppUpdate } from '@/lib/mini-app-updates';
 import { Plus, Upload, FileQuestion, Globe, CheckSquare, Search } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
+import { MiniAppLocalImportDialog } from './mini-apps-local-import-dialog';
 import { MiniAppGithubImportDialog } from './mini-apps-github-import-dialog';
 import { MiniAppStoreDetailDialog } from './mini-apps-store-detail';
 import { MiniAppStoreCard, type MiniAppIndexItem } from './mini-apps-store-card';
@@ -68,6 +69,7 @@ function MiniAppListPage() {
   const [selectedStoreItem, setSelectedStoreItem] = useState<MiniAppIndexItem | null>(null);
   // 从 GitHub 仓库地址安装独立 mini-app 仓库（header 导入下拉第二项弹出的对话框）
   const [githubDialogOpen, setGithubDialogOpen] = useState(false);
+  const [localDialogOpen, setLocalDialogOpen] = useState(false);
   const [checkingUpdates, setCheckingUpdates] = useState(false);
   const [availableUpdates, setAvailableUpdates] = useState<MiniAppUpdate[]>([]);
 
@@ -127,6 +129,7 @@ function MiniAppListPage() {
     (item: MiniAppIndexItem) => {
       const installed = installedMap[item.id];
       if (!installed) return 'not-installed' as const;
+      if (installed.localPath) return 'installed' as const;
       if (item.md5 && item.md5 !== installed.storeChecksum) return 'updatable' as const;
       if (!item.md5 && item.version && item.version !== installed.version) return 'updatable' as const;
       return 'installed' as const;
@@ -303,6 +306,10 @@ function MiniAppListPage() {
                 <Upload className="h-3.5 w-3.5 mr-2" />
                 {t('page.importZip')}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLocalDialogOpen(true)}>
+                <RiFolderAddLine className="size-3.5 me-2" />
+                {t('page.addLocal')}
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setGithubDialogOpen(true)}>
                 <Globe className="h-3.5 w-3.5 mr-2" />
                 {t('page.importGithub')}
@@ -353,6 +360,10 @@ function MiniAppListPage() {
               <DropdownMenuItem onClick={handleImport}>
                 <Upload className="h-3.5 w-3.5 mr-2" />
                 {t('page.importZip')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLocalDialogOpen(true)}>
+                <RiFolderAddLine className="size-3.5 me-2" />
+                {t('page.addLocal')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setGithubDialogOpen(true)}>
                 <Globe className="h-3.5 w-3.5 mr-2" />
@@ -484,11 +495,12 @@ function MiniAppListPage() {
         importing={!!selectedStoreItem && storeImportingId === selectedStoreItem.id}
         progress={storeInstallProgress ?? undefined}
         installingDevelopment={storeInstallingDevelopment}
-        disabled={storeImportingId !== null}
+        disabled={storeImportingId !== null || !!(selectedStoreItem && installedMap[selectedStoreItem.id]?.localPath)}
         onInstall={handleInstallStoreItem}
         onClose={() => setSelectedStoreItem(null)}
       />
       <MiniAppCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <MiniAppLocalImportDialog open={localDialogOpen} onOpenChange={setLocalDialogOpen} onImported={loadProjects} />
       <MiniAppGithubImportDialog
         open={githubDialogOpen}
         onOpenChange={setGithubDialogOpen}

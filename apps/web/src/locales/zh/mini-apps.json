@@ -1,5 +1,6 @@
 {
   "page": {
+    "addLocal": "添加本地应用",
     "title": "Mini App",
     "subtitle": "创建并管理你的 Mini App，为工作流定制可交互的轻量应用。",
     "storeTab": "商店",
@@ -43,6 +44,9 @@
     "selected": "已选择 {count} 项"
   },
   "card": {
+    "unlink": "移除",
+    "unlinkTitle": "移除本地应用",
+    "unlinkConfirm": "将「{name}」从列表移除？原文件夹及文件会保留。",
     "edit": "编辑",
     "duplicate": "复制",
     "delete": "删除",
@@ -52,6 +56,15 @@
     "deleteConfirm": "确定要删除「{name}」吗？此操作无法撤销。",
     "cancel": "取消",
     "revealFolder": "打开所在文件夹"
+  },
+  "localImport": {
+    "title": "添加本地应用",
+    "description": "选择包含 manifest.json 的项目文件夹。应用将直接使用原目录，编辑会保存到该目录。",
+    "submit": "添加",
+    "adding": "添加中…",
+    "cancel": "取消",
+    "duplicate": "同名或同 ID 的应用已存在，请先从列表移除后再添加。",
+    "failed": "添加失败，请确认目录包含有效的 manifest.json 和 src 入口文件。"
   },
   "create": {
     "title": "创建自定义页面",
