@@ -12,6 +12,13 @@
 - 裁决保留：workflow-ws 契约段、5 个未接线脚本、sdk demo 页、sdk 7 模块/shared 4 域（发布包对外 API）。
 - 验证与图谱：`pnpm typecheck` ✓、`build:packages` ✓；feature_map 重建 33 节点 / 2728 文件 / 100% / ghost 0；tracked 2750 → 2730。
 
+## 2026-11-27 — git 面板废弃 + workspace 角色厘清
+
+- git 变更面板（VSCode 式 Source Control UI 已不存在）死代码清理：删除 `apps/web/src/components/git/commit-diff-viewer.tsx`、`stores/editor.ts` 的 commitDiff 通路（COMMIT_DIFF_PREFIX/isCommitDiffPath/openCommitDiff/closeCommitDiff）、`common-code-editor.tsx` 的 isCommitDiff 渲染分支、locales en/zh `git.json`；shared 删除 `types/git.ts` 与 `types/worktree.ts`（Worktree 域全仓 0 引用）、`events.ts` 删 `worktree.*` 事件段；sdk 删 `demo/git.html`/`demo/js/git.js` 与 index.ts 注释幻觉 API。git 面板删除后 shared 26 → 25 域、web locales 各 28 json。
+- git 活链保留：workspace clone 导入（`adapters/git.ts` gitClone）、DiffViewer 组件复用（agent 工具步骤 diff / Prompt 优化对比）、商店模板（mcps/git.json、skills/using-git-worktrees）。
+- workspace 两套同名物厘清（回答「workspaces 还是旧 agent-spaces 概念吗」）：A 套 = agent-spaces 遗留 Workspace（routes/workspace.ts 8 端点，现役功能仅 3——workflow WS 执行通道（use-resolved-workspace-id）、聊天内文件编辑器（editor-panel）、git clone 导入；注册表仅 1 条且 boundDirs 指向已失效旧 Mac 路径）；B 套 = ChatWorkspace（/api/chat/workspaces，浏览器绑定自动创建，session/channel 挂其下，是 AI 聊天运行必需）。同名不同物是混淆根源。
+- 附注：用户同步进行 icons 精简（public/icons 870 → 20 种，file-icon.tsx 映射表同步）；图谱待该轮入库后统一重跑 gen-feature-map 刷新（当前 docs/feature_map.* 为 2748 口径）。
+
 ## 2026-11-27 — init-project 增量更新：商店拆仓
 
 - 全仓清点（git ls-files 4072 → **2750**）：内置 plugins/workflows/mini-apps 迁出至独立 GitHub 商店仓库（hunmer/flow-spaces-plugins、flow-spaces-workflows、flow-spaces-mini-apps、game-asset-canvas），`packages/templates` 缩容为 agents/mcps/skills/output-styles/prompt/skillspackage（393 → 316 文件），`pack-mini-apps.mjs` 移除。

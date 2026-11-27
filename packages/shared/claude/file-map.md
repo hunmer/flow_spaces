@@ -16,7 +16,6 @@ packages/shared/
       agent.ts                      # AgentSession + AgentUsage + BUILTIN_AGENT_IDS + isBuiltinAgent()
       channel.ts                    # Channel + Message + MessagePart(11种) + TodoItem + 附件
       file.ts                       # FileNode（递归文件树）
-      git.ts                        # GitFileStatus + GitStatusResult + GitLogEntry + GitDiffResult + GitBranch + GitOperationEntry
       events.ts                     # WSEvent + ClientEventMap(13事件) + ServerEventMap(35+事件)
       llm.ts                        # LLMModel + LLMProvider + LLMModelCost + LLMThinkingEffort
       tool.ts                       # BUILT_IN_AGENT_TOOLS(35工具) + BuiltInAgentToolName
@@ -35,7 +34,6 @@ packages/shared/
       hooks.ts                      # HookConfig + HookRule + ClaudeHookEventName(21种)
       database.ts                   # DatabaseMeta + DocNode + DatabaseNodeVersion + 向量搜索 + PRESET_COVERS
       kanban.ts                     # KanbanBoard + KanbanColumn + KanbanTask + KanbanPriority + KanbanLayoutMode
-      worktree.ts                   # WorktreeInfo + WorktreeStatus + CreateWorktreeInput
   dist/                             # 编译产物（不纳入版本控制）
     index.js / index.d.ts           # 包入口编译产物
     types/                          # 各子模块编译产物 + source maps
@@ -56,7 +54,7 @@ packages/shared/
 
 | 领域 | 文件 | 数量 |
 |------|------|------|
-| 核心业务 | workspace, issue, task, agent, channel, file, git | 7 |
+| 核心业务 | workspace, issue, task, agent, channel, file | 6 |
 | 基础设施 | events, llm, tool | 3 |
 | Workflow | workflow, workflow-execution, workflow-errors, workflow-plugin, workflow-composite, workflow-shortcut, workflow-ws | 7 |
-| 辅助功能 | subscription, search, notification, speech, code-favorites, hooks, database, kanban, worktree | 9 |
+| 辅助功能 | subscription, search, notification, speech, code-favorites, hooks, database, kanban | 8 |

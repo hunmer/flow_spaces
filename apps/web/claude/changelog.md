@@ -6,7 +6,8 @@
 
 - 删除 5 处 0 引用代码：`src/shims/next/dynamic.tsx`、`src/shims/styled-jsx.d.ts`、`src/app/api/chat/route.ts`（371 行 Next.js route handler 残留，`/api/chat` 已由 Express 实现）、`src/components/home/workflows-table.tsx`（被 metrics-dashboard 取代）、`src/components/base/command-palette/`（注意：活码是 `src/components/command-palette/`，被 `main.tsx` 引用）。
 - `AgentSpacesUI` → `FlowSpacesUI` 全链重命名：`use-mini-app-host-api.tsx`、`react-renderer.tsx`、`mini-app-renderer.tsx`、`display.ts`、`ui/*.tsx` 注释；`window.AgentSpacesUI` 保留兼容别名（挂载/卸载双名同步、`new Function` 形参双注入），存量 mini-app 脚本不受影响。
-- locales 清理：en/zh 各删 6 个 0 消费 namespace（issue/flexLayout/database/agentCommands/skillsPackages/outputStyles），各剩 29 json。
+- locales 清理：en/zh 各删 6 个 0 消费 namespace（issue/flexLayout/database/agentCommands/skillsPackages/outputStyles）；git 面板废弃轮再删 git.json，各剩 28 json。
+- git 面板死代码废弃：删除 `components/git/commit-diff-viewer.tsx`、`stores/editor.ts` 的 commitDiff 通路（COMMIT_DIFF_PREFIX/openCommitDiff 等）、`common-code-editor.tsx` 的 isCommitDiff 分支（git 面板 UI 已不存在，DiffViewer 组件保留用于聊天工具步骤与 Prompt 对比）。
 - 附带修复：`ui/morphing-spinner.tsx` 的 `<style jsx>`（styled-jsx 类型 shim 删除后 typecheck 报错）改为普通 `<style>`。
 - `pnpm typecheck` 通过；feature_map 重建 2728 文件 100% 覆盖。
 ## 2026-11-27 — init-project 增量更新：商店拆仓

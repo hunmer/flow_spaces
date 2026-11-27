@@ -16,7 +16,7 @@ Flow Spaces — 工作流可视化编辑器与 Mini App 平台。Vite + React 19
 | `apps/web` | React 19 SPA（编辑器/Mini App/聊天/BoardUI） | [CLAUDE.md](apps/web/CLAUDE.md) |
 | `packages/server` | Express 5 + WS + SQLite + AI 运行时适配 + 运行时数据 | [CLAUDE.md](packages/server/CLAUDE.md) |
 | `packages/sdk` | 前端统一 API SDK（24 模块 + demo 页） | [CLAUDE.md](packages/sdk/CLAUDE.md) |
-| `packages/shared` | 前后端共享 TS 类型（26 域） | [CLAUDE.md](packages/shared/CLAUDE.md) |
+| `packages/shared` | 前后端共享 TS 类型（25 域） | [CLAUDE.md](packages/shared/CLAUDE.md) |
 | `packages/templates` | Agent Store 内容源（agents/mcps/skills/output-styles/prompt/skillspackage） | [CLAUDE.md](packages/templates/CLAUDE.md) |
 | `packages/logs/` | server 运行日志（运行时生成，不入库） | — |
 

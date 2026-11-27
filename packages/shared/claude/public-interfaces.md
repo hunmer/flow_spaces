@@ -8,7 +8,7 @@
 
 | 导出 | 类型 | 说明 |
 |------|------|------|
-| `Workspace` | interface | 工作空间（id, name, boundDirs, agentspaceDir, 通知设置, Hook 开关, Worktree 标记） |
+| `Workspace` | interface | 工作空间（id, name, boundDirs, agentspaceDir, 通知设置, Hook 开关） |
 | `CreateWorkspaceInput` | interface | 创建工作空间输入（name, boundDirs） |
 | `AgentConfig` | interface | Agent 预设配置（含 role/runtimeKind/modelProvider/tools/mcps/skills 等 25+ 字段） |
 | `BuiltInAgentRole` | type | 内置角色：`'agent' \| 'scheduler' \| 'task_creator' \| 'bot'` |
@@ -67,7 +67,7 @@
 |------|------|------|
 | `WSEvent<T>` | interface | WebSocket 事件基础结构（event, workspaceId, timestamp, data） |
 | `ClientEventMap` | type | 客户端->服务端事件映射（13 个事件：终端/频道消息/Agent 控制/Workflow 执行） |
-| `ServerEventMap` | type | 服务端->客户端事件映射（35+ 个事件：终端/频道/Agent/Issue/Task/Workflow/Command/Notification/Worktree） |
+| `ServerEventMap` | type | 服务端->客户端事件映射（30+ 个事件：终端/频道/Agent/Issue/Task/Workflow/Notification） |
 | `ClientEventName` | type | 客户端事件名集合 |
 | `ServerEventName` | type | 服务端事件名集合 |
 
@@ -75,9 +75,6 @@
 
 | 导出 | 类型 | 说明 |
 |------|------|------|
-| `GitFileStatus` | interface | 文件状态（6 种 + staged/conflicted 标记） |
-| `GitStatusResult` | interface | Git 状态摘要（branch, files, ahead/behind, insertions/deletions, headHash） |
-| `GitLogEntry` | interface | 提交日志（hash, message, author, date, parents, refs） |
 | `GitDiffResult` | interface | 差异结果（含二进制/新增/删除/冲突标记） |
 | `GitBranch` | interface | 分支（name, current） |
 | `GitOperationEntry` | interface | Git 操作历史 |
@@ -261,11 +258,3 @@
 | `KanbanTask` | interface | 任务（含优先级/截止日期） |
 | `KanbanPriority` | type | 优先级：`'low' \| 'medium' \| 'high'` |
 | `KanbanLayoutMode` | type | 布局：`'horizontal' \| 'vertical'` |
-
-### Git Worktree
-
-| 导出 | 类型 | 说明 |
-|------|------|------|
-| `WorktreeInfo` | interface | Worktree 完整信息 |
-| `WorktreeStatus` | type | 状态：`'active' \| 'merged' \| 'deleted'` |
-| `CreateWorktreeInput` | interface | 创建输入 |

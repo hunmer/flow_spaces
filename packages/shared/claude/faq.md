@@ -72,11 +72,6 @@ A: DatabaseMeta 是数据库的元信息（名称、描述、Embedding 模型）
 **Q: DatabaseNodeVersion 的 patch 字段含义？**
 A: 增量补丁（start 位置、删除文本、插入文本），用于版本差异对比和回滚。
 
-## Worktree
-
-**Q: WorktreeInfo 的 prUrl 有什么用？**
-A: 记录 Worktree 创建的 Pull Request URL，用于追踪 PR 状态。
-
 ## 工具
 
 **Q: 内置工具有多少个？**

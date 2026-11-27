@@ -4,7 +4,8 @@
 
 ## 2026-11-27 — 死代码清理
 
-- 删除 `src/types/command.ts`（QuickCommand/CommandProcess/CommandProcessEvent 全仓 0 引用），`src/index.ts` 桶导出移除对应行，类型域 27 → 26。
+- 删除 `src/types/command.ts`（QuickCommand/CommandProcess/CommandProcessEvent 全仓 0 引用），`src/index.ts` 桶导出移除对应行。
+- git 面板废弃轮：删除 `src/types/git.ts`（GitFileStatus/GitStatusResult/GitLogEntry，git 变更面板 UI 已废弃）与 `src/types/worktree.ts`（Worktree 域 0 引用）；`events.ts` 删 `worktree.*` 4 事件段；类型域 27 → 25。
 - `events.ts` 删除 `command.*` 事件类型段；`database.ts` 删除 DatabaseVectorStats/IndexResult/SearchResult（向量检索死链下游）。
 - dist 已通过 `pnpm build:packages` 重建刷新。
 ## 2026-11-15 — 复核类型清单并刷新索引

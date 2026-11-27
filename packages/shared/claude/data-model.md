@@ -9,7 +9,6 @@ Workspace
   |-- AgentConfig (1:N, 通过 workspace 内 agents 数组关联)
   |-- Channel (1:N, workspaceId)
   |-- Issue (1:N, workspaceId)
-  |-- WorktreeInfo (1:N, workspaceId)
   |-- DatabaseMeta (1:N, workspaceId)
   |-- KanbanBoard (1:N, workspaceId)
 
@@ -61,9 +60,7 @@ KanbanBoard
 | Workflow Node | `NodeRunState` | `normal` / `disabled` / `skipped` |
 | Workflow Execution | `ExecutionLog['status']` | `running` / `completed` / `paused` / `error` |
 | Workflow Step | `ExecutionStep['status']` | `running` / `completed` / `error` / `skipped` |
-| Worktree | `WorktreeStatus` | `active` / `merged` / `deleted` |
 | Command Process | `CommandProcess['status']` | `running` / `stopping` |
-| Git File | `GitFileStatus['status']` | `modified` / `added` / `deleted` / `renamed` / `untracked` / `conflicted` |
 
 ## 时间戳格式
 

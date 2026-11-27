@@ -27,11 +27,11 @@ apps/web/
 | `components/ui|common|table|viewers|decorations/` | 通用 UI |
 | `components/sidebar|sidebar-rail|layout|home|metrics-dashboard|command-palette|settings/` | 壳与导航 |
 | `components/editor/` | CodeMirror 6 封装 |
-| `components/git|plugins/` | Git 面板、插件面板 |
+| `components/git/` | Diff 渲染组件（diff-viewer） |
 | `stores/` | 14+ zustand store（workflow-editor/、search-commands/ 为子目录） |
 | `lib/` | sdk.ts、ws.ts、agent-store（商店路由/镜像/旧 base 清除）、auth、themes、routes、code-languages、model-catalog、workflow-*、terminal-registry 等 |
 | `hooks/` | 9 个通用 hooks |
-| `locales/{en,zh}/` | 29 命名空间 ×2 语言 |
+| `locales/{en,zh}/` | 28 命名空间 ×2 语言 |
 | `shims/` | next 兼容层（next/dynamic|image|navigation、next-intl、styled-jsx） |
 | `styles/` | globals.css、app-root.css、boardui/ |
 | `utils/` | cx、directional-icon、scroll-direction、use-dismiss-on-outside-press |
