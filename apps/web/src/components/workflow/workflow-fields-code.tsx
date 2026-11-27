@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MonacoCodeEditor as MonacoEditor } from '@/components/editor/monaco-code-editor';
+import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
 import { WorkflowCodeFullscreenDialog } from './workflow-code-fullscreen-dialog';
 
 function getCodeEditorOptions(readOnly: boolean) {

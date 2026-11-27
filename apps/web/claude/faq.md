@@ -3,8 +3,8 @@
 **Q: 页面空白/控制台 TDZ "Cannot access ... before initialization"？**
 vendor chunk 分组被改动导致 mermaid 簇被切断。看 `vite.config.ts` 的 `buildMermaidClosure`；恢复注释中的分组顺序，本地 `pnpm build` 验证。
 
-**Q: Monaco 加载失败？**
-Monaco 不走 bundle：postinstall 把 `node_modules/monaco-editor/min/vs` 复制到 `public/monaco/vs`。依赖重装后确认该目录存在；升级 monaco 版本后必须重跑 postinstall。
+**Q: 代码编辑器渲染异常？**
+编辑器为 CodeMirror 6（@uiw/react-codemirror），全部依赖走 bundle（vendor-codemirror chunk）。升级依赖后重新 `pnpm build` 即可。
 
 **Q: 找某个 UI 组件从哪开始？**
 优先 `components/base/`、`components/application/`（BoardUI）；其次 `components/ui/`；业务件按域在 `components/<domain>/`。dev 模式点组件可直接跳源码（react-dev-inspector）。

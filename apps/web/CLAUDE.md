@@ -23,7 +23,7 @@ Vite + React 19 SPA 前端（自 flow-spaces Next.js 迁移）。三大界面域
 | [数据模型](claude/data-model.md) | stores、数据流、本地持久化 | 改状态/数据流 |
 | [测试与质量](claude/testing-and-quality.md) | typecheck、现有测试、风险 | 提交前 |
 | [文件索引](claude/file-map.md) | 目录结构速查 | 找文件 |
-| [FAQ](claude/faq.md) | 白屏/Monaco/i18n/高度链等 | 排错 |
+| [FAQ](claude/faq.md) | 白屏/编辑器/i18n/高度链等 | 排错 |
 | [变更记录](claude/changelog.md) | 索引更新历史 | 了解变更 |
 
 ## 扫描状态

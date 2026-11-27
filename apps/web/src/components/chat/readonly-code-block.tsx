@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/components/layout/theme-provider"
 import { JsonViewer } from "@/components/viewers/json-viewer"
-import { MonacoCodeEditor as MonacoEditor } from "@/components/editor/monaco-code-editor"
+import { CodeEditor } from "@/components/editor/code-editor"
 
 interface ReadonlyCodeBlockProps {
   value: string
@@ -24,7 +24,7 @@ export function ReadonlyCodeBlock({
     try {
       parsed = JSON.parse(value)
     } catch {
-      // parse failed, fall through to Monaco
+      // parse failed, fall through to the code editor
     }
     if (parsed !== undefined && typeof parsed === "object" && parsed !== null) {
       return (
@@ -48,7 +48,7 @@ export function ReadonlyCodeBlock({
         </div>
       ) : null}
       <div style={{ height }}>
-        <MonacoEditor
+        <CodeEditor
           height="100%"
           language={language}
           value={value}

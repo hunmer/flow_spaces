@@ -18,4 +18,4 @@
 
 ## 静态审计
 
-- `scripts/gen-feature-map.py` 可重跑生成功能图谱（38 功能节点模型）；其产物 `docs/feature_map.json/html` 已不随仓分发，如需可本地生成。
+- `scripts/gen-feature-map.py` 可重跑生成功能图谱：2026-11-27 已生成 `docs/feature_map.json/html`（33 功能节点 / 2947 文件 / 覆盖率 100%，本地未入库）。

@@ -11,7 +11,7 @@
 ## 运行形态
 
 - 开发：`vite`（端口 5173），`/api`、`/ws`、`/public`、`/static` 代理到 flow-spaces server（默认 `http://127.0.0.1:3110`，可用 `SERVER_URL` 覆盖）。
-- 构建：`vite build`，rollup `manualChunks` 按库拆 vendor chunk（mermaid/monaco/katex/tiptap/xyflow/recharts/babel/elk/icons/aria/media/framer-motion/react/misc）。
+- 构建：`vite build`，rollup `manualChunks` 按库拆 vendor chunk（mermaid/codemirror/katex/tiptap/xyflow/recharts/babel/elk/icons/aria/media/framer-motion/react/misc）。
 - 桌面：`electron/main.mjs` + `preload.mjs`（`pnpm electron:dev`）。
 - 部署产物由 server 静态服务（server 仓库 `public/` + `/static` 路由）。
 

@@ -31,5 +31,4 @@
 ## 禁止事项
 
 - 不绕过 SDK 直接 fetch 后端；不在组件里写裸色/裸字号类。
-- 不手动修改 `public/monaco/`（postinstall 从 node_modules 同步）。
 - 不改动 vite.config 的 mermaid 闭包逻辑除非理解 TDZ 风险（注释在文件头）。

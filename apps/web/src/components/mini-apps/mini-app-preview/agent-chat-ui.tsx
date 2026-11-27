@@ -16,7 +16,6 @@ import { MINI_APP_HIDDEN_FIELDS } from '@/components/sidebar/agent-shared';
 import { CommonEditorPanel } from '@/components/editor/editor-panel';
 import { CommonCodeEditor } from '@/components/editor/common-code-editor';
 import { type OpenFile } from '@/stores/editor';
-import { getModel, getModelUri, getOrCreateModel } from '@/lib/monaco-models';
 import { Copy, Loader2, Sparkles, Settings2, Eraser, FilesIcon, Trash2, RotateCcw, MessageSquareText, UploadIcon, Bell, BellOff } from 'lucide-react';
 import { miniAppConfigToAgentPreset, agentPresetToMiniAppConfig } from '../mini-app-agent-adapter';
 import { useMiniAppAgentChat } from './use-agent-chat';
@@ -120,9 +119,6 @@ function MiniAppAgentFilesDialog({ projectId, open, onOpenChange }: { projectId:
     [activeFilePath, openFiles],
   );
   const activeContent = activeFile ? modifiedFileContents[activeFile.path] ?? activeFile.content : '';
-  const modelPath = activeFilePath
-    ? getModelUri(`mini-app-preview-agent-files:${projectId}`, activeFilePath).toString()
-    : undefined;
 
   const handleChange = useCallback((path: string, content: string) => {
     setOpenFiles((prev) => prev.map((file) => (
@@ -239,7 +235,6 @@ function MiniAppAgentFilesDialog({ projectId, open, onOpenChange }: { projectId:
                 activeFile={activeFile}
                 activeFilePath={activeFilePath}
                 activeContent={activeContent}
-                modelPath={modelPath}
                 mediaType={null}
                 mediaUrl={null}
                 isCommitDiff={false}
@@ -249,10 +244,6 @@ function MiniAppAgentFilesDialog({ projectId, open, onOpenChange }: { projectId:
                 onSave={handleSave}
                 onRefreshActiveFile={handleRefreshActiveFile}
                 onClearPendingJump={() => undefined}
-                onGetExpectedModelPath={(path) => getModelUri(`mini-app-preview-agent-files:${projectId}`, path).path}
-                onGetModel={(path) => getModel(`mini-app-preview-agent-files:${projectId}`, path)}
-                onEnsureModel={(path, content) => getOrCreateModel(`mini-app-preview-agent-files:${projectId}`, path, content)}
-                onRegisterNavigation={() => undefined}
               />
             </main>
           </div>

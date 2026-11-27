@@ -346,7 +346,7 @@ const webDir = resolveRuntimeDir('web');
 if (existsSync(webDir)) {
   // /static/* -> public/* (avatar URLs etc.)
   app.use('/static', express.static(publicDir));
-  // web static assets (_next, monaco, etc.)
+  // web static assets (_next, codemirror vendor chunks, etc.)
   app.use(express.static(webDir));
 
   // SPA fallback: serve correct HTML for each route

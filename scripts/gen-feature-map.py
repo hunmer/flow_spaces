@@ -183,7 +183,7 @@ FEATURES = [
     ("web.boardui", "BoardUI 组件库", "base/application/foundations/reui 源码级组件", "🎨"),
     ("web.ui", "通用 UI", "ui/common/table/viewers/decorations 组件", "🧱"),
     ("web.shell", "壳与导航", "SidebarRail、首页、命令面板、设置、仪表盘", "🏠"),
-    ("web.editor", "Monaco 编辑器", "Monaco loader、模型、动作注册", "📝"),
+    ("web.editor", "CodeMirror 编辑器", "CodeMirror 6 组件、语言映射、模型动作", "📝"),
     ("web.git-plugins", "Git 与插件 UI", "git 面板、workflow 插件面板", "🌿"),
     ("web.stores", "状态管理", "14 个 store：workspace/chat/agent/workflow/editor", "🧠"),
     ("web.lib", "基础库", "SDK 客户端、WS、主题、路由表、模型目录等 43 模块", "📚"),
@@ -192,7 +192,7 @@ FEATURES = [
     ("web.shims", "Next 兼容层", "next/* → SPA shim（dynamic/image/navigation/next-intl）", "🌉"),
     ("web.styles", "样式与工具", "globals.css/typography.css、cx 等工具", "🖌️"),
     ("web.electron", "Electron 桌面", "main.mjs/preload.mjs", "🖥️"),
-    ("web.assets", "静态资源", "public/icons 1085 个图标、monaco 分发等", "🖼️"),
+    ("web.assets", "静态资源", "public/icons 1085 个图标、CodeMirror 依赖打包等", "🖼️"),
 ]
 
 CATEGORY_OF = {

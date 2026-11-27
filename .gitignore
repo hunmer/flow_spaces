@@ -2,7 +2,6 @@ node_modules/
 dist/
 *.local
 .DS_Store
-apps/web/public/monaco/vs/bicep-DF5aW17k.js
 # flow-spaces-data 内容已拆分到独立仓库（商店内容源），整目录不入库：
 # plugins   -> https://github.com/hunmer/flow-spaces-plugins
 # workflows -> https://github.com/hunmer/flow-spaces-workflows

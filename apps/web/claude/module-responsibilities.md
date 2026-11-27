@@ -8,7 +8,7 @@
 | `app/` | 路由层：`router.tsx` 路由表 + 各路由客户端壳（login、workflows/[id]、workflows/share、mini-apps、mini-apps-preview）+ `api/` 路由级数据 | 9 文件 |
 | `components/` | 全部 UI 组件（见下表） | 522 文件 |
 | `stores/` | zustand 状态：account/agent/channel/chat/editor(+editor-send)/inspector-history/llm/mobile-panel/terminal/workflow(+workflow-editor)/workspace/search-commands | 25 文件 |
-| `lib/` | 基础库：sdk 客户端、ws、auth、themes、routes、monaco-*、model-catalog、terminal-registry、workflow-nodes/prompt/plugin-api/edge-id/api、layout-templates、mini-app-workflow-config 等 | 43 文件 |
+| `lib/` | 基础库：sdk 客户端、ws、auth、themes、routes、code-languages、model-catalog、terminal-registry、workflow-nodes/prompt/plugin-api/edge-id/api、layout-templates、mini-app-workflow-config 等 |
 | `hooks/` | use-mobile、use-persistent-state、use-plugin-list、use-resolved-agent-icon、use-resolved-workspace-id、use-user-avatar、use-workflow-editor、use-count-up、workflow-clipboard | 9 文件 |
 | `locales/` | en/zh 双语 JSON（约 30 命名空间） | 73 文件 |
 | `shims/` | next 兼容层：next/{dynamic,image,navigation}、next-intl.tsx、styled-jsx.d.ts | 5 文件 |
@@ -25,7 +25,7 @@
 | `chat/`（33）+ `composer/`（6） | 会话流渲染（消息分段/附件/工具调用展示）与输入区（@提及、模型选择、语音） |
 | `sidebar/`（31）+ `sidebar-rail/`（8） | 全局侧栏导航与轨道布局壳（SidebarRail 包裹列表页） |
 | `mini-apps/`（26） | Mini App 列表页、编辑器页、预览容器、运行沙箱（react-renderer + Babel standalone 动态加载） |
-| `editor/`（14） | Monaco 代码编辑器封装（loader、models、action registry） |
+| `editor/` | CodeMirror 6 代码编辑器封装（code-editor、code-languages、菜单栏、预览） |
 | `common/`（12） | 跨域通用组件 |
 | `home/`（5）+ `metrics-dashboard/`（3） | 首页（MarketingHome/HomePage）与仪表盘 |
 | `command-palette/`（2） | 全局命令面板（Cmd+K） |

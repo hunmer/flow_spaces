@@ -48,7 +48,7 @@ graph LR
   WEB --商店索引/安装--> STORES[独立商店仓库 x4]
 ```
 
-- 找功能代码：`rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
+- 找功能代码：`docs/feature_map.html`（33 功能节点 / 2947 文件 / 100% 覆盖，2026-11-27 本地生成）或 `rg` / grep（CodeGraph 索引未建，需要时先 `codegraph init`）。
 - 商店内容（plugins/workflows/mini-app）默认从独立仓库 GitHub raw 拉取；本地 `/agents-store` 只分发 templates 包内剩余内容（agents/mcps/skills 等）。
 
 ## 扫描状态

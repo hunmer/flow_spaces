@@ -40,7 +40,7 @@ import {
   Link2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MonacoCodeEditor as MonacoEditor } from '@/components/editor/monaco-code-editor';
+import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
 import { ImportButton, useFileImportPicker } from './import-button';
 import { ExternalImportDialog } from './external-import-dialog';
 

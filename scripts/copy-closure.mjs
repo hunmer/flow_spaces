@@ -23,7 +23,7 @@
  *      对账：删除上一轮复制过、本轮不在清单内且源仓库存在对应文件的文件
  *      （脚手架 src/{App.tsx,main.tsx,index.css,vite-env.d.ts}、src/pages/**、src/shims/** 永不删）。
  *   C) 资源：src/locales 全量、src/app/globals.css、
- *      public/{monaco,monaco-themes,icons,devices,sdk} 全量。
+ *      public/{icons,devices,sdk} 全量。
  *
  * 输出：flow_spaces/scripts/copy-report.txt（含最终数字、分目录分布、与规划口径对比、
  *       差距文件清单）+ 控制台摘要。
@@ -313,7 +313,7 @@ assets.push([
   path.join(SRC, "app", "globals.css"),
   path.join(DEST_SRC, "styles", "globals.css"), // 任务简报指定落点 src/styles/globals.css
 ]);
-for (const sub of ["monaco", "monaco-themes", "icons", "devices", "sdk"]) {
+for (const sub of ["icons", "devices", "sdk"]) {
   const dir = path.join(WEB, "public", sub);
   if (!fs.existsSync(dir)) {
     log(`  ⚠️ public/${sub} 源目录不存在，跳过`);

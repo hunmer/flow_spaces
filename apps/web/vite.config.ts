@@ -154,10 +154,11 @@ export default defineConfig(({ command }) => {
           if (id.includes("node_modules/mermaid") || mermaidClosure.has(id))
             return "vendor-mermaid";
           if (
-            id.includes("node_modules/monaco-editor") ||
-            id.includes("node_modules/@monaco-editor/")
+            id.includes("node_modules/@codemirror/") ||
+            id.includes("node_modules/@lezer/") ||
+            id.includes("node_modules/@uiw/")
           )
-            return "vendor-monaco";
+            return "vendor-codemirror";
           if (
             id.includes("node_modules/katex") ||
             id.includes("node_modules/@vscode/rehype-katex")

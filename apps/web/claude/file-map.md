@@ -10,7 +10,7 @@ apps/web/
 ├── boardui.json               # BoardUI registry/alias
 ├── AGENTS.md                  # BoardUI 设计规则（boardui:rules）
 ├── electron/                  # main.mjs + preload.mjs
-├── public/                    # icons(1085 svg)、monaco/、ai-chat 等静态资源
+├── public/                    # icons(1085 svg)、ai-chat 等静态资源
 └── src/
 ```
 
@@ -26,10 +26,10 @@ apps/web/
 | `components/base|application|foundations|reui/` | BoardUI 组件库 |
 | `components/ui|common|table|viewers|decorations/` | 通用 UI |
 | `components/sidebar|sidebar-rail|layout|home|metrics-dashboard|command-palette|settings/` | 壳与导航 |
-| `components/editor/` | Monaco 封装 |
+| `components/editor/` | CodeMirror 6 封装 |
 | `components/git|plugins/` | Git 面板、插件面板 |
 | `stores/` | 14+ zustand store（workflow-editor/、search-commands/ 为子目录） |
-| `lib/` | sdk.ts、ws.ts、agent-store（商店路由/镜像/旧 base 清除）、auth、themes、routes、monaco-*、model-catalog、workflow-*、terminal-registry 等 30 文件 |
+| `lib/` | sdk.ts、ws.ts、agent-store（商店路由/镜像/旧 base 清除）、auth、themes、routes、code-languages、model-catalog、workflow-*、terminal-registry 等 |
 | `hooks/` | 9 个通用 hooks |
 | `locales/{en,zh}/` | 约 30 命名空间 ×2 语言 |
 | `shims/` | next 兼容层（next/dynamic|image|navigation、next-intl、styled-jsx） |

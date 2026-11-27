@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
@@ -13,11 +12,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import type * as Monaco from 'monaco-editor';
+import type { CodeEditorAction, CodeEditorHandle } from "@/components/editor/code-editor";
 import { useTerminalStore } from "@/stores/terminal";
 
 interface EditorMenuBarProps {
-  editorRef: React.RefObject<Monaco.editor.IStandaloneCodeEditor | null>;
+  editorHandle: CodeEditorHandle | null;
   activeFilePath: string | null;
   isReadOnly: boolean;
   onSave: () => void;
@@ -26,35 +25,21 @@ interface EditorMenuBarProps {
   onToggleFullscreen: () => void;
   wordWrap: boolean;
   onToggleWordWrap: () => void;
-  minimap: boolean;
-  onToggleMinimap: () => void;
   fontSize: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
-  monacoTheme: string | null;
-  onThemeChange: (theme: string | null) => void;
 }
 
-export function EditorMenuBar({ editorRef, activeFilePath, isReadOnly, onSave, onToggleReadOnly, isFullscreen, onToggleFullscreen, wordWrap, onToggleWordWrap, minimap, onToggleMinimap, fontSize, onZoomIn, onZoomOut, onZoomReset, monacoTheme, onThemeChange }: EditorMenuBarProps) {
+export function EditorMenuBar({ editorHandle, activeFilePath, isReadOnly, onSave, onToggleReadOnly, isFullscreen, onToggleFullscreen, wordWrap, onToggleWordWrap, fontSize, onZoomIn, onZoomOut, onZoomReset }: EditorMenuBarProps) {
   const t = useTranslations('editor');
-  const [themeList, setThemeList] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    fetch('/monaco-themes/themelist.json')
-      .then(r => r.json())
-      .then(setThemeList)
-      .catch(() => {});
-  }, []);
-
-  const sortedThemes = Object.entries(themeList).sort(([, a], [, b]) => a.localeCompare(b));
-
-  const exec = (action: string) => {
+  const exec = (action: CodeEditorAction) => {
     requestAnimationFrame(() => {
-      const editor = editorRef.current;
-      if (!editor) return;
-      editor.focus();
-      editor.getAction(action)?.run();
+      const handle = editorHandle;
+      if (!handle) return;
+      handle.focus();
+      handle.runAction(action);
     });
   };
 
@@ -86,26 +71,26 @@ export function EditorMenuBar({ editorRef, activeFilePath, isReadOnly, onSave, o
             <DropdownMenuShortcut>⇧⌘Z</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => exec('editor.action.clipboardCutAction')}>
+          <DropdownMenuItem onClick={() => exec('cut')}>
             {t('menuCut')}
             <DropdownMenuShortcut>⌘X</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => exec('editor.action.clipboardCopyAction')}>
+          <DropdownMenuItem onClick={() => exec('copy')}>
             {t('menuCopy')}
             <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => exec('editor.action.clipboardPasteAction')}>
+          <DropdownMenuItem onClick={() => exec('paste')}>
             {t('menuPaste')}
             <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => exec('actions.find')}>
+          <DropdownMenuItem onClick={() => exec('find')}>
             {t('menuFind')}
             <DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={isReadOnly}
-            onClick={() => exec('editor.action.startFindReplaceAction')}
+            onClick={() => exec('replace')}
           >
             {t('menuReplace')}
             <DropdownMenuShortcut>⌥⌘F</DropdownMenuShortcut>
@@ -126,24 +111,6 @@ export function EditorMenuBar({ editorRef, activeFilePath, isReadOnly, onSave, o
           <DropdownMenuItem onClick={onToggleWordWrap}>
             {wordWrap ? t('disableWordWrap') : t('enableWordWrap')}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onToggleMinimap}>
-            {minimap ? t('disableMinimap') : t('enableMinimap')}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>{t('editorTheme')}</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="max-h-80 overflow-y-auto">
-              <DropdownMenuItem onClick={() => onThemeChange(null)}>
-                {monacoTheme === null && '✓ '}{t('themeDefault')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {sortedThemes.map(([slug, name]) => (
-                <DropdownMenuItem key={slug} onClick={() => onThemeChange(name)}>
-                  {monacoTheme === name && '✓ '}{name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onZoomIn}>
             {t('zoomIn')}

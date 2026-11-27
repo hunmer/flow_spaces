@@ -40,5 +40,5 @@
 ## 禁止事项
 
 - 不手改生成物：`packages/templates/*/index.json`（generate-index.mjs 生成）、`apps/web/public/monaco/`。
-- `scripts/gen-feature-map.py` 仍可运行，但其产物（docs/feature_map.*）已不随仓分发，勿提交生成物。
+- `scripts/gen-feature-map.py` 重建功能图谱 JSON（2026-11-27 已生成本地 `docs/feature_map.json/html`，未入库；是否提交由维护者决定）。
 - 不主动执行 git 提交/分支/reset。

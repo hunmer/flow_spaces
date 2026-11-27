@@ -1,24 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import "@/lib/monaco-builtin-actions";
 import "@/components/editor/code-editor-clipboard";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Code, Eye, FileText, AlignLeft, Binary } from "lucide-react";
 import { useTheme } from "@/components/layout/theme-provider";
 import { useTranslations } from "next-intl";
 import { CommitDiffViewer } from "@/components/git/commit-diff-viewer";
 import type { MediaType, OpenFile } from "@/stores/editor";
 import { EditorMenuBar } from "./code-editor-menu-bar";
-import { getLanguage } from "./code-editor-utils";
-import { collapseEditorSelection } from "./code-editor-mobile";
-import { useMobileReadonlyOverlay } from "./useMobileReadonlyOverlay";
-import { MobileReadonlyOverlay } from "./code-editor-mobile-overlay";
-import { MonacoCodeEditor as MonacoEditor } from "@/components/editor/monaco-code-editor";
+import { getLanguage } from "@/lib/code-languages";
+import { CodeEditor, type CodeEditorHandle, type CodeEditorOptions } from "./code-editor";
 import { Markdown } from "@/components/ui/markdown";
 import { MermaidPreview } from "@/components/ui/mermaid-preview";
 import type { GitDiffResult } from "@flow-spaces/shared";
-import type * as Monaco from "monaco-editor";
 
 function getDefaultReadOnly() {
   if (typeof window === "undefined") return false;
@@ -42,7 +36,6 @@ interface CommonCodeEditorProps {
   activeFile: OpenFile | undefined;
   activeFilePath: string | null;
   activeContent: string;
-  modelPath?: string;
   mediaType: MediaType | null;
   mediaUrl: string | null;
   isCommitDiff: boolean;
@@ -54,18 +47,6 @@ interface CommonCodeEditorProps {
   onSave: () => void;
   onRefreshActiveFile: () => void;
   onClearPendingJump: () => void;
-  onGetExpectedModelPath: (path: string) => string;
-  onGetModel: (path: string) => Monaco.editor.ITextModel | null;
-  onEnsureModel: (path: string, content: string) => void;
-  onRegisterNavigation: (
-    editor: Monaco.editor.IStandaloneCodeEditor,
-    monaco: typeof Monaco,
-    disposables: Monaco.IDisposable[],
-  ) => void;
-  onRunBuiltinAction?: (actionId: string, editor: Monaco.editor.IStandaloneCodeEditor) => void;
-  onApplyRegisteredActions?: (
-    editor: Monaco.editor.IStandaloneCodeEditor,
-  ) => Monaco.IDisposable[];
 }
 
 function formatFileSize(bytes: number): string {
@@ -117,7 +98,6 @@ export function CommonCodeEditor({
   activeFile,
   activeFilePath,
   activeContent,
-  modelPath,
   mediaType,
   mediaUrl,
   isCommitDiff,
@@ -129,32 +109,19 @@ export function CommonCodeEditor({
   onSave,
   onRefreshActiveFile,
   onClearPendingJump,
-  onGetExpectedModelPath,
-  onGetModel,
-  onEnsureModel,
-  onRegisterNavigation,
-  onRunBuiltinAction,
-  onApplyRegisteredActions,
 }: CommonCodeEditorProps) {
   const { resolvedTheme } = useTheme();
   const t = useTranslations("editor");
-  const isMobile = useIsMobile();
-  const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoRef = useRef<typeof Monaco | null>(null);
-  const navigationDisposablesRef = useRef<Monaco.IDisposable[]>([]);
-  const actionRegistryDisposablesRef = useRef<Monaco.IDisposable[]>([]);
+  const editorHandleRef = useRef<CodeEditorHandle | null>(null);
   const wheelZoomCleanupRef = useRef<(() => void) | null>(null);
+  const [editorHandle, setEditorHandle] = useState<CodeEditorHandle | null>(null);
   const [isReadOnly, setIsReadOnly] = useState(getDefaultReadOnly);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [wordWrap, setWordWrap] = useState(() => localStorage.getItem("editor-word-wrap") === "true");
-  const [minimap, setMinimap] = useState(() => localStorage.getItem("editor-minimap") === "true");
   const [fontSize, setFontSize] = useState(() => {
     const saved = localStorage.getItem("editor-font-size");
     return saved ? parseInt(saved, 10) : 13;
   });
-  const [monacoTheme, setMonacoTheme] = useState<string | null>(null);
-  const [editorReadyTick, setEditorReadyTick] = useState(0);
-  const [jumpRetryTick, setJumpRetryTick] = useState(0);
   const [showPreview, setShowPreview] = useState(true);
 
   const isPreviewable = mediaType === "image" || mediaType === "video" || mediaType === "audio" || mediaType === "svg" || mediaType === "markdown" || mediaType === "mermaid";
@@ -162,123 +129,36 @@ export function CommonCodeEditor({
 
   useEffect(() => { setShowPreview(true); }, [activeFilePath]);
 
-  const mobile = useMobileReadonlyOverlay({
-    editorRef,
-    monacoRef,
-    activeContent,
-    onRunBuiltinAction,
-    isMobile,
-    isReadOnly,
-    isCommitDiff,
-    hasActiveFile: Boolean(activeFile),
-    editorReadyTick,
-    wordWrap,
-  });
+  const handleMount = useCallback((handle: CodeEditorHandle) => {
+    editorHandleRef.current = handle;
+    setEditorHandle(handle);
 
-  const handleSaveRef = useRef(onSave);
-  useEffect(() => { handleSaveRef.current = onSave; }, [onSave]);
-
-  const syncReadOnly = useCallback((editor: Monaco.editor.IStandaloneCodeEditor, readOnly: boolean) => {
-    editor.updateOptions({ readOnly });
-  }, []);
-
-  const applyMonacoTheme = useCallback(async (themeName: string | null) => {
-    if (themeName === null) {
-      setMonacoTheme(null);
-      localStorage.removeItem("editor-monaco-theme");
-      return;
-    }
-    try {
-      const res = await fetch(`/monaco-themes/${encodeURIComponent(themeName)}.json`);
-      const data = await res.json();
-      const monaco = monacoRef.current;
-      if (monaco) {
-        monaco.editor.defineTheme(themeName, data);
-        monaco.editor.setTheme(themeName);
-      }
-      setMonacoTheme(themeName);
-      localStorage.setItem("editor-monaco-theme", themeName);
-    } catch {}
-  }, []);
-
-  const registerNavigation = useCallback((editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
-    onRegisterNavigation(editor, monaco, navigationDisposablesRef.current);
-  }, [onRegisterNavigation]);
-
-  const attachWheelZoom = useCallback((editor: Monaco.editor.IStandaloneCodeEditor) => {
     wheelZoomCleanupRef.current?.();
-
-    const node = editor.getDomNode();
-    if (!node) return;
-
-    const handler = (e: WheelEvent) => {
-      if (!e.ctrlKey && !e.metaKey) return;
-      e.preventDefault();
-      e.stopPropagation();
-      setFontSize((prev) => {
-        const next = prev + (e.deltaY < 0 ? 1 : -1);
-        const clamped = Math.min(Math.max(next, 8), 40);
-        localStorage.setItem("editor-font-size", String(clamped));
-        return clamped;
-      });
-    };
-
-    node.addEventListener("wheel", handler, { passive: false, capture: true });
-    wheelZoomCleanupRef.current = () => {
-      node.removeEventListener("wheel", handler, true);
-    };
-  }, []);
-
-  const handleMount = useCallback((editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) => {
-    editorRef.current = editor;
-    monacoRef.current = monaco;
-    syncReadOnly(editor, isReadOnly);
-    editor.updateOptions({ fontSize, quickSuggestions: false, renderValidationDecorations: "off" });
-    registerNavigation(editor, monaco);
-    attachWheelZoom(editor);
-
-    for (const d of actionRegistryDisposablesRef.current) d.dispose();
-    actionRegistryDisposablesRef.current = onApplyRegisteredActions
-      ? onApplyRegisteredActions(editor)
-      : [];
-
-    setEditorReadyTick((tick) => tick + 1);
-
-    editor.addAction({
-      id: "agentSpaces.saveFile",
-      label: "Save File",
-      keybindings: [2048 | 49],
-      run: () => handleSaveRef.current(),
-    });
-
-    const savedTheme = localStorage.getItem("editor-monaco-theme");
-    if (savedTheme) {
-      fetch(`/monaco-themes/${encodeURIComponent(savedTheme)}.json`)
-        .then((r) => r.json())
-        .then((data) => {
-          monaco.editor.defineTheme(savedTheme, data);
-          monaco.editor.setTheme(savedTheme);
-          setMonacoTheme(savedTheme);
-        })
-        .catch(() => {});
+    const node = handle.getDomNode();
+    if (node) {
+      const handler = (e: WheelEvent) => {
+        if (!e.ctrlKey && !e.metaKey) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setFontSize((prev) => {
+          const next = prev + (e.deltaY < 0 ? 1 : -1);
+          const clamped = Math.min(Math.max(next, 8), 40);
+          localStorage.setItem("editor-font-size", String(clamped));
+          return clamped;
+        });
+      };
+      node.addEventListener("wheel", handler, { passive: false, capture: true });
+      wheelZoomCleanupRef.current = () => {
+        node.removeEventListener("wheel", handler, true);
+      };
     }
-  }, [attachWheelZoom, fontSize, isReadOnly, onApplyRegisteredActions, registerNavigation, syncReadOnly]);
-
-  useEffect(() => {
-    if (!editorRef.current || !monacoRef.current) return;
-    registerNavigation(editorRef.current, monacoRef.current);
-  }, [registerNavigation]);
+  }, []);
 
   useEffect(() => {
     return () => {
       wheelZoomCleanupRef.current?.();
       wheelZoomCleanupRef.current = null;
-      for (const disposable of navigationDisposablesRef.current) {
-        disposable.dispose();
-      }
-      navigationDisposablesRef.current = [];
-      for (const d of actionRegistryDisposablesRef.current) d.dispose();
-      actionRegistryDisposablesRef.current = [];
+      editorHandleRef.current = null;
     };
   }, []);
 
@@ -289,44 +169,6 @@ export function CommonCodeEditor({
   }, [activeFile, activeFilePath, activeFile?.modified, isCommitDiff, onRefreshActiveFile]);
 
   useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    syncReadOnly(editor, isReadOnly);
-  }, [isReadOnly, syncReadOnly]);
-
-  useEffect(() => {
-    if (!mobile.pendingNavigationSelectionCleanup.current) return;
-    window.setTimeout(() => {
-      if (!mobile.pendingNavigationSelectionCleanup.current) return;
-      collapseEditorSelection(editorRef.current);
-      mobile.closeMobileSelectionMode();
-    }, 0);
-  }, [activeFilePath, editorReadyTick, mobile]);
-
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    editor.updateOptions({ wordWrap: wordWrap ? "on" : "off" });
-  }, [wordWrap]);
-
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    editor.updateOptions({ minimap: { enabled: minimap } });
-  }, [minimap]);
-
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    editor.updateOptions({ fontSize });
-  }, [fontSize]);
-
-  useEffect(() => {
-    if (!activeFile || !activeFilePath) return;
-    onEnsureModel(activeFilePath, activeContent);
-  }, [activeFile, activeFilePath, activeContent, onEnsureModel]);
-
-  useEffect(() => {
     if (!pendingJump || !activeFilePath || pendingJump.path !== activeFilePath) return;
 
     if (isCodePreviewToggle && showPreview) {
@@ -334,97 +176,39 @@ export function CommonCodeEditor({
       return;
     }
 
-    if (!editorRef.current) return;
+    const handle = editorHandleRef.current;
+    if (!handle) return;
 
-    const { line, column, endLine, endColumn, path } = pendingJump;
-    const editor = editorRef.current;
-    let model = editor.getModel();
-    const expectedModelPath = onGetExpectedModelPath(path);
-    if (!model || model.uri.path !== expectedModelPath) {
-      const targetModel = onGetModel(path);
-      if (targetModel) {
-        editor.setModel(targetModel);
-        model = targetModel;
-      }
-    }
-
-    if (!model || model.uri.path !== expectedModelPath) {
-      const retryTimer = window.setTimeout(() => {
-        setJumpRetryTick((tick) => tick + 1);
-      }, 30);
-      return () => window.clearTimeout(retryTimer);
-    }
-
-    const lineNumber = Math.min(Math.max(1, line), model.getLineCount());
-    const maxColumn = model.getLineMaxColumn(lineNumber);
-    const columnNumber = Math.min(Math.max(1, column || 1), maxColumn);
-
-    const endLineNumber = endLine ? Math.min(Math.max(1, endLine), model.getLineCount()) : lineNumber;
-    const endColumnNumber = endColumn
-      ? Math.min(Math.max(1, endColumn), model.getLineMaxColumn(endLineNumber))
-      : columnNumber;
-    const selection = {
-      startLineNumber: lineNumber,
-      startColumn: columnNumber,
-      endLineNumber,
-      endColumn: endColumnNumber,
-    };
-
-    editor.setSelection(selection);
-    editor.setPosition({ lineNumber, column: columnNumber });
-    editor.revealLineInCenter(lineNumber);
-    const highlights = editor.createDecorationsCollection([{
-      range: selection,
-      options: {
-        className: "symbolHighlight",
-        stickiness: 1,
-      },
-    }]);
-    window.setTimeout(() => highlights.clear(), 700);
+    const { line, column, endLine, endColumn } = pendingJump;
+    handle.setSelection(line, column || 1, endLine, endColumn, { flash: true });
     if (!isReadOnly) {
-      editor.focus();
+      handle.focus();
     }
     onClearPendingJump();
-  }, [pendingJump, activeFilePath, editorReadyTick, jumpRetryTick, onClearPendingJump, isReadOnly, isCodePreviewToggle, showPreview, onGetExpectedModelPath, onGetModel]);
+  }, [pendingJump, activeFilePath, editorHandle, onClearPendingJump, isReadOnly, isCodePreviewToggle, showPreview]);
 
-  const editorOptions: Monaco.editor.IStandaloneEditorConstructionOptions = {
+  const editorOptions: CodeEditorOptions = {
     fontSize,
-    minimap: { enabled: minimap },
     scrollBeyondLastLine: false,
-    glyphMargin: true,
-    lineNumbersMinChars: 3,
     padding: { top: 8 },
     renderLineHighlight: "gutter",
     readOnly: isReadOnly,
     wordWrap: wordWrap ? "on" : "off",
   };
 
-  const renderMonacoEditor = (withGotoLocation: boolean) => (
-    <MonacoEditor
+  const renderCodeEditor = () => (
+    <CodeEditor
       height="100%"
       language={activeFile ? getLanguage(activeFile.path) : undefined}
+      path={activeFilePath ?? undefined}
       value={activeContent}
-      path={modelPath}
-      onChange={(value, event) => {
-        if (!activeFile || event.isFlush) return;
+      onChange={(value) => {
+        if (!activeFile) return;
         onChange(activeFile.path, value || "");
       }}
       onMount={handleMount}
-      options={{
-        ...editorOptions,
-        ...(withGotoLocation
-          ? {
-              gotoLocation: {
-                multipleDefinitions: "goto",
-                multipleTypeDefinitions: "goto",
-                multipleDeclarations: "goto",
-                multipleImplementations: "goto",
-                multipleReferences: "goto",
-              },
-            }
-          : {}),
-      }}
-      theme={monacoTheme || (resolvedTheme === "dark" ? "vs-dark" : "vs")}
+      onSave={onSave}
+      options={editorOptions}
     />
   );
 
@@ -432,7 +216,7 @@ export function CommonCodeEditor({
     <div className={`flex flex-col h-full ${isFullscreen ? "fixed inset-0 z-50 bg-background" : ""}`}>
       {tabs}
       <EditorMenuBar
-        editorRef={editorRef}
+        editorHandle={editorHandle}
         activeFilePath={activeFilePath}
         isReadOnly={isReadOnly}
         onSave={onSave}
@@ -444,12 +228,6 @@ export function CommonCodeEditor({
           const v = !wordWrap;
           setWordWrap(v);
           localStorage.setItem("editor-word-wrap", String(v));
-        }}
-        minimap={minimap}
-        onToggleMinimap={() => {
-          const v = !minimap;
-          setMinimap(v);
-          localStorage.setItem("editor-minimap", String(v));
         }}
         fontSize={fontSize}
         onZoomIn={() => setFontSize((s) => {
@@ -466,10 +244,8 @@ export function CommonCodeEditor({
           setFontSize(13);
           localStorage.setItem("editor-font-size", "13");
         }}
-        monacoTheme={monacoTheme}
-        onThemeChange={applyMonacoTheme}
       />
-      <div className="relative flex-1 min-h-0 bg-background" {...mobile.containerProps}>
+      <div className="relative flex-1 min-h-0 bg-background">
         {isCommitDiff && commitDiffData ? (
           <CommitDiffViewer diffs={commitDiffData.diffs} message={commitDiffData.message} />
         ) : isPreviewable && showPreview && (mediaUrl || mediaType === "markdown" || mediaType === "mermaid") ? (
@@ -520,29 +296,10 @@ export function CommonCodeEditor({
               <Eye size={14} />
               {t("preview")}
             </button>
-            {renderMonacoEditor(false)}
+            {renderCodeEditor()}
           </div>
         ) : activeFile ? (
-          <>
-            {renderMonacoEditor(true)}
-            {mobile.showMobileReadonlyOverlay ? (
-              <MobileReadonlyOverlay
-                activeContent={activeContent}
-                wordWrap={wordWrap}
-                mobileSelectionMode={mobile.mobileSelectionMode}
-                mobileReadonlyMenu={mobile.mobileReadonlyMenu}
-                mobileSelectionPreMetrics={mobile.mobileSelectionPreMetrics}
-                mobileSelectionPreRef={mobile.mobileSelectionPreRef}
-                mobileReadonlyMenuRef={mobile.mobileReadonlyMenuRef}
-                onContextMenu={mobile.handleMobileSelectionContextMenu}
-                onEnterSelectionMode={mobile.enterMobileSelectionMode}
-                onCloseSelectionMode={mobile.closeMobileSelectionMode}
-                onCopySelection={mobile.copyMobileSelection}
-                onRunEditorAction={mobile.runMobileEditorAction}
-                onRunBuiltinAction={mobile.runMobileBuiltinAction}
-              />
-            ) : null}
-          </>
+          renderCodeEditor()
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             {t("openFileToEdit")}

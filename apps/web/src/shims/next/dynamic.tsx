@@ -2,7 +2,7 @@
  * `next/dynamic` shim：React.lazy + Suspense 的简化版。
  *
  * 业务闭包内的两种用法（均为客户端组件，ssr:false 在 SPA 下无意义）：
- *   1. dynamic<EditorProps>(() => import("@monaco-editor/react").then(m => m.default), { ssr:false, loading })
+ *   1. dynamic(() => import("@uiw/react-codemirror").then(m => m.default), { ssr:false, loading })
  *   2. dynamic(() => import("@/components/teams/team-chat-panel").then(m => m.TeamChatPanel), { ssr:false })
  * loader 可能 resolve 出组件本身或 ES module（取 .default），两者都归一到
  * React.lazy 需要的 { default: ComponentType } 形态。

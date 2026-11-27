@@ -25,4 +25,4 @@ rg/grep 搜符号；各模块入口见各 CLAUDE.md。CodeGraph 索引未建（`
 key 需 en/zh 双语同步；跑 `node scripts/check-locale-parity.mjs` 校验。
 
 **Q: docs 里的旧引用还作数吗？**
-`MIGRATION-NOTES.md`、`docs/smoke/`、`docs/feature_map.*` 已不随仓分发（相关失效链接已于 2026-11-27 清理：README、docs/workflow/README、plugin-guide 参考实现路径已改指 flow-spaces-plugins 仓库）。
+`MIGRATION-NOTES.md`、`docs/smoke/` 已不随仓分发（相关失效链接已于 2026-11-27 清理：README、docs/workflow/README、plugin-guide 参考实现路径已改指 flow-spaces-plugins 仓库）；`docs/feature_map.json/html` 已于 2026-11-27 重新本地生成（未入库）。

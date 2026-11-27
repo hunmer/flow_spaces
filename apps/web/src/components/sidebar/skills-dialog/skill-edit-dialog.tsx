@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { FileIcon, FolderIcon, FolderOpenIcon, ChevronRightIcon, Loader2, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { MonacoCodeEditor as MonacoEditor } from '@/components/editor/monaco-code-editor';
+import { CodeEditor as MonacoEditor } from '@/components/editor/code-editor';
 import type { SkillInfo } from './types';
 
 interface SkillFile {

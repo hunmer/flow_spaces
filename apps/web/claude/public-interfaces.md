@@ -19,7 +19,7 @@ SPA 无服务端路由；以下为 react-router 客户端路由（`src/app/route
 
 - REST：全部经 `@flow-spaces/sdk`（24 模块，见 packages/sdk）；路由级数据访问在 `src/app/api/`。
 - WS：`/ws` 代理 → server（聊天/终端/语音/工作流执行通道，`lib/ws.ts`）。
-- 静态：`/public`（上传/头像）、`/static`、`/monaco/vs`（本地 public）。
+- 静态：`/public`（上传/头像）、`/static`。
 
 ## 导出给其他包的内容
 

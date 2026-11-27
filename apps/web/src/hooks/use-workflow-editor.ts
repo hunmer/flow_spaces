@@ -38,7 +38,7 @@ function isEditableElement(element: Element | null): boolean {
     || element instanceof HTMLTextAreaElement
     || element instanceof HTMLSelectElement
     || element.isContentEditable
-    || element.closest('.monaco-editor, .monaco-editor *') !== null
+    || element.closest('.cm-editor, .cm-editor *') !== null
     || element.closest('[contenteditable="true"], [role="textbox"]') !== null
   );
 }

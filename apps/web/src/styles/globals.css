@@ -205,7 +205,7 @@
     @apply border-border outline-ring/50;
   }
   html[data-custom-font="true"] body,
-  html[data-custom-font="true"] body :where(:not(.monaco-editor, .monaco-editor *, .xterm, .xterm *)) {
+  html[data-custom-font="true"] body :where(:not(.cm-editor, .cm-editor *, .xterm, .xterm *)) {
     font-family: var(--font-app) !important;
   }
   body {
@@ -1136,3 +1136,9 @@ a[href="https://reactflow.dev"] {
 }
 
 :root { --font-inter: var(--app-font-sans); --shadow-card: 0 1px 1px 0 rgb(0 0 0 / 0.05); }
+
+/* CodeMirror 编辑器：pendingJump 命中行的短暂高亮（对齐旧 Monaco symbolHighlight） */
+.cm-flash-selection {
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  border-radius: 2px;
+}

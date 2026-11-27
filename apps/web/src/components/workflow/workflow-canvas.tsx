@@ -164,7 +164,7 @@ function isEditableKeyboardTarget(target: EventTarget | null): boolean {
     || target instanceof HTMLTextAreaElement
     || target instanceof HTMLSelectElement
     || target.isContentEditable
-    || target.closest('.monaco-editor, .monaco-editor *') !== null
+    || target.closest('.cm-editor, .cm-editor *') !== null
     || target.closest('[contenteditable="true"], [role="textbox"]') !== null
   );
 }

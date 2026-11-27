@@ -3,7 +3,7 @@
 ## 关键运行时依赖（package.json 摘要）
 
 - 框架：React 19 + react-router-dom（SPA）、Vite 7、Tailwind CSS v4（@tailwindcss/vite）。
-- 编辑器/画布：@xyflow/react（工作流画布）、@monaco-editor/react + monaco-editor（代码编辑）、@tiptap/*（富文本）、mermaid（预览渲染，闭包拆 chunk）。
+- 编辑器/画布：@xyflow/react（工作流画布）、@uiw/react-codemirror + @codemirror/*（CodeMirror 6 代码编辑）、@tiptap/*（富文本）、mermaid（预览渲染，闭包拆 chunk）。
 - AI 流：@ai-sdk/react + anthropic/google/openai providers（浏览器侧直连可选路径）。
 - UI：react-aria-components、@radix-ui/*、@dnd-kit/*、@tanstack/react-table、sonner、framer-motion、lucide-react + @remixicon/react + @tabler/icons-react。
 - workspace 包：`@flow-spaces/sdk`、`@flow-spaces/shared`。
@@ -28,4 +28,4 @@
 
 - TypeScript strict + ES2022 + bundler resolution（根 tsconfig.base.json）。
 - `next/*` 与 `next-intl` 导入仅作为迁移兼容存在，alias 已重定向，勿新增。
-- Monaco 走 public 静态分发（postinstall 同步），升级 monaco-editor 版本后需重跑 postinstall。
+- CodeMirror 6 全部走 bundle（vite manualChunks 拆 vendor-codemirror chunk），无 public 静态分发。
