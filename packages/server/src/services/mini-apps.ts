@@ -11,6 +11,7 @@ import { unloadServices } from './mini-app-services.js';
 import { executeDb as dbExecuteDb, executeDbTransaction as dbExecuteDbTransaction, closeProjectDbs } from '../storage/mini-app-db.js';
 import * as fileService from './file.js';
 import { verifyStoreFileBuffer } from './store-file-checksum.js';
+import { downloadStoreFiles } from './store-download-pool.js';
 
 export { store };
 export type { MiniAppProject };
@@ -543,19 +544,19 @@ export async function installFromStore(input: {
   const reportProgress = (path: string) => onProgress?.({
     total: files.length, completed: downloaded + skipped, downloaded, skipped, path, installDevelopment,
   });
-  for (const file of files) {
+  await downloadStoreFiles(files, async (file) => {
     const targetPath = join(projectRoot, file.path);
     if (md5OfFile(targetPath) === file.md5) {
       skipped++;
       reportProgress(file.path);
-      continue;
+      return;
     }
     const buf = verifyStoreFileBuffer(await fetchStoreBuffer(`${base}/${file.path}`), file.md5, file.path);
     mkdirSync(dirname(targetPath), { recursive: true });
     writeFileSync(targetPath, buf);
     downloaded++;
     reportProgress(file.path);
-  }
+  });
 
   const installed = store.upsertStoreProject({
     id: project.id, name: project.name,
