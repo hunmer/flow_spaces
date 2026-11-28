@@ -70,10 +70,10 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
             <img
               src={backgroundImage}
               alt=""
-              className="size-full object-cover"
+              className="size-full scale-105 object-cover blur-[3px]"
             />
             {/* Dark overlay for readability */}
-            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0 bg-black/40" />
           </div>
         )}
 

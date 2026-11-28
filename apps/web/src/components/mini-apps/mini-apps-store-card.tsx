@@ -7,6 +7,7 @@ import { Chip } from '@/components/base/badges/chip';
 import { AgentIcon } from '@/components/common/agent-icon';
 import { FeatureCard } from '@/components/ui/feature-card';
 import { resolveStoreUrl } from '@/lib/agent-store';
+import { cx } from '@/utils/cx';
 
 /** 商店索引条目（mini-app/index.json） */
 export interface MiniAppIndexItem {
@@ -49,6 +50,7 @@ interface MiniAppStoreCardProps {
 /** 商店模式卡片：复用本地 MiniAppCard 的 FeatureCard 视觉，底部为「查看详情」按钮；已安装时右上角展示角标，安装/更新入口移入详情对话框 */
 export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCardProps) {
   const t = useTranslations('mini-apps');
+  const hasCover = Boolean(item.coverUrl);
 
   return (
     <FeatureCard
@@ -71,7 +73,7 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
         <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
           {/* Name + type chip + installed badge */}
           <div className="flex items-center gap-2 min-w-0">
-            <p className="text-sm font-medium truncate">{item.name}</p>
+            <p className={cx('text-sm font-medium truncate', hasCover && 'text-white drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]')}>{item.name}</p>
             {status === 'installed' && (
               <Chip variant="caption" color="lime" className="shrink-0 gap-1">
                 <Check className="size-3" />
@@ -79,7 +81,7 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
               </Chip>
             )}
           </div>
-          <p className="text-xs text-muted-foreground line-clamp-1">
+          <p className={cx('text-xs line-clamp-1', hasCover ? 'text-white/80 drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]' : 'text-muted-foreground')}>
             {item.description || '—'}
           </p>
         </div>
