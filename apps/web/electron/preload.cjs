@@ -36,7 +36,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     checkUpdate: () => ipcRenderer.invoke('appInfo:checkUpdate'),
   },
   clientPlugins,
-  ...(process.platform === "win32" ? {
+  ...(process.platform === "win32" || process.platform === "darwin" ? {
     miniApps: {
       createDesktopShortcut: (project) => ipcRenderer.invoke("miniApps:createDesktopShortcut", project),
     },

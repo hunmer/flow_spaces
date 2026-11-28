@@ -9,7 +9,7 @@ import { attachWindowLoader } from "./window-loader.mjs";
 import { createAppInfoApi } from "./app-info.mjs";
 import { spawn } from "node:child_process";
 import net from "node:net";
-import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
+import { createMacMiniAppShortcut, miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -241,18 +241,25 @@ async function openMiniApp(id) {
 }
 
 ipcMain.handle("miniApps:createDesktopShortcut", (event, project) => {
-  if (process.platform !== "win32" || new URL(event.sender.getURL()).origin !== appOrigin) {
+  if ((process.platform !== "win32" && process.platform !== "darwin") ||
+      new URL(event.sender.getURL()).origin !== appOrigin) {
     throw new Error("Desktop shortcuts are unavailable");
   }
-  const { filename, options } = miniAppShortcut({
+  const shortcut = {
     id: project?.id,
     name: project?.name,
     executable: process.execPath,
     appPath: path.join(__dirname, "main.mjs"),
     packaged: IS_PACKAGED,
-  });
+  };
+  const desktop = app.getPath("desktop");
+  if (process.platform === "darwin") {
+    createMacMiniAppShortcut(desktop, shortcut, project?.iconBuffer);
+    return;
+  }
+  const { filename, options } = miniAppShortcut(shortcut);
   const icon = saveMiniAppShortcutIcon(path.join(app.getPath("userData"), "mini-app-icons"), project.id, project.iconBuffer);
-  if (!shell.writeShortcutLink(path.join(app.getPath("desktop"), filename), "create", {
+  if (!shell.writeShortcutLink(path.join(desktop, filename), "create", {
     ...options,
     cwd: path.dirname(process.execPath),
     icon,

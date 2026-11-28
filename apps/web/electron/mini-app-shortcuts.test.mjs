@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { EventEmitter } from "node:events";
 import path from "node:path";
 import vm from "node:vm";
+import { createAppInfoApi } from "./app-info.mjs";
 import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
 
 const input = {
@@ -56,10 +57,15 @@ test("preview routing encodes IDs rather than injecting URL query or hash", () =
   assert.equal(url.hash, "");
 });
 
-test("Electron cold start, second instance, and shortcut IPC route to the requested app", async () => {
+for (const platform of ["win32", "darwin"]) {
+  test(`Electron cold start, second instance, and shortcut IPC on ${platform}`, () => testDesktopShortcut(platform));
+}
+
+async function testDesktopShortcut(platform) {
   const windows = [];
   const handlers = new Map();
   const shortcuts = [];
+  const macShortcuts = [];
   const app = Object.assign(new EventEmitter(), {
     isPackaged: false,
     setName() {}, setAppUserModelId() {},
@@ -86,10 +92,11 @@ test("Electron cold start, second instance, and shortcut IPC route to the reques
     .replace(/^import .*;\r?$/gm, "")
     .replace(/^const __dirname = .*;\r?$/m, 'const __dirname = "E:/flow spaces/electron";');
   vm.runInNewContext(source, {
-    app, BrowserWindow: FakeWindow, WebContentsView: class {}, attachWindowLoader() {}, path, URL, console,
+    app, BrowserWindow: FakeWindow, WebContentsView: class {}, attachWindowLoader() {}, createAppInfoApi, path, URL, console,
     miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut,
+    createMacMiniAppShortcut: (...args) => macShortcuts.push(args),
     saveMiniAppShortcutIcon: () => "C:/icons/app.ico",
-    process: { env: {}, platform: "win32", execPath: input.executable, argv: ["electron", "--mini-app=cold"] },
+    process: { env: {}, platform, execPath: input.executable, argv: ["electron", "--mini-app=cold"] },
     fetch: async () => ({ ok: true }),
     ipcMain: { on() {}, handle: (name, handler) => handlers.set(name, handler) },
     shell: { writeShortcutLink: (...args) => { shortcuts.push(args); return true; } },
@@ -107,13 +114,23 @@ test("Electron cold start, second instance, and shortcut IPC route to the reques
   assert.equal(windows.length, 2);
   assert.ok(windows[1].focused && windows[1].restored);
   const create = handlers.get("miniApps:createDesktopShortcut");
-  create({ sender: windows[0].webContents }, { id: "cold", name: "应用" });
-  assert.equal(shortcuts.length, 1);
-  assert.match(shortcuts[0][0], /\.lnk$/);
-  assert.match(shortcuts[0][2].args, /--mini-app=cold/);
-  assert.equal(shortcuts[0][2].icon, "C:/icons/app.ico");
+  const iconBuffer = new ArrayBuffer(8);
+  create({ sender: windows[0].webContents }, { id: "cold", name: "应用", iconBuffer });
+  if (platform === "darwin") {
+    assert.equal(shortcuts.length, 0);
+    assert.equal(macShortcuts.length, 1);
+    assert.equal(macShortcuts[0][0], app.getPath("desktop"));
+    assert.equal(macShortcuts[0][1].id, "cold");
+    assert.equal(macShortcuts[0][2], iconBuffer);
+  } else {
+    assert.equal(macShortcuts.length, 0);
+    assert.equal(shortcuts.length, 1);
+    assert.match(shortcuts[0][0], /\.lnk$/);
+    assert.match(shortcuts[0][2].args, /--mini-app=cold/);
+    assert.equal(shortcuts[0][2].icon, "C:/icons/app.ico");
+  }
   assert.throws(() => create({ sender: { getURL: () => "https://example.com" } }, input));
-});
+}
 
 
 test("persists a Windows ICO with a 256px PNG payload and rejects invalid data", () => {
