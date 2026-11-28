@@ -43,6 +43,7 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const t = useTranslations('settings');
   const aboutFade = useScrollFade();
+  const appearanceFade = useScrollFade();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -78,25 +79,28 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <Tab id="about"><RiInformationLine aria-hidden="true" />{t('about')}</Tab>
             </TabList>
           </div>
-          <TabPanel id="appearance" className="min-w-0 flex-1 p-6">
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-foreground">{t('theme')}</h3>
-              <ThemePanel />
-            </section>
-            <section className="mt-8 flex flex-col gap-3">
-              <h3 className="text-sm font-medium text-foreground">{t('themeColor')}</h3>
-              <ThemeColorPanel />
-            </section>
-            <section className="mt-8 flex flex-col gap-3">
-              <h3 className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <MousePointerIcon
-                  className="size-4 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                {t('cursor')}
-              </h3>
-              <CursorPanel />
-            </section>
+          <TabPanel id="appearance" className="relative min-h-0 min-w-0 flex-1">
+            <div className="h-full overflow-y-auto p-6" onScroll={appearanceFade.onScroll}>
+              <section className="flex flex-col gap-3">
+                <h3 className="text-sm font-medium text-foreground">{t('theme')}</h3>
+                <ThemePanel />
+              </section>
+              <section className="mt-8 flex flex-col gap-3">
+                <h3 className="text-sm font-medium text-foreground">{t('themeColor')}</h3>
+                <ThemeColorPanel />
+              </section>
+              <section className="mt-8 flex flex-col gap-3">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <MousePointerIcon
+                    className="size-4 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  {t('cursor')}
+                </h3>
+                <CursorPanel />
+              </section>
+            </div>
+            <ScrollFade progress={appearanceFade.progress} />
           </TabPanel>
           <TabPanel id="general" className="min-w-0 flex-1 p-6">
             <GeneralPanel />
