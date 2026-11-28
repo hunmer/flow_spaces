@@ -6,7 +6,7 @@
     "build:packages": { "script": "pnpm", "args": ["build:packages"], "desc": "Build @flow-spaces/shared and @flow-spaces/sdk" },
     "preview": { "script": "pnpm", "args": ["preview"], "desc": "Preview built web app" },
     "typecheck": { "script": "pnpm", "args": ["typecheck"], "desc": "TypeScript check for web app" },
-    "electron:dev": { "script": "pnpm", "args": ["--filter", "@flow-spaces/web", "electron:dev"], "desc": "Electron dev shell (loads Vite dev server on 5173, run 'dev' first)" },
-    "electron:dev:full": { "script": "node", "args": ["scripts/electron-dev-full.mjs"], "desc": "Vite + Electron one-shot dev (concurrent start, run alone — port 5173 & single-instance lock)" }
+    "electron:dev": { "script": "pnpm", "args": ["--filter", "@flow-spaces/web", "electron:dev"], "desc": "Backend + Vite + Electron dev (reuses healthy existing services)" },
+    "electron:dev:full": { "script": "node", "args": ["scripts/electron-dev-full.mjs"], "desc": "Backend + Vite + Electron one-shot dev (waits for backend on 3110)" }
   }
 }
