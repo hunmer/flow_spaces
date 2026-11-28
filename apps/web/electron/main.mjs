@@ -61,6 +61,10 @@ const DEFAULT_WINDOW_OPTIONS = {
   width: 1440,
   height: 900,
   ...(DEV_WINDOW_ICON ? { icon: DEV_WINDOW_ICON } : {}),
+  // 无边框窗口：标题栏由渲染进程 ElectronTitlebar 绘制（macOS 风格红绿灯 + 拖拽区），
+  // 拖拽经 CSS -webkit-app-region: drag 实现，无需 IPC。
+  frame: false,
+  titleBarStyle: "hidden",
 };
 
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
@@ -72,18 +76,20 @@ function applyWindowOpenHandler(w) {
   w.webContents.setWindowOpenHandler(({ url }) => {
     try {
       if (new URL(url).origin === appOrigin) {
-        return {
-          action: "allow",
-          // 子窗口继承主窗口默认尺寸与图标
-          overrideBrowserWindowConfiguration: {
-            ...DEFAULT_WINDOW_OPTIONS,
-            webPreferences: {
-              preload: path.join(__dirname, "preload.cjs"),
-              contextIsolation: true,
-              nodeIntegration: false,
-            },
+        // 手动创建子窗口：overrideBrowserWindowConfiguration 无法可靠覆盖
+        // webPreferences.preload（preload 不注入 → electronAPI 缺失 → 标题栏不渲染），
+        // 因此 deny 后自建 BrowserWindow，确保 frameless + preload 全部生效。
+        const child = new BrowserWindow({
+          ...DEFAULT_WINDOW_OPTIONS,
+          webPreferences: {
+            preload: path.join(__dirname, "preload.cjs"),
+            contextIsolation: true,
+            nodeIntegration: false,
           },
-        };
+        });
+        applyWindowOpenHandler(child);
+        child.loadURL(url).catch((e) => console.error("[electron] 子窗口加载失败:", e));
+        return { "action": "deny" };
       }
     } catch { /* 非法 URL，走外部浏览器 */ }
     shell.openExternal(url);
@@ -91,6 +97,16 @@ function applyWindowOpenHandler(w) {
   });
   // 新窗口里的 window.open 也应用同一规则
   w.webContents.on("did-create-window", (child) => applyWindowOpenHandler(child));
+  // F12 切换 DevTools（无边框窗口无系统菜单可用）
+  w.webContents.on("before-input-event", (event, input) => {
+    if (input.type === "keyDown" && input.key === "F12") {
+      w.webContents.toggleDevTools();
+      event.preventDefault();
+    }
+  });
+  // 最大化状态变化同步给渲染进程（红绿灯图标切换）
+  w.on("maximize", () => w.webContents.send("windowControls:maximizeChanged", true));
+  w.on("unmaximize", () => w.webContents.send("windowControls:maximizeChanged", false));
 }
 
 // ---------------- 生产模式：内嵌 server 子进程 ----------------
@@ -198,6 +214,23 @@ ipcMain.handle("clientPlugins:installFromStore", () => {
   throw new Error("client plugin install not implemented in this shell");
 });
 ipcMain.handle("clientPlugins:uninstall", () => ({ success: false }));
+
+// —— 自定义标题栏（无边框窗口）IPC：窗口控制 + 最大化状态同步 ——
+ipcMain.on("windowControls:minimize", (event) => {
+  BrowserWindow.fromWebContents(event.sender)?.minimize();
+});
+ipcMain.on("windowControls:toggleMaximize", (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return;
+  if (win.isMaximized()) win.unmaximize();
+  else win.maximize();
+});
+ipcMain.on("windowControls:close", (event) => {
+  BrowserWindow.fromWebContents(event.sender)?.close();
+});
+ipcMain.handle("windowControls:isMaximized", (event) =>
+  BrowserWindow.fromWebContents(event.sender)?.isMaximized() ?? false,
+);
 
 // 单实例锁：避免双开时两个内嵌 server 同写一个数据目录
 if (!app.requestSingleInstanceLock()) {

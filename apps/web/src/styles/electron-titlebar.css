@@ -1,0 +1,18 @@
+/* Electron 自定义标题栏拖拽区（无边框窗口）。
+   -webkit-app-region 由主进程原生处理：drag = 拖拽移动/双击最大化；
+   no-drag 区域（红绿灯按钮）恢复普通鼠标事件。 */
+.electron-titlebar-drag {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.electron-titlebar-no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* 标题栏占用高度：ElectronTitlebar 挂载时在 <html> 上设
+   --electron-titlebar-height，卸载/非 Electron 环境回落 0（无副作用）。 */
+body {
+  padding-top: var(--electron-titlebar-height, 0px);
+}

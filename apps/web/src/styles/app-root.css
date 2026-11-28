@@ -12,5 +12,5 @@
  *   - styles/globals.css 的 `--app-content-height: 100dvh` 是加载早期的 fallback。
  */
 #root {
-  height: var(--app-content-height, 100dvh);
+  height: calc(var(--app-content-height, 100dvh) - var(--electron-titlebar-height, 0px));
 }

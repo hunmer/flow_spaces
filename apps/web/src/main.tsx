@@ -25,6 +25,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { LocaleProvider } from "@/components/layout/locale-provider";
 import { ViewportInsets } from "@/components/layout/viewport-insets";
+import { ElectronTitlebar } from "@/components/layout/electron-titlebar";
 import { DevInspector } from "@/components/layout/dev-inspector";
 import { CommandPalette } from "@/components/command-palette/command-palette";
 import { CustomCursor } from "react-cursor-studio";
@@ -55,6 +56,8 @@ createRoot(document.getElementById("root")!).render(
     >
       <LocaleProvider>
         <ViewportInsets />
+        {/* Electron 无边框窗口标题栏（非 Electron 环境渲染 null） */}
+        <ElectronTitlebar />
         <BrowserRouter>
           <AppRoutes />
           {/* 全局命令面板（⌘K / Ctrl+K，顶栏搜索按钮触发） */}

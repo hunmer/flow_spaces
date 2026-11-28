@@ -14,10 +14,9 @@ import { Progress, ProgressIndicator, ProgressTrack } from '@/components/ui/prog
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar } from '@/components/base/avatar/avatar';
-import { Switch } from '@/components/base/switch/switch';
 import { useMiniAppFastLoading, useMiniAppLoadingStore } from '@/stores/mini-app-loading';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Info, AlertTriangle, MessageSquareText, Monitor, RefreshCw, Workflow as WorkflowIcon } from 'lucide-react';
+import { Loader2, Info, AlertTriangle, MessageSquareText, Monitor, RefreshCw, Workflow as WorkflowIcon, Zap } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { MiniAppRenderer, type MiniAppTaskEvent } from '../mini-app-renderer';
 import { PluginIcon } from '@/components/workflow/workflow-plugin-icon';
@@ -406,17 +405,19 @@ export function MiniAppPreview({ type, sourceCode, error, onError, projectId, pr
           </span>
           <div className="flex-1 flex justify-end items-center gap-1">
             {toolbarExtra}
-            <div className="flex shrink-0 items-center px-2" title={t('preview.fastLoadingTip')}>
-              <Switch
-                size="sm"
-                isSelected={fastLoading}
-                isDisabled={reloading}
-                onChange={(enabled) => { if (projectId) setAppFastLoading(projectId, enabled); }}
-                aria-label={t('preview.fastLoading')}
-              >
-                <span className="text-caption-1-semibold text-text-secondary">{t('preview.fastLoading')}</span>
-              </Switch>
-            </div>
+            {/* 快速加载开关：图标切换按钮（开启时高亮，点按切换持久化设置后重载） */}
+            <Button
+              variant={fastLoading ? 'secondary' : 'ghost'}
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => { if (projectId) setAppFastLoading(projectId, !fastLoading); }}
+              disabled={reloading}
+              title={t('preview.fastLoadingTip')}
+              aria-label={t('preview.fastLoading')}
+              aria-pressed={fastLoading}
+            >
+              <Zap className="h-4 w-4" />
+            </Button>
             {availableDevices.length > 0 && (
               <Select value={device} onValueChange={(v) => setDevice(v ?? 'none')}>
                 <SelectTrigger className="h-7 w-auto gap-1 text-xs px-2" aria-label={t('preview.device')}>

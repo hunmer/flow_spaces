@@ -120,13 +120,6 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
             {/* Name + type chip */}
             <div className="flex items-center gap-2 min-w-0">
               <p className={cn("text-sm font-medium truncate", hasBackground && "text-white")}>{project.name}</p>
-              <Chip
-                variant="caption"
-                color={project.type === 'react' ? 'blue' : 'neutral'}
-                className={cn("shrink-0", hasBackground && "bg-black/50 text-white border border-white/20")}
-              >
-                {project.type === 'react' ? 'React' : 'HTML'}
-              </Chip>
             </div>
 
             {/* Tags + Plugin icons — always render row for consistent height */}

@@ -71,9 +71,6 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
           {/* Name + type chip + installed badge */}
           <div className="flex items-center gap-2 min-w-0">
             <p className="text-sm font-medium truncate">{item.name}</p>
-            <Chip variant="caption" color={item.type === 'react' ? 'blue' : 'neutral'} className="shrink-0">
-              {item.type === 'react' ? 'React' : 'HTML'}
-            </Chip>
             {status === 'installed' && (
               <Chip variant="caption" color="lime" className="shrink-0 gap-1">
                 <Check className="size-3" />
