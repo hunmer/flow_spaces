@@ -68,18 +68,7 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
       <FeatureCard
         backgroundImage={backgroundUrl}
         color="blue"
-        className="cursor-pointer aspect-[9/16]"
-        centerIcon={
-          <AgentIcon
-            name={project.name}
-            avatarUrl={project.avatarUrl ? sdk.miniApp.getAvatarUrl(project.id) : undefined}
-            icon={project.icon}
-            bordered={false}
-            textSize="text-4xl"
-            rounded="rounded-2xl"
-            className="size-24"
-          />
-        }
+        className="cursor-pointer aspect-[16/9]"
         onClick={() => window.open(miniAppPreviewUrl(project.id), '_blank')}
       >
         {/* Dropdown menu (top-right) */}
@@ -116,27 +105,29 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
           </DropdownMenu>
         </div>
 
-        {/* Type badge (top-left) */}
-        <div className="absolute top-2.5 left-3 z-10">
-          <Chip
-            variant="caption"
-            color={project.type === 'react' ? 'blue' : 'neutral'}
-            className={cn(hasBackground && "bg-black/50 text-white border border-white/20")}
-          >
-            {project.type === 'react' ? 'React' : 'HTML'}
-          </Chip>
-        </div>
-
-        {/* Bottom glass panel */}
-        <div className="mt-auto">
-          <div className={cn(
-            "rounded-t-xl p-3",
-            hasBackground
-              ? "bg-black/50 backdrop-blur-md text-white"
-              : "bg-background/80 dark:bg-background/60 backdrop-blur-sm border-t text-card-foreground"
-          )}>
-            {/* Name */}
-            <p className="text-sm font-medium truncate mb-1">{project.name}</p>
+        {/* Horizontal content: icon + info */}
+        <div className="flex h-full items-center gap-3 p-3">
+          <AgentIcon
+            name={project.name}
+            avatarUrl={project.avatarUrl ? sdk.miniApp.getAvatarUrl(project.id) : undefined}
+            icon={project.icon}
+            bordered={false}
+            textSize="text-2xl"
+            rounded="rounded-xl"
+            className="size-14 shrink-0 transition-transform duration-200 group-hover:scale-110"
+          />
+          <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+            {/* Name + type chip */}
+            <div className="flex items-center gap-2 min-w-0">
+              <p className={cn("text-sm font-medium truncate", hasBackground && "text-white")}>{project.name}</p>
+              <Chip
+                variant="caption"
+                color={project.type === 'react' ? 'blue' : 'neutral'}
+                className={cn("shrink-0", hasBackground && "bg-black/50 text-white border border-white/20")}
+              >
+                {project.type === 'react' ? 'React' : 'HTML'}
+              </Chip>
+            </div>
 
             {/* Tags + Plugin icons — always render row for consistent height */}
             <div className="flex items-center gap-2 flex-wrap min-h-[22px]">

@@ -50,57 +50,50 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
   return (
     <FeatureCard
       color="blue"
-      className="cursor-pointer aspect-[9/16]"
-      centerIcon={
+      className="cursor-pointer aspect-[16/9]"
+      onClick={() => onOpenDetail(item)}
+    >
+      {/* Horizontal content: icon + info + action */}
+      <div className="flex h-full items-center gap-3 p-3">
         <AgentIcon
           name={item.name}
           avatarUrl={item.iconUrl ? (/^https?:\/\//.test(item.iconUrl) ? item.iconUrl : resolveStoreUrl(item.iconUrl)) : undefined}
           icon={item.icon}
           bordered={false}
-          textSize="text-4xl"
-          rounded="rounded-2xl"
-          className="size-24"
+          textSize="text-2xl"
+          rounded="rounded-xl"
+          className="size-14 shrink-0 transition-transform duration-200 group-hover:scale-110"
         />
-      }
-      onClick={() => onOpenDetail(item)}
-    >
-      {/* Type badge (top-left) */}
-      <div className="absolute top-2.5 left-3 z-10">
-        <Chip variant="caption" color={item.type === 'react' ? 'blue' : 'neutral'}>
-          {item.type === 'react' ? 'React' : 'HTML'}
-        </Chip>
-      </div>
-
-      {/* Installed badge (top-right) */}
-      {status === 'installed' && (
-        <div className="absolute top-2.5 right-3 z-10">
-          <Chip variant="caption" color="lime" className="gap-1">
-            <Check className="size-3" />
-            {t('store.installed')}
-          </Chip>
-        </div>
-      )}
-
-      {/* Bottom glass panel */}
-      <div className="mt-auto">
-        <div className="rounded-t-xl p-3 bg-background/80 dark:bg-background/60 backdrop-blur-sm border-t text-card-foreground">
-          <p className="text-sm font-medium truncate mb-1">{item.name}</p>
-          <p className="text-xs text-muted-foreground line-clamp-2 min-h-[32px] mb-2">
+        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+          {/* Name + type chip + installed badge */}
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="text-sm font-medium truncate">{item.name}</p>
+            <Chip variant="caption" color={item.type === 'react' ? 'blue' : 'neutral'} className="shrink-0">
+              {item.type === 'react' ? 'React' : 'HTML'}
+            </Chip>
+            {status === 'installed' && (
+              <Chip variant="caption" color="lime" className="shrink-0 gap-1">
+                <Check className="size-3" />
+                {t('store.installed')}
+              </Chip>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground line-clamp-1">
             {item.description || '—'}
           </p>
-          <Button
-            variant="default"
-            size="sm"
-            className="w-full h-7"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetail(item);
-            }}
-          >
-            <Eye className="size-3.5 mr-1" />
-            {t('store.viewDetail')}
-          </Button>
         </div>
+        <Button
+          variant="default"
+          size="sm"
+          className="h-7 shrink-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenDetail(item);
+          }}
+        >
+          <Eye className="size-3.5 mr-1" />
+          {t('store.viewDetail')}
+        </Button>
       </div>
     </FeatureCard>
   );
