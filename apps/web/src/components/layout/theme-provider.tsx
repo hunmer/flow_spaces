@@ -35,20 +35,20 @@ const CUSTOM_FONTS_KEY = 'customFonts';
 
 export interface ThemeAccentOption {
   key: string;
-  /** 圆点展示色（与 globals.css [data-accent] 段 light 档色值保持一致）。 */
+  /** 圆点展示色 = accent ramp 基色（Tailwind 500 档，与 globals.css [data-accent] 的 --color-accent-500 一致）。 */
   swatch: string;
 }
 
 /** 可选主题色（accent）；生效的 CSS 变量覆盖规则在 globals.css 的 [data-accent] 段。 */
 export const THEME_ACCENTS: readonly ThemeAccentOption[] = [
-  { key: 'blue', swatch: '#1456f0' },
-  { key: 'violet', swatch: '#7c3aed' },
-  { key: 'cyan', swatch: '#0891b2' },
-  { key: 'emerald', swatch: '#059669' },
-  { key: 'amber', swatch: '#d97706' },
-  { key: 'orange', swatch: '#ea580c' },
-  { key: 'red', swatch: '#dc2626' },
-  { key: 'pink', swatch: '#db2777' },
+  { key: 'blue', swatch: '#3b82f6' },
+  { key: 'violet', swatch: '#8b5cf6' },
+  { key: 'cyan', swatch: '#06b6d4' },
+  { key: 'emerald', swatch: '#10b981' },
+  { key: 'amber', swatch: '#f59e0b' },
+  { key: 'orange', swatch: '#f97316' },
+  { key: 'red', swatch: '#ef4444' },
+  { key: 'pink', swatch: '#ec4899' },
 ];
 
 /** SSR 防闪烁脚本内嵌的合法 accent key 列表。 */
