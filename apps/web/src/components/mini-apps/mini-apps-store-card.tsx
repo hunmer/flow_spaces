@@ -15,6 +15,8 @@ export interface MiniAppIndexItem {
   type?: 'react' | 'html';
   icon?: string;
   iconUrl?: string;
+  /** 封面背景图（商店卡片背景），mini-app/{id}/cover.jpg */
+  coverUrl?: string;
   description?: string;
   md5?: string;
   updatedAt?: string;
@@ -51,6 +53,7 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
     <FeatureCard
       color="blue"
       className="cursor-pointer aspect-[16/9]"
+      backgroundImage={item.coverUrl ? (/^https?:\/\//.test(item.coverUrl) ? item.coverUrl : resolveStoreUrl(item.coverUrl)) : undefined}
       onClick={() => onOpenDetail(item)}
     >
       {/* Horizontal content: icon + info + action */}
