@@ -200,6 +200,27 @@
   --code-highlight: color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
+/* 主题色（accent）覆盖：<html data-accent="..."> 由 ThemeProvider 写入，
+   light / dark 两档；blue 即默认主题色（显式声明保持一致）。
+   swatch 展示色与 theme-provider.tsx 的 THEME_ACCENTS 保持同步。 */
+[data-accent='blue'] { --primary: #1456f0; --ring: #1456f0; --sidebar-primary: #1456f0; --sidebar-ring: #1456f0; }
+[data-accent='violet'] { --primary: #7c3aed; --ring: #7c3aed; --sidebar-primary: #7c3aed; --sidebar-ring: #7c3aed; }
+[data-accent='cyan'] { --primary: #0891b2; --ring: #0891b2; --sidebar-primary: #0891b2; --sidebar-ring: #0891b2; }
+[data-accent='emerald'] { --primary: #059669; --ring: #059669; --sidebar-primary: #059669; --sidebar-ring: #059669; }
+[data-accent='amber'] { --primary: #d97706; --ring: #d97706; --sidebar-primary: #d97706; --sidebar-ring: #d97706; }
+[data-accent='orange'] { --primary: #ea580c; --ring: #ea580c; --sidebar-primary: #ea580c; --sidebar-ring: #ea580c; }
+[data-accent='red'] { --primary: #dc2626; --ring: #dc2626; --sidebar-primary: #dc2626; --sidebar-ring: #dc2626; }
+[data-accent='pink'] { --primary: #db2777; --ring: #db2777; --sidebar-primary: #db2777; --sidebar-ring: #db2777; }
+
+:root.dark[data-accent='blue'] { --primary: #3b82f6; --ring: #3b82f6; --sidebar-primary: #3b82f6; --sidebar-ring: #3b82f6; }
+:root.dark[data-accent='violet'] { --primary: #a78bfa; --ring: #a78bfa; --sidebar-primary: #a78bfa; --sidebar-ring: #a78bfa; }
+:root.dark[data-accent='cyan'] { --primary: #22d3ee; --ring: #22d3ee; --sidebar-primary: #22d3ee; --sidebar-ring: #22d3ee; }
+:root.dark[data-accent='emerald'] { --primary: #34d399; --ring: #34d399; --sidebar-primary: #34d399; --sidebar-ring: #34d399; }
+:root.dark[data-accent='amber'] { --primary: #fbbf24; --ring: #fbbf24; --sidebar-primary: #fbbf24; --sidebar-ring: #fbbf24; }
+:root.dark[data-accent='orange'] { --primary: #fb923c; --ring: #fb923c; --sidebar-primary: #fb923c; --sidebar-ring: #fb923c; }
+:root.dark[data-accent='red'] { --primary: #f87171; --ring: #f87171; --sidebar-primary: #f87171; --sidebar-ring: #f87171; }
+:root.dark[data-accent='pink'] { --primary: #f472b6; --ring: #f472b6; --sidebar-primary: #f472b6; --sidebar-ring: #f472b6; }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -29,7 +29,7 @@ import {
   StoreIcon,
   UserIcon,
 } from 'lucide-react';
-import { ThemePanel, CursorPanel } from './appearance-panel';
+import { ThemePanel, ThemeColorPanel, CursorPanel } from './appearance-panel';
 import { GeneralPanel } from './general-panel';
 import { ModelSettingsPanel } from './model-settings-panel';
 import { StoreSourcesPanel } from './store-sources-panel';
@@ -82,6 +82,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             <section className="flex flex-col gap-3">
               <h3 className="text-sm font-medium text-foreground">{t('theme')}</h3>
               <ThemePanel />
+            </section>
+            <section className="mt-8 flex flex-col gap-3">
+              <h3 className="text-sm font-medium text-foreground">{t('themeColor')}</h3>
+              <ThemeColorPanel />
             </section>
             <section className="mt-8 flex flex-col gap-3">
               <h3 className="flex items-center gap-2 text-sm font-medium text-foreground">

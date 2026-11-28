@@ -17,6 +17,7 @@ import {
   setCursorTrailPercent,
 } from 'react-cursor-studio';
 import {
+  CheckIcon,
   MonitorIcon,
   MoonIcon,
   SunIcon,
@@ -25,7 +26,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import { useTheme } from '@/components/layout/theme-provider';
+import { THEME_ACCENTS, useTheme } from '@/components/layout/theme-provider';
 import { OptionCard } from './option-card';
 
 /** cursor 样式 key → settings 命名空间的 i18n key（未知 key 回退包内名称）。 */
@@ -114,6 +115,69 @@ export function ThemePanel() {
           onSelect={() => setTheme(option.value)}
         />
       ))}
+    </div>
+  );
+}
+
+/** accent key → settings 命名空间的 i18n key。 */
+const ACCENT_LABEL_KEYS: Record<string, string> = {
+  blue: 'accentBlue',
+  violet: 'accentViolet',
+  cyan: 'accentCyan',
+  emerald: 'accentEmerald',
+  amber: 'accentAmber',
+  orange: 'accentOrange',
+  red: 'accentRed',
+  pink: 'accentPink',
+};
+
+/** 【外观】Tab · 主题色：圆点列表切换 accent（swatch 为功能色值，非主题 token）。 */
+export function ThemeColorPanel() {
+  const t = useTranslations('settings');
+  const { accent, setAccent } = useTheme();
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={t('themeColor')}
+      className="flex flex-wrap gap-2.5"
+    >
+      {THEME_ACCENTS.map((option) => {
+        const selected = accent === option.key;
+        const label = ACCENT_LABEL_KEYS[option.key]
+          ? t(ACCENT_LABEL_KEYS[option.key])
+          : option.key;
+        return (
+          <button
+            key={option.key}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            aria-label={label}
+            title={label}
+            onClick={() => setAccent(option.key)}
+            className={cn(
+              'flex size-8 items-center justify-center rounded-full outline-none transition-transform',
+              'focus-visible:ring-2 focus-visible:ring-ring',
+              selected
+                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                : 'hover:scale-110',
+            )}
+          >
+            <span
+              className="flex size-5 items-center justify-center rounded-full"
+              style={{ backgroundColor: option.swatch }}
+            >
+              {selected && (
+                <CheckIcon
+                  className="size-3 text-primary-foreground"
+                  aria-hidden="true"
+                />
+              )}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
