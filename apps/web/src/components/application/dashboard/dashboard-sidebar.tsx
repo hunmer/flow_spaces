@@ -129,23 +129,34 @@ function NavItem({
       aria-label={label}
       title={collapsed ? label : undefined}
       className={cx(
-        "flex items-center justify-between overflow-hidden rounded-2lg p-2",
+        "relative flex items-center justify-between overflow-hidden rounded-2lg p-2",
         "transition-[width,background-color] duration-300 ease-in-out",
         collapsed ? "w-9" : "w-full",
-        isSelected
-          ? "bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected"
-          : "hover:bg-background-secondary-hover",
+        !isSelected && "hover:bg-background-secondary-hover",
       )}
     >
-      <span className="flex min-w-0 items-center gap-2">
+      {/* 激活态填充：渐变背景（background-image）与阴影无法被 CSS transition 补间，
+          所以把激活样式搬到这层绝对定位覆盖层上，靠 opacity/scale 在新旧激活项间淡入淡出。 */}
+      <span
+        aria-hidden
+        className={cx(
+          "absolute inset-0 rounded-2lg bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected",
+          "transition-[opacity,transform] duration-300 ease-in-out",
+          isSelected ? "scale-100 opacity-100" : "scale-90 opacity-0",
+        )}
+      />
+      <span className="relative flex min-w-0 items-center gap-2">
         <Icon
-          className={cx("size-5 shrink-0", isSelected ? "text-white" : "text-foreground-icon-secondary")}
+          className={cx(
+            "size-5 shrink-0 transition-colors duration-300 ease-in-out",
+            isSelected ? "text-white" : "text-foreground-icon-secondary",
+          )}
           aria-hidden
         />
         <Collapsible collapsed={collapsed}>
           <span
             className={cx(
-              "text-body-medium whitespace-nowrap",
+              "text-body-medium whitespace-nowrap transition-colors duration-300 ease-in-out",
               isSelected ? "text-white" : "text-text-secondary",
             )}
           >
@@ -153,7 +164,7 @@ function NavItem({
           </span>
         </Collapsible>
       </span>
-      {badge && <Collapsible collapsed={collapsed}>{badge}</Collapsible>}
+      {badge && <Collapsible collapsed={collapsed} className="relative">{badge}</Collapsible>}
     </a>
   ));
 }
