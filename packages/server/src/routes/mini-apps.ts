@@ -96,6 +96,18 @@ router.get('/:id/files/manifest', (req: Request<{ id: string }>, res: Response) 
   catch (error: any) { res.status(error.message.includes('not found') ? 404 : 500).json({ error: error.message }); }
 });
 
+// 使用 src 路径校验，兼容托管项目与链接到本地目录的项目。
+router.get('/:id/files/absolute-path', (req: Request<{ id: string }, any, any, { path?: string }>, res: Response) => {
+  try {
+    svc.getProject(req.params.id);
+    const filePath = req.query.path;
+    if (typeof filePath !== 'string' || !filePath) { res.status(400).json({ error: 'path is required' }); return; }
+    const absolutePath = svc.store.resolveSrcPath(req.params.id, filePath);
+    if (!existsSync(absolutePath) || !statSync(absolutePath).isFile()) { res.status(404).json({ error: 'File not found' }); return; }
+    res.json({ path: absolutePath });
+  } catch (error: any) { res.status(error.message.includes('not found') ? 404 : 400).json({ error: error.message }); }
+});
+
 router.get('/:id/files/content', (req: Request<{ id: string }, any, any, { path?: string }>, res: Response) => {
   try {
     const filePath = req.query.path as string;

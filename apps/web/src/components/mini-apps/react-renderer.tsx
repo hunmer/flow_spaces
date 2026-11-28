@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import * as ReactJsxRuntime from 'react/jsx-runtime';
 import * as ReactJsxDevRuntime from 'react/jsx-dev-runtime';
 import { evaluateMiniAppDist } from '@/lib/mini-app-dist';
+import { miniAppInspectorPlugin } from '@/lib/mini-app-inspector';
 // @babel/standalone 体积很大（渲染后 5.5MB），且只在编译自定义 React 视图时
 // 才需要：动态 import 拆成按需加载的独立 chunk，避免拖累首屏 vendor 体积。
 // （旧 Next.js/webpack 项目里此处的 require('@babel/standalone') 会被打包器编译掉）
@@ -278,6 +279,7 @@ function resolveExternalModule(id: string) {
 }
 
 interface UseMiniAppReactRendererOptions {
+  projectId?: string;
   enabled: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   sourceCode: string;
@@ -289,6 +291,7 @@ interface UseMiniAppReactRendererOptions {
 }
 
 export function useMiniAppReactRenderer({
+  projectId,
   enabled,
   containerRef,
   sourceCode,
@@ -349,6 +352,15 @@ export function useMiniAppReactRenderer({
       const localFiles = filesRef.current;
       const entryFile = mainFileRef.current;
       const moduleCache = new Map<string, { exports: Record<string, any> }>();
+      const compileSource = (source: string, filePath: string) => Babel.transform(source, {
+        presets: ['react'],
+        plugins: [
+          ...(import.meta.env.DEV && projectId ? [miniAppInspectorPlugin(projectId, filePath)] : []),
+          'transform-modules-commonjs',
+        ],
+        filename: filePath,
+        sourceType: 'module',
+      }).code;
 
       function resolveLocalPath(fromFile: string, importId: string): string | null {
         if (!importId.startsWith('.')) return null;
@@ -387,12 +399,7 @@ export function useMiniAppReactRenderer({
         const source = localFiles[filePath];
         if (source === undefined) throw new Error(`Module not found: ${filePath}`);
 
-        const compiled = Babel.transform(source, {
-          presets: ['react'],
-          plugins: ['transform-modules-commonjs'],
-          filename: filePath,
-          sourceType: 'module',
-        }).code;
+        const compiled = compileSource(source, filePath);
 
         const localRequire = (id: string) => {
           const externalModule = resolveExternalModule(id);
@@ -416,12 +423,7 @@ export function useMiniAppReactRenderer({
         return undefined;
       };
 
-      const compiled = Babel.transform(code, {
-        presets: ['react'],
-        plugins: ['transform-modules-commonjs'],
-        filename: entryFile,
-        sourceType: 'module',
-      }).code;
+      const compiled = compileSource(code, entryFile);
 
       const fn = new Function('React', 'ReactDOM', 'exports', 'require', compiled!);
       fn(React, ReactDOM, moduleExports, mainRequire);
@@ -438,7 +440,7 @@ export function useMiniAppReactRenderer({
     } catch (err: any) {
       reportError(err.message || String(err));
     }
-  }, [containerRef, reportError, renderCompiledReact, precompiled]);
+  }, [containerRef, reportError, renderCompiledReact, precompiled, projectId]);
 
   useEffect(() => {
     if (!enabled || !sourceCode) return;

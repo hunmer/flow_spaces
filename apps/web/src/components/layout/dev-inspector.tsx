@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Inspector, gotoServerEditor } from "react-dev-inspector";
 import { MousePointer2 } from "lucide-react";
+import { sdk } from "@/lib/sdk";
 
 /**
  * 开发态组件源码定位器（移植自 agent_spaces packages/web/src/components/layout/dev-inspector.tsx）。
@@ -78,32 +79,55 @@ function getCodeInfo(element: Element) {
 export function DevInspector() {
   const [active, setActive] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const inspectedRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const inspectElement = useCallback(async (target: Element) => {
+    // 原生捕获监听与 Inspector 回调可能处理同一次点击。
+    if (inspectedRef.current) return;
+    inspectedRef.current = true;
+    setActive(false);
+    const miniAppSource = target.closest("[data-mini-app-source-file]");
+    if (miniAppSource) {
+      try {
+        const absolutePath = await sdk.miniApp.getSourceFileAbsolutePath(
+          miniAppSource.getAttribute("data-mini-app-source-project")!,
+          miniAppSource.getAttribute("data-mini-app-source-file")!,
+        );
+        gotoServerEditor({
+          absolutePath,
+          lineNumber: miniAppSource.getAttribute("data-mini-app-source-line") ?? "1",
+          columnNumber: miniAppSource.getAttribute("data-mini-app-source-column") ?? "1",
+        });
+      } catch (error) {
+        console.error("[dev-inspector] 无法解析 miniapp 源码位置", error);
+      }
+      return;
+    }
+
+    const codeInfo = getCodeInfo(target);
+
+    if (codeInfo) {
+      gotoServerEditor(codeInfo);
+    }
+  }, []);
+
   useEffect(() => {
     if (!active) return;
+    inspectedRef.current = false;
 
     const handleClick = (event: MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
-
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-
-      const codeInfo = getCodeInfo(target);
-      setActive(false);
-
-      if (codeInfo) {
-        gotoServerEditor(codeInfo);
-      }
+      if (event.target instanceof Element) void inspectElement(event.target);
     };
 
     window.addEventListener("click", handleClick, true);
     return () => window.removeEventListener("click", handleClick, true);
-  }, [active]);
+  }, [active, inspectElement]);
 
   if (process.env.NODE_ENV !== "development") return null;
   if (!mounted) return null;
@@ -120,10 +144,8 @@ export function DevInspector() {
         keys={inspectorKeys}
         active={active}
         onActiveChange={setActive}
-        onClickElement={() => {}}
-        onInspectElement={({ codeInfo }) => {
-          gotoServerEditor(codeInfo);
-        }}
+        onClickElement={({ element }) => { void inspectElement(element); }}
+        onInspectElement={() => {}}
       />
       <button
         type="button"

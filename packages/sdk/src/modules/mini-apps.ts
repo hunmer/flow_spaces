@@ -107,6 +107,10 @@ export function createMiniAppApi(http: HttpClient) {
     getFileTree: (id: string): Promise<string[]> =>
       http.get(`/api/mini-apps/${encodeURIComponent(id)}/files`),
 
+    /** 解析 src 中的源码路径，供开发态组件定位使用。 */
+    getSourceFileAbsolutePath: (id: string, filePath: string): Promise<string> =>
+      http.get<{ path: string }>(`/api/mini-apps/${encodeURIComponent(id)}/files/absolute-path?path=${encodeURIComponent(filePath)}`).then((result) => result.path),
+
     getFileManifest: (id: string): Promise<{ path: string; mtimeMs: number }[]> =>
       http.get(`/api/mini-apps/${encodeURIComponent(id)}/files/manifest`),
 

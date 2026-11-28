@@ -214,6 +214,7 @@ export function MiniAppRenderer({
     };
   }, [componentProps, resolvedTheme]);
   const { clearReactRenderer } = useMiniAppReactRenderer({
+    projectId,
     enabled: type === 'react',
     containerRef,
     sourceCode,
