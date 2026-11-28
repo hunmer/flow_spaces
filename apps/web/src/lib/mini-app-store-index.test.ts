@@ -81,7 +81,7 @@ test('mismatched IDs are rejected to keep checksum updates consistent', async ()
 
 test('external manifest and checksums load without requesting file lists', async () => {
   const calls: string[] = [];
-  const registration = { ...external, iconUrl: 'icon.png', hasIntro: true, hasDevelopment: true };
+  const registration = { ...external, iconUrl: 'icon.png', coverUrl: 'cover.jpg', hasIntro: true, hasDevelopment: true };
   const result = await loadMiniAppStoreIndex(async <T>(path: string) => (
     path.endsWith('/index.json') ? [] : [registration]
   ) as T[], base, (async url => {
@@ -96,6 +96,7 @@ test('external manifest and checksums load without requesting file lists', async
   assert.equal(result.items[0].hasDevelopment, true);
   assert.equal(result.items[0].md5, manifest.md5);
   assert.equal(result.items[0].files, undefined);
+  assert.equal(result.items[0].coverUrl, base('hunmer', external.id) + '/cover.jpg');
   assert.equal(result.items[0].iconUrl, base('hunmer', external.id) + '/icon.png');
 });
 

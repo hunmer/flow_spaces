@@ -43,7 +43,9 @@ function baseDir(): string {
 }
 
 function indexPath(): string {
-  return join(baseDir(), 'index.json');
+  // 商店目录的 index.json 由 generate-index.mjs 维护，运行时状态单独保存。
+  const root = baseDir();
+  return join(root, existsSync(join(root, 'checksums.json')) ? 'runtime-index.json' : 'index.json');
 }
 
 function projectDir(projectId: string): string {
@@ -122,6 +124,17 @@ function stripLegacyTimestamps(project: MiniAppProject): MiniAppProject {
   return next;
 }
 
+/** 从已有资源补齐列表展示字段，不改写项目 manifest。 */
+function withProjectAssets(project: MiniAppProject): MiniAppProject {
+  const directory = project.localPath ?? join(baseDir(), project.id);
+  const firstFile = (names: string[]) => names.find(name => existsSync(join(directory, name)));
+  return {
+    ...project,
+    avatarUrl: project.avatarUrl || firstFile(['avatar.png', 'icon.png', 'icon.svg']),
+    backgroundUrl: project.backgroundUrl || firstFile(['background.png', 'background.jpg', 'background.jpeg', 'background.webp', 'cover.png', 'cover.jpg', 'cover.jpeg', 'cover.webp']),
+  };
+}
+
 // ---- Launch times ----
 // 所有 mini-app 的最后启动时间集中记录在 mini-apps/launch-times.json，
 // 不再写入各项目自己的 manifest.json。
@@ -159,12 +172,15 @@ function clearLaunchTime(projectId: string): void {
 
 export function listProjects(): MiniAppProject[] {
   // 旧数据兼容：index.json 中可能残留 updatedAt，读时剥离
-  return (readJsonFile<MiniAppProject[]>(indexPath()) ?? []).map(stripLegacyTimestamps);
+  // 首次分离时从旧索引读取注册信息，后续只读运行时注册表。
+  const projects = readJsonFile<MiniAppProject[]>(indexPath())
+    ?? readJsonFile<MiniAppProject[]>(join(baseDir(), 'index.json')) ?? [];
+  return projects.map(project => withProjectAssets(stripLegacyTimestamps(project)));
 }
 
 /**
  * 扫描 mini-apps/ 下每个项目目录的 manifest.json，重建 index.json。
- * 每次调用都从磁盘读取最新 manifest 并写入 index.json。
+ * 每次调用都从磁盘读取最新 manifest；商店目录写 runtime-index.json，避免覆盖发布索引。
  */
 export function rebuildIndex(): MiniAppProject[] {
   const root = baseDir();
@@ -191,8 +207,9 @@ export function rebuildIndex(): MiniAppProject[] {
   }
 
   onDisk.sort((a, b) => (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0));
-  writeJsonFile(indexPath(), onDisk);
-  return onDisk;
+  const projects = onDisk.map(withProjectAssets);
+  writeJsonFile(indexPath(), projects);
+  return projects;
 }
 
 /** name 与已有项目重复时抛出。route 层用 instanceof 判别并返回 409。 */

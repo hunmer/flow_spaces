@@ -6,6 +6,7 @@ export interface ExternalMiniApp {
   repository: string;
   branch?: string;
   iconUrl?: string;
+  coverUrl?: string;
   hasIntro?: boolean;
   hasDevelopment?: boolean;
 }
@@ -47,6 +48,7 @@ export async function loadMiniAppStoreIndex(
     const paths = new Set((app.files ?? []).map((file: { path: string }) => file.path));
     const icon = [entry.iconUrl, app.iconUrl, app.avatarUrl, app.icon, 'icon.png', 'avatar.png', 'icon.svg']
       .find(path => typeof path === 'string' && (path === entry.iconUrl || path === app.iconUrl || /^https?:\/\//.test(path) || paths.has(path)));
+    const cover = entry.coverUrl ?? app.coverUrl ?? app.backgroundUrl;
     return {
       ...app,
       id: entry.id,
@@ -55,6 +57,7 @@ export async function loadMiniAppStoreIndex(
       baseUrl,
       storeUrl,
       iconUrl: icon ? (/^https?:\/\//.test(icon) ? icon : `${baseUrl}/${icon.replace(/^\/+/, '')}`) : undefined,
+      coverUrl: typeof cover === 'string' && cover ? (/^https?:\/\//.test(cover) ? cover : `${baseUrl}/${cover.replace(/^\/+/, '')}`) : undefined,
       hasIntro: app.hasIntro ?? entry.hasIntro ?? paths.has('README.md'),
       introUrl: `${baseUrl}/README.md`,
     };
