@@ -185,6 +185,13 @@ export function MiniAppStoreDetailDialog({
           </aside>
           {/* 右栏（3/4）：README 介绍 */}
           <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6">
+            {item.coverUrl && (
+              <img
+                src={/^https?:\/\//.test(item.coverUrl) ? item.coverUrl : resolveStoreUrl(item.coverUrl)}
+                alt={item.name}
+                className="mb-4 aspect-[4/3] w-full rounded-xl border object-cover"
+              />
+            )}
             {item.hasIntro ? (
               intro.loading ? (
                 <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
