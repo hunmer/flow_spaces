@@ -8,14 +8,15 @@ export type ServerConfig = {
 const STORAGE_KEY = "flow-spaces-servers";
 const ACTIVE_KEY = "flow-spaces-active-server";
 const COOKIE_KEY = "active-server";
-// Vite 迁移：独立 server 实例端口 3110（原 Next 项目为 "3100"）。
-// 见 MIGRATION-NOTES.md。
+// 开发环境的独立后端端口；生产环境由后端同源提供页面。
 const SERVER_PORT = "3110";
 
 function getDefaultServerUrl(): string {
   const configuredUrl = process.env.NEXT_PUBLIC_SERVER_URL?.trim();
   if (configuredUrl) return normalizeServerUrl(configuredUrl);
   if (typeof window !== "undefined" && window.location.hostname) {
+    // Electron 使用动态端口，必须保留页面 origin 中的端口。
+    if (import.meta.env.PROD) return window.location.origin;
     return normalizeServerUrl(window.location.hostname);
   }
   return normalizeServerUrl("127.0.0.1");
@@ -40,7 +41,8 @@ export function normalizeServerUrl(input: string): string {
 
   try {
     const parsed = new URL(value.includes("://") ? value : `http://${value}`);
-    return `http://${parsed.hostname}:${SERVER_PORT}`;
+    if (!parsed.port && !value.includes("://")) parsed.port = SERVER_PORT;
+    return parsed.origin;
   } catch {
     return `http://${value.replace(/^https?:\/\//, "").split("/")[0].split(":")[0]}:${SERVER_PORT}`;
   }

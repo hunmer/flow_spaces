@@ -45,7 +45,7 @@ export default defineConfig(({ command }) => {
   define: {
     // The only NEXT_PUBLIC_* var used by the original codebase
     // (src/lib/server.ts, src/proxy.ts). Empty string → fall back to
-    // window.location.hostname, same as the original default behavior.
+    // 页面 origin（生产）或 hostname + 开发后端端口（开发）。
     "process.env.NEXT_PUBLIC_SERVER_URL": JSON.stringify(
       process.env.NEXT_PUBLIC_SERVER_URL ?? "",
     ),
