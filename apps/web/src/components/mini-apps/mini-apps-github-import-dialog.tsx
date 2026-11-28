@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { sdk } from '@/lib/sdk';
+import { loadMiniAppFiles } from '@/lib/mini-app-updates';
 import { parseGithubRepoUrl, githubRepoRawUrl, githubAppManifestUrl } from '@/lib/agent-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,7 @@ interface MiniAppGithubImportDialogProps {
 
 /**
  * 从 GitHub 仓库地址安装独立 mini-app：
- * 拉取仓库根 app.json（元数据 + 文件级 md5 清单），交给 server 增量安装。
+ * 拉取仓库根 app.json 元数据与 files.json 文件级 md5 清单，交给 server 增量安装。
  * 入口在页面 header 的「导入」下拉菜单第二项。
  */
 export function MiniAppGithubImportDialog({ open, onOpenChange, onImported }: MiniAppGithubImportDialogProps) {
@@ -61,9 +62,7 @@ export function MiniAppGithubImportDialog({ open, onOpenChange, onImported }: Mi
         files?: Array<{ path: string; md5: string }>;
         development?: Array<{ path: string; md5: string }>;
       };
-      if (!Array.isArray(app.files) || !app.files.length) {
-        throw new Error('app.json has no file list');
-      }
+      const fileManifest = await loadMiniAppFiles(githubRepoRawUrl(repoInfo.owner, repoInfo.repo), app.md5);
 
       // id 用仓库名；清单 path 相对仓库根 raw 地址
       await sdk.miniApp.installFromStore({
@@ -79,10 +78,10 @@ export function MiniAppGithubImportDialog({ open, onOpenChange, onImported }: Mi
           enabledPlugins: app.enabledPlugins,
           mainFile: app.mainFile,
         },
-        files: app.files,
-        development: app.development,
+        files: fileManifest.files,
+        development: fileManifest.development,
         storeUrl: manifestUrl,
-        storeChecksum: app.md5,
+        storeChecksum: fileManifest.md5,
       });
 
       setUrl('');

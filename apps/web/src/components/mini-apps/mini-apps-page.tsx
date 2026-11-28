@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Button as UpdateButton } from '@/components/base/buttons/button';
 import { RiFolderAddLine, RiRefreshLine } from '@remixicon/react';
-import { checkMiniAppUpdates, loadMiniAppUpdate, type MiniAppUpdate } from '@/lib/mini-app-updates';
+import { checkMiniAppUpdates, loadMiniAppUpdate, loadMiniAppFiles, type MiniAppUpdate } from '@/lib/mini-app-updates';
 import { Plus, Upload, FileQuestion, Globe, CheckSquare, Search } from 'lucide-react';
 import { MiniAppCard } from './mini-apps-card';
 import { MiniAppCreateDialog } from './mini-apps-create-dialog';
@@ -174,6 +174,7 @@ function MiniAppListPage() {
     setStoreInstallingDevelopment(installDevelopment === true);
     try {
       const baseUrl = item.baseUrl ?? resolveStoreUrl(`mini-app/${item.id}`);
+      const app = await loadMiniAppFiles(baseUrl, item.md5);
       await sdk.miniApp.installFromStore({
         id: item.id,
         baseUrl,
@@ -188,11 +189,11 @@ function MiniAppListPage() {
           enabledPlugins: item.enabledPlugins,
           enabledWorkflows: item.enabledWorkflows,
         },
-        files: item.files ?? [],
-        development: item.development,
+        files: app.files,
+        development: app.development,
         installDevelopment,
         storeUrl: item.storeUrl ?? baseUrl,
-        storeChecksum: item.md5,
+        storeChecksum: app.md5,
       }, setStoreInstallProgress);
       await loadProjects();
     } catch (err) {

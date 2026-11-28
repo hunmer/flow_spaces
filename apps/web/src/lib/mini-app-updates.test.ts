@@ -31,7 +31,7 @@ test('shared store checks one small file and detects same-version changes', asyn
   assert.equal(result.checked, 2);
   assert.equal(result.skipped, 1);
   assert.equal(result.failed, 0);
-  assert.equal(result.updates[0].manifestUrl, `${storeBase}index.json`);
+  assert.equal(result.updates[0].manifestUrl, `${storeBase}first/files.json`);
 });
 
 test('independent repo uses checksums.json beside saved app.json and preserves its branch', async () => {
@@ -40,7 +40,7 @@ test('independent repo uses checksums.json beside saved app.json and preserves i
   const result = await checkMiniAppUpdates([project('game', { storeUrl: `${base}/app.json` })], storeBase, request);
   assert.deepEqual(calls, [`${base}/checksums.json`]);
   assert.equal(result.updates[0].baseUrl, base);
-  assert.equal(result.updates[0].manifestUrl, `${base}/app.json`);
+  assert.equal(result.updates[0].manifestUrl, `${base}/files.json`);
 });
 
 test('missing local checksum offers an update; legacy ZIP source uses current store', async () => {
@@ -67,18 +67,24 @@ test('malformed checksum response is reported as a failure', async () => {
   assert.equal(result.updates.length, 0);
 });
 
-test('update loads shared and independent manifests only when requested', async () => {
-  const app = { id: 'app', name: 'app', md5: newMd5, files: [{ path: 'src/index.jsx', md5: oldMd5 }] };
-  const update = { id: 'app', name: 'app', md5: newMd5, baseUrl: `${storeBase}app`, manifestUrl: `${storeBase}index.json`, storeUrl: `${storeBase}app` };
-  const { request } = mockFetch({ [update.manifestUrl]: [app], 'https://repo.example/app.json': app });
+test('update fetches only the selected app files.json', async () => {
+  const app = { id: 'app', name: 'app', md5: newMd5, files: [{ path: 'src/index.jsx', md5: oldMd5 }], development: [{ path: 'src/vendor/editor/main.ts', md5: oldMd5 }] };
+  const update = { id: 'app', name: 'app', md5: newMd5, baseUrl: `${storeBase}app`, manifestUrl: `${storeBase}app/files.json`, storeUrl: `${storeBase}app` };
+  const { request, calls } = mockFetch({ [update.manifestUrl]: app });
   assert.deepEqual(await loadMiniAppUpdate(update, request), app);
-  assert.deepEqual(await loadMiniAppUpdate({ ...update, manifestUrl: 'https://repo.example/app.json' }, request), app);
+  assert.deepEqual(calls, [update.manifestUrl]);
 });
 
-test('changed or empty installation manifests are rejected', async () => {
-  const update = { id: 'app', name: 'app', md5: newMd5, baseUrl: '', manifestUrl: 'https://repo.example/app.json', storeUrl: '' };
-  const { request } = mockFetch({ [update.manifestUrl]: { id: 'app', md5: oldMd5, files: [] } });
-  await assert.rejects(loadMiniAppUpdate(update, request), /Invalid or changed/);
+test('changed, empty or mismatched installation manifests are rejected', async () => {
+  const update = { id: 'app', name: 'app', md5: newMd5, baseUrl: 'https://repo.example', manifestUrl: 'https://repo.example/files.json', storeUrl: '' };
+  for (const app of [
+    { id: 'app', md5: oldMd5, files: [{ path: 'src/index.jsx', md5: oldMd5 }] },
+    { id: 'app', md5: newMd5, files: [] },
+    { id: 'wrong', md5: newMd5, files: [{ path: 'src/index.jsx', md5: oldMd5 }] },
+  ]) {
+    const { request } = mockFetch({ [update.manifestUrl]: app });
+    await assert.rejects(loadMiniAppUpdate(update, request), /Invalid or changed/);
+  }
 });
 
 test('linked local apps are skipped without fetching remote updates', async () => {

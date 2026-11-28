@@ -73,3 +73,19 @@ test('mismatched IDs are rejected to keep checksum updates consistent', async ()
   assert.equal(result.items.length, 0);
 });
 
+
+test('lightweight external metadata loads without requesting file lists', async () => {
+  const calls: string[] = [];
+  const result = await loadMiniAppStoreIndex(async <T>(path: string) => (
+    path.endsWith('/index.json') ? [] : [external]
+  ) as T[], base, (async url => {
+    calls.push(String(url));
+    return Response.json({ id: external.id, name: '画布', md5: manifest.md5, iconUrl: 'icon.png', hasIntro: true, hasDevelopment: true });
+  }) as typeof fetch);
+  assert.equal(result.failed, 0);
+  assert.deepEqual(calls, [`${base('hunmer', external.id)}/app.json`]);
+  assert.equal(result.items[0].hasIntro, true);
+  assert.equal(result.items[0].hasDevelopment, true);
+  assert.equal(result.items[0].files, undefined);
+  assert.equal(result.items[0].iconUrl, `${base('hunmer', external.id)}/icon.png`);
+});

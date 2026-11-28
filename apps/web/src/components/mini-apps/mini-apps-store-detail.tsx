@@ -169,7 +169,7 @@ export function MiniAppStoreDetailDialog({
                 </>
               )}
             </Button>
-            {!!item.development?.length && (
+            {(item.hasDevelopment || !!item.development?.length) && (
               <DevelopmentButton
                 variant="secondary"
                 size="small"

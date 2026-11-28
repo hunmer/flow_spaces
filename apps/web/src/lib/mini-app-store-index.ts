@@ -33,19 +33,19 @@ export async function loadMiniAppStoreIndex(
     const response = await request(storeUrl, { cache: 'no-store', signal: AbortSignal.timeout(15_000) });
     if (!response.ok) throw new Error(`fetch ${storeUrl} failed: ${response.status}`);
     const app = await response.json();
-    if (!app || (app.id && app.id !== entry.id) || !app.name || !Array.isArray(app.files) || !app.files.length) {
+    if (!app || (app.id && app.id !== entry.id) || !app.name) {
       throw new Error(`Invalid external mini-app manifest: ${entry.id}`);
     }
-    const paths = new Set(app.files.map((file: { path: string }) => file.path));
+    const paths = new Set((app.files ?? []).map((file: { path: string }) => file.path));
     const icon = [app.iconUrl, app.avatarUrl, app.icon, 'icon.png', 'avatar.png', 'icon.svg']
-      .find(path => typeof path === 'string' && (/^https?:\/\//.test(path) || paths.has(path)));
+      .find(path => typeof path === 'string' && (path === app.iconUrl || /^https?:\/\//.test(path) || paths.has(path)));
     return {
       ...app,
       id: entry.id,
       baseUrl,
       storeUrl,
       iconUrl: icon ? (/^https?:\/\//.test(icon) ? icon : `${baseUrl}/${icon.replace(/^\/+/, '')}`) : undefined,
-      hasIntro: paths.has('README.md'),
+      hasIntro: app.hasIntro ?? paths.has('README.md'),
       introUrl: `${baseUrl}/README.md`,
     };
   }));

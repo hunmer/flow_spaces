@@ -71,7 +71,7 @@ export async function checkMiniAppUpdates(projects: MiniAppProject[], storeBase:
       if (md5.toLowerCase() !== project.storeChecksum?.toLowerCase()) {
         updates.push({
           id: project.id, name: project.name, md5, baseUrl,
-          manifestUrl: `${rootUrl}/${standalone ? 'app.json' : 'index.json'}`,
+          manifestUrl: `${baseUrl}/files.json`,
           storeUrl: standalone ? `${baseUrl}/app.json` : baseUrl,
         });
       }
@@ -82,12 +82,18 @@ export async function checkMiniAppUpdates(projects: MiniAppProject[], storeBase:
   return { updates, checked, failed, skipped };
 }
 
-/** 点更新才加载完整文件清单，确认它与刚检查的 MD5 一致。 */
-export async function loadMiniAppUpdate(update: MiniAppUpdate, request = fetch): Promise<MiniAppRemoteManifest> {
-  const data = await fetchJson(update.manifestUrl, request);
-  const manifest = (Array.isArray(data) ? data.find(item => item?.id === update.id) : data) as MiniAppRemoteManifest | undefined;
-  if (!manifest || manifest.md5?.toLowerCase() !== update.md5.toLowerCase() || !Array.isArray(manifest.files) || !manifest.files.length) {
-    throw new Error(`Invalid or changed update manifest: ${update.id}`);
+/** 安装时才读取该应用的文件清单，并核对索引校验值。 */
+export async function loadMiniAppFiles(baseUrl: string, md5?: string, request = fetch): Promise<MiniAppRemoteManifest> {
+  const manifest = await fetchJson(`${baseUrl.replace(/\/+$/, '')}/files.json`, request) as MiniAppRemoteManifest;
+  if (!manifest || (md5 && manifest.md5?.toLowerCase() !== md5.toLowerCase()) || !Array.isArray(manifest.files) || !manifest.files.length) {
+    throw new Error('Invalid or changed update manifest');
   }
+  return manifest;
+}
+
+/** 点更新才加载该应用的文件清单。 */
+export async function loadMiniAppUpdate(update: MiniAppUpdate, request = fetch): Promise<MiniAppRemoteManifest> {
+  const manifest = await loadMiniAppFiles(update.baseUrl, update.md5, request);
+  if (manifest.id && manifest.id !== update.id) throw new Error(`Invalid or changed update manifest: ${update.id}`);
   return manifest;
 }
