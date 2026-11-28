@@ -12,7 +12,7 @@
 //      （独立生产依赖目录，避免 Windows 安装器展开 pnpm 链接造成重复与解析错误）
 //   4. 在 apps/web 下调用 electron-builder（配置见 apps/web/electron-builder.yml）
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { build } from "esbuild";
@@ -75,4 +75,24 @@ const checks = [
 ];
 for (const c of checks) if (!existsSync(c)) die(`missing build artifact: ${c}`);
 run("pnpm", ["--filter", "@flow-spaces/web", "exec", "electron-builder", ...passthrough]);
+
+// Windows：工作区若带 Low 完整性标签（沙箱/受控目录），打包产物会继承该标签，
+// 双击启动即闪退（renderer 进程无法在 Low 完整性下初始化，与 scripts/electron-dev.mjs
+// 修复的 dev 场景同源）。对 out/ 下所有 unpacked 目录恢复中完整性；NSIS 安装版
+// 展开到目标目录时按目标目录标签写入，不受此影响，无需处理。
+if (process.platform === "win32") {
+  const outDir = path.join(root, "apps/web/electron-build/out");
+  if (existsSync(outDir)) {
+    for (const name of readdirSync(outDir)) {
+      const candidate = path.join(outDir, name);
+      if (!statSync(candidate).isDirectory()) continue;
+      console.log(`[electron-build] 恢复产物目录中完整性: out/${name}`);
+      const r = spawnSync("icacls.exe", [candidate, "/setintegritylevel", "(OI)(CI)M", "/T", "/C", "/Q"], { stdio: "inherit" });
+      if (r.error || r.status !== 0) {
+        console.warn(`[electron-build] 完整性修复失败（out/${name}）:`, r.error?.message ?? `exit ${r.status}`);
+      }
+    }
+  }
+}
+
 console.log("\n[electron-build] done. 产物在 apps/web/electron-build/out/");
