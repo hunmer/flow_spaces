@@ -75,4 +75,22 @@ const checks = [
 ];
 for (const c of checks) if (!existsSync(c)) die(`missing build artifact: ${c}`);
 run("pnpm", ["--filter", "@flow-spaces/web", "exec", "electron-builder", ...passthrough]);
+
+// Windows：工作区若带 Low 完整性标签（沙箱/受控目录），打包产物会继承该标签——
+// 包括 NSIS 安装器 exe 本身。安装器（per-user、不提权）以 Low 完整性运行时受
+// No-Write-Up 限制，无法写入任何 Medium 目录（卸载器文件即报"不能打开要写入
+// 的文件"）；unpacked 产物同理，双击即闪退（renderer 无法在 Low 完整性下初始化），
+// 与 scripts/electron-dev.mjs 修复的 dev 场景同源。故对 out/ 整个目录（含顶层
+// 安装器 exe/blockmap 与所有子目录）恢复中完整性。
+if (process.platform === "win32") {
+  const outDir = path.join(root, "apps/web/electron-build/out");
+  if (existsSync(outDir)) {
+    console.log("[electron-build] 恢复 out/ 产物中完整性（含安装器与 unpacked）");
+    const r = spawnSync("icacls.exe", [outDir, "/setintegritylevel", "(OI)(CI)M", "/T", "/C", "/Q"], { stdio: "inherit" });
+    if (r.error || r.status !== 0) {
+      console.warn("[electron-build] 完整性修复失败:", r.error?.message ?? `exit ${r.status}`);
+    }
+  }
+}
+
 console.log("\n[electron-build] done. 产物在 apps/web/electron-build/out/");
