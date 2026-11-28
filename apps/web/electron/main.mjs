@@ -47,6 +47,14 @@ async function waitForServer(url, timeoutMs = 30000) {
 const DEV_ORIGIN = new URL(DEV_URL).origin;
 let appOrigin = DEV_ORIGIN; // 生产模式下启动后更新
 
+// 主/子窗口统一默认外观：尺寸 + 开发模式任务栏图标
+// （打包后 win 用 exe 内嵌 ico、mac 用 Dock 图标，无需显式 icon）
+const DEFAULT_WINDOW_OPTIONS = {
+  width: 1440,
+  height: 900,
+  ...(IS_PACKAGED ? {} : { icon: path.join(__dirname, "..", "build", "icon.png") }),
+};
+
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
 // 外部链接交给系统浏览器。子窗口递归应用同一规则。
 function applyWindowOpenHandler(w) {
@@ -58,7 +66,9 @@ function applyWindowOpenHandler(w) {
       if (new URL(url).origin === appOrigin) {
         return {
           action: "allow",
+          // 子窗口继承主窗口默认尺寸与图标
           overrideBrowserWindowConfiguration: {
+            ...DEFAULT_WINDOW_OPTIONS,
             webPreferences: {
               preload: path.join(__dirname, "preload.cjs"),
               contextIsolation: true,
@@ -136,10 +146,7 @@ function killEmbeddedServer() {
 
 async function createWindow() {
   const win = new BrowserWindow({
-    width: 1440,
-    height: 900,
-    // 开发模式任务栏/窗口图标（打包后 win 用 exe 内嵌 ico、mac 用 Dock 图标）
-    ...(IS_PACKAGED ? {} : { icon: path.join(__dirname, "..", "build", "icon.png") }),
+    ...DEFAULT_WINDOW_OPTIONS,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
