@@ -74,8 +74,11 @@ const DEFAULT_WINDOW_OPTIONS = {
   ...(DEV_WINDOW_ICON ? { icon: DEV_WINDOW_ICON } : {}),
   // 无边框窗口：标题栏由渲染进程 ElectronTitlebar 绘制（macOS 风格红绿灯 + 拖拽区），
   // 拖拽经 CSS -webkit-app-region: drag 实现，无需 IPC。
+  // 注意：不要设置 titleBarStyle —— macOS 下 frame:false 时任何非 normal 的
+  // titleBarStyle（如 "hidden"）都会让系统原生红绿灯重新显示
+  // （native_window_mac.mm: 非 kNormal 即 InternalSetWindowButtonVisibility(true)），
+  // 与渲染层自绘红绿灯重叠。不设则红绿灯隐藏（kNormal 分支）。
   frame: false,
-  titleBarStyle: "hidden",
 };
 
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
