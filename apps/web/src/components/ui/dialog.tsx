@@ -156,7 +156,9 @@ export function DialogViewport({
   return (
     <div
       className={cx(
-        "fixed inset-0 grid grid-rows-[1fr_auto_3fr] justify-items-center p-4",
+        // Electron 无边框窗口下避开顶部 38px 自定义标题栏（非 Electron 回落 0px），
+        // 使弹窗在标题栏以下的可视区内居中，与浏览器表现一致。
+        "fixed inset-x-0 bottom-0 top-[var(--electron-titlebar-height,0px)] grid grid-rows-[1fr_auto_3fr] justify-items-center p-4",
         className,
       )}
       data-slot="dialog-viewport"
