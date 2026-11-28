@@ -10,6 +10,7 @@ import type { FileNode, Workspace } from '@flow-spaces/shared';
 import { unloadServices } from './mini-app-services.js';
 import { executeDb as dbExecuteDb, executeDbTransaction as dbExecuteDbTransaction, closeProjectDbs } from '../storage/mini-app-db.js';
 import * as fileService from './file.js';
+import { verifyStoreFileBuffer } from './store-file-checksum.js';
 
 export { store };
 export type { MiniAppProject };
@@ -445,10 +446,6 @@ async function fetchStoreBuffer(url: string): Promise<Buffer> {
   return Buffer.from(await res.arrayBuffer());
 }
 
-function md5Of(buf: Buffer): string {
-  return createHash('md5').update(buf).digest('hex');
-}
-
 function md5OfFile(filePath: string): string | null {
   try {
     return createHash('md5').update(readFileSync(filePath)).digest('hex');
@@ -553,10 +550,7 @@ export async function installFromStore(input: {
       reportProgress(file.path);
       continue;
     }
-    const buf = await fetchStoreBuffer(`${base}/${file.path}`);
-    if (md5Of(buf) !== file.md5) {
-      throw new Error(`checksum mismatch after download: ${file.path}`);
-    }
+    const buf = verifyStoreFileBuffer(await fetchStoreBuffer(`${base}/${file.path}`), file.md5, file.path);
     mkdirSync(dirname(targetPath), { recursive: true });
     writeFileSync(targetPath, buf);
     downloaded++;
