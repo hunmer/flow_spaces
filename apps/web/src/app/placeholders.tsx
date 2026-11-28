@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl";
 export function NotFoundPage() {
   const t = useTranslations("common");
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 text-center">
+    <div className="flex h-[calc(var(--app-content-height)-var(--electron-titlebar-height,0px))] flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-lg font-semibold">404</h1>
       <p className="text-sm text-muted-foreground">{t("pageNotFound")}</p>
       <Link
@@ -28,7 +28,7 @@ export function NotFoundPage() {
 export function MiniAppPreviewEmptyState() {
   const t = useTranslations("common");
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 text-center">
+    <div className="flex h-[calc(var(--app-content-height)-var(--electron-titlebar-height,0px))] flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-lg font-semibold">{t("miniAppPreviewTitle")}</h1>
       <p className="text-sm text-muted-foreground">
         {t("miniAppMissingIdPrefix")}

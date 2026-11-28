@@ -10,7 +10,10 @@ const webDir = path.join(root, "apps", "web");
 const require = createRequire(path.join(webDir, "package.json"));
 const electronPath = require("electron");
 
-if (process.platform === "win32") {
+// 仅开发环境生效：icacls 完整性修复只应在 dev 启动链（electron:dev /
+// electron:dev:full → 本脚本）执行；生产/打包路径不得改动系统 ACL。
+const devOnly = process.env.NODE_ENV !== "production" && process.env.ELECTRON_SKIP_DEV_REPAIR !== "1";
+if (process.platform === "win32" && devOnly) {
   // 工作区的 Low 标签可能被重新安装的文件继承。只处理 Electron 运行目录，
   // 包括 DLL 和资源：仅恢复 exe 仍可能导致 renderer 启动失败。
   const repair = spawnSync("icacls.exe", [

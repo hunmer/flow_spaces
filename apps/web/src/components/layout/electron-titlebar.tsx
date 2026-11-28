@@ -19,6 +19,7 @@ type ElectronWindowControls = {
   close: () => void;
   isMaximized: () => Promise<boolean>;
   onMaximizeChange: (callback: (maximized: boolean) => void) => () => void;
+  setIcon?: (buffer: ArrayBuffer) => void;
 };
 
 const TITLEBAR_HEIGHT = 38;
@@ -74,6 +75,32 @@ export function ElectronTitlebar() {
   const [maximized, setMaximized] = useState(false);
   // Windows 习惯红绿灯靠右；macOS/Linux 保持左侧
   const [lightsOnRight, setLightsOnRight] = useState(false);
+  // 页面（如 mini-app 预览）通过 electron-titlebar:meta 事件替换标题栏图标与名称
+  const [meta, setMeta] = useState<{ title?: string; icon?: string; avatarUrl?: string } | null>(null);
+
+  useEffect(() => {
+    const onMeta = (event: Event) => {
+      setMeta((event as CustomEvent<{ title?: string; icon?: string; avatarUrl?: string } | null>).detail ?? null);
+    };
+    window.addEventListener("electron-titlebar:meta", onMeta as EventListener);
+    return () => window.removeEventListener("electron-titlebar:meta", onMeta as EventListener);
+  }, []);
+
+  const setIcon = controls?.setIcon;
+  // meta.avatarUrl 存在时同步窗口本体图标（任务栏/Alt-Tab），经 IPC 传字节到主进程
+  useEffect(() => {
+    if (!meta?.avatarUrl || !setIcon) return;
+    let cancelled = false;
+    fetch(meta.avatarUrl)
+      .then((res) => (res.ok ? res.arrayBuffer() : null))
+      .then((buffer) => {
+        if (!cancelled && buffer) setIcon(buffer);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [meta?.avatarUrl, setIcon]);
 
   useEffect(() => {
     const api = (window as typeof window & {
@@ -114,8 +141,20 @@ export function ElectronTitlebar() {
     </div>
   );
   const title = (
-    <span className="select-none text-caption-1-semibold text-text-tertiary">
-      Flow Spaces
+    <span className="flex select-none items-center gap-1.5 text-caption-1-semibold text-text-tertiary">
+      {meta?.avatarUrl ? (
+        <img
+          src={meta.avatarUrl}
+          alt=""
+          className="size-4 rounded-sm object-cover"
+          draggable={false}
+        />
+      ) : meta?.icon ? (
+        <span className="text-xs leading-none" aria-hidden>
+          {meta.icon}
+        </span>
+      ) : null}
+      {meta?.title ?? "Flow Spaces"}
     </span>
   );
 

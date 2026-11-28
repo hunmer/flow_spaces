@@ -157,6 +157,23 @@ export default function MiniAppPreviewPageClient() {
     sdk.miniApp.markLaunched(projectId).catch(() => {});
   }, [projectId]);
 
+  // Electron 标题栏展示 mini-app 自己的图标与名称（electron-titlebar.tsx 监听）
+  useEffect(() => {
+    if (!project) return;
+    window.dispatchEvent(
+      new CustomEvent('electron-titlebar:meta', {
+        detail: {
+          title: project.name,
+          icon: project.icon,
+          avatarUrl: project.avatarUrl ? sdk.miniApp.getAvatarUrl(project.id) : undefined,
+        },
+      }),
+    );
+    return () => {
+      window.dispatchEvent(new CustomEvent('electron-titlebar:meta', { detail: null }));
+    };
+  }, [project]);
+
   useEffect(() => {
     runtimeContextRef.current = runtimeContext;
   }, [runtimeContext]);
@@ -198,21 +215,21 @@ export default function MiniAppPreviewPageClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-[calc(var(--app-content-height)-var(--electron-titlebar-height,0px))]">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (!project) {
-    return <div className="flex items-center justify-center h-screen text-muted-foreground">Project not found</div>;
+    return <div className="flex items-center justify-center h-[calc(var(--app-content-height)-var(--electron-titlebar-height,0px))] text-muted-foreground">Project not found</div>;
   }
 
   // 声明了插件/工作流依赖才走守卫核查；未声明的项目直接渲染（避免多一帧核查 loading）
   const hasDeclaredDeps = Boolean(project.enabledPlugins?.length || project.enabledWorkflows?.length);
 
   return (
-    <div className={`h-screen flex flex-col ${embedded ? 'overflow-auto' : 'overflow-hidden'}`}>
+    <div className={`h-[calc(var(--app-content-height)-var(--electron-titlebar-height,0px))] flex flex-col ${embedded ? 'overflow-auto' : 'overflow-hidden'}`}>
       {host}
       <div className={`flex-1 min-h-0 ${embedded ? 'overflow-auto' : 'overflow-hidden'}`}>
         {depsReady || !hasDeclaredDeps ? (

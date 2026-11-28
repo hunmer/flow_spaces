@@ -18,6 +18,8 @@ const windowControls = {
   toggleMaximize: () => ipcRenderer.send("windowControls:toggleMaximize"),
   close: () => ipcRenderer.send("windowControls:close"),
   isMaximized: () => ipcRenderer.invoke("windowControls:isMaximized"),
+  // 动态窗口图标（传入图片 ArrayBuffer，主进程转 nativeImage）
+  setIcon: (buffer) => ipcRenderer.send("windowControls:setIcon", buffer),
   // 订阅最大化状态变化（win.on('maximize'/'unmaximize') 侧推送）
   onMaximizeChange: (callback) => {
     const listener = (_event, maximized) => callback(maximized);

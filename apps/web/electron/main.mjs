@@ -4,7 +4,7 @@
 //   （resources/server/dist/app.js，Node-API 原生模块与 Electron 内嵌 Node 兼容，
 //   无需 electron-rebuild），前端由 server 静态服务（resources/server/web）。
 //   数据写入 userData/data（FLOW_SPACES_DATA_DIR），与开发环境的 ~/.flow-spaces-data 隔离。
-import { app, BrowserWindow, WebContentsView, ipcMain, shell } from "electron";
+import { app, BrowserWindow, WebContentsView, ipcMain, nativeImage, shell } from "electron";
 import { attachWindowLoader } from "./window-loader.mjs";
 import { spawn } from "node:child_process";
 import net from "node:net";
@@ -275,6 +275,16 @@ ipcMain.on("windowControls:close", (event) => {
 ipcMain.handle("windowControls:isMaximized", (event) =>
   BrowserWindow.fromWebContents(event.sender)?.isMaximized() ?? false,
 );
+// 动态窗口图标（mini-app 预览子窗口显示自己的头像）：渲染进程传图片字节
+ipcMain.on("windowControls:setIcon", (event, buffer) => {
+  try {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const image = nativeImage.createFromBuffer(Buffer.from(buffer));
+    if (win && !image.isEmpty()) win.setIcon(image);
+  } catch (e) {
+    console.warn("[electron] setIcon failed:", e?.message);
+  }
+});
 
 // 单实例锁：避免双开时两个内嵌 server 同写一个数据目录
 if (!app.requestSingleInstanceLock()) {
