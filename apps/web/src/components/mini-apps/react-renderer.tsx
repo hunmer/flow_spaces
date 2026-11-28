@@ -344,7 +344,8 @@ export function useMiniAppReactRenderer({
 
     try {
       if (precompiled) {
-        reactComponentRef.current = evaluateMiniAppDist(code, resolveExternalModule, React, ReactDOM) as React.ComponentType<Record<string, unknown>>;
+        reactComponentRef.current = evaluateMiniAppDist(code, resolveExternalModule, React, ReactDOM,
+          import.meta.env.DEV ? projectId : undefined) as React.ComponentType<Record<string, unknown>>;
         renderCompiledReact();
         return;
       }

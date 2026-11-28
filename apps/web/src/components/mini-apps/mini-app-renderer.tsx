@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/components/layout/theme-provider';
 import { useMiniAppReactRenderer } from './react-renderer';
 import { getTaskEventsSince } from './mini-app-task-events';
+import { annotateMiniAppHtml } from '@/lib/mini-app-html-inspector';
 
 export type MiniAppRenderType = 'react' | 'html';
 
@@ -277,6 +278,11 @@ export function MiniAppRenderer({
     sandboxCleanupRef.current = null;
     clearReactRenderer();
 
+    const sourceProjectId = projectId || getMiniAppProjectIdFromLocation();
+    if (import.meta.env.DEV && sourceProjectId) {
+      html = annotateMiniAppHtml(html, sourceProjectId, mainFile || 'index.html');
+    }
+
     // 沙箱分支：检测到 module script 或 importmap 时，用 iframe srcdoc 让浏览器原生解析 ESM/import map。
     // Excalidraw 等需要原生 ESM 的 HTML 项目走此路径；普通 HTML 项目走下方旧逻辑。
     const needsSandbox = /<script[^>]*\btype\s*=\s*["'](?:module|importmap)["'][^>]*>/i.test(html);
@@ -313,7 +319,7 @@ export function MiniAppRenderer({
       }
     }
     onError(null);
-  }, [clearReactRenderer, onError, resolvedComponentProps, projectId]);
+  }, [clearReactRenderer, onError, resolvedComponentProps, projectId, mainFile]);
 
   useEffect(() => () => {
     sandboxCleanupRef.current?.();

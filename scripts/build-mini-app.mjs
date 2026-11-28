@@ -6,6 +6,7 @@ import { build } from 'esbuild';
 // 与 react-renderer 的宿主模块映射保持一致；其余依赖由 esbuild 打进 bundle。
 const external = [
   'react', 'react-dom', 'react-dom/client', 'embla-carousel-react',
+  '@flow-spaces/mini-app-inspector/jsx-dev-runtime',
   '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities',
   '@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-placeholder',
   '@tiptap/extension-task-list', '@tiptap/extension-task-item',
@@ -21,19 +22,20 @@ const entry = resolve(srcDir, manifest.mainFile || 'index.jsx');
 if (!entry.startsWith(srcDir + sep)) throw new Error('mainFile must be inside src/');
 mkdirSync(join(projectDir, 'dist'), { recursive: true });
 const result = await build({
+  absWorkingDir: srcDir,
   entryPoints: [entry],
   outfile: join(projectDir, 'dist/index.cjs'),
   bundle: true,
   format: 'cjs',
   platform: 'browser',
   target: 'es2022',
-  jsx: 'transform',
+  // 保留原始文件/行列；运行时复用宿主 React，生产宿主不注入 DOM 标记。
+  jsx: 'automatic',
+  jsxDev: true,
+  jsxImportSource: '@flow-spaces/mini-app-inspector',
   minify: true,
   metafile: true,
   external,
-  // 自动 JSX runtime 需保留宿主 React 实例；源码现有约定为 classic runtime。
-  jsxFactory: 'React.createElement',
-  jsxFragment: 'React.Fragment',
   define: { 'process.env.NODE_ENV': '"production"' },
   logLevel: 'info',
 });

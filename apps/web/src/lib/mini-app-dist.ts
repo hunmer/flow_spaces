@@ -9,9 +9,35 @@ export function evaluateMiniAppDist(
   resolveExternal: (id: string) => unknown,
   react: unknown,
   reactDom: unknown,
+  inspectorProjectId?: string,
 ): unknown {
   const module = { exports: {} as { default?: unknown } };
   const require = (id: string) => {
+    if (id === '@flow-spaces/mini-app-inspector/jsx-dev-runtime') {
+      const host = react as {
+        Fragment: unknown;
+        createElement: (type: unknown, props: Record<string, unknown>) => unknown;
+      };
+      return {
+        Fragment: host.Fragment,
+        jsxDEV: (type: unknown, props: Record<string, unknown>, key: unknown, _static: boolean,
+          source?: { fileName: string; lineNumber: number; columnNumber: number }) => {
+          const filePath = source?.fileName.replace(/\\/g, '/');
+          const inspectable = inspectorProjectId && typeof type === 'string' && filePath
+            && !filePath.startsWith('/') && !filePath.includes(':') && !filePath.split('/').includes('..');
+          return host.createElement(type, {
+            ...props,
+            ...(key === undefined ? {} : { key }),
+            ...(inspectable ? {
+              'data-mini-app-source-project': inspectorProjectId,
+              'data-mini-app-source-file': filePath,
+              'data-mini-app-source-line': String(source!.lineNumber),
+              'data-mini-app-source-column': String(source!.columnNumber),
+            } : {}),
+          });
+        },
+      };
+    }
     const value = resolveExternal(id);
     if (value === undefined) throw new Error(`Unsupported dist external module: ${id}`);
     return value;
