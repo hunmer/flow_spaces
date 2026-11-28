@@ -14,6 +14,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // 统一 app 名称（userData/日志目录名）：package.json 的 scoped name 会生成
 // ~/Library/Application Support/@flow-spaces/web 这样的目录，必须尽早重设。
 app.setName("flow-spaces");
+// Windows 任务栏分组/图标缓存锚点：不设置时任务栏会跟随 electron.exe 的
+// 缓存（开发模式下常显示默认 atom 图标）。与 electron-builder.yml 的 appId 一致。
+app.setAppUserModelId("com.flowspaces.desktop");
 const DEV_URL = process.env.ELECTRON_DEV_URL || "http://127.0.0.1:5173";
 
 const IS_PACKAGED = app.isPackaged;
@@ -47,12 +50,17 @@ async function waitForServer(url, timeoutMs = 30000) {
 const DEV_ORIGIN = new URL(DEV_URL).origin;
 let appOrigin = DEV_ORIGIN; // 生产模式下启动后更新
 
-// 主/子窗口统一默认外观：尺寸 + 开发模式任务栏图标
+// 主/子窗口统一默认外观：尺寸 + 开发模式任务栏图标。
+// Windows 下窗口图标必须用 .ico（PNG 会被静默忽略）；其余平台用 .png。
 // （打包后 win 用 exe 内嵌 ico、mac 用 Dock 图标，无需显式 icon）
+const DEV_WINDOW_ICON = IS_PACKAGED
+  ? undefined
+  : path.join(__dirname, "..", "build", process.platform === "win32" ? "icon.ico" : "icon.png");
+
 const DEFAULT_WINDOW_OPTIONS = {
   width: 1440,
   height: 900,
-  ...(IS_PACKAGED ? {} : { icon: path.join(__dirname, "..", "build", "icon.png") }),
+  ...(DEV_WINDOW_ICON ? { icon: DEV_WINDOW_ICON } : {}),
 };
 
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
