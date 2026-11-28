@@ -97,6 +97,7 @@
   "fontAdded": "Font added",
   "fontAddFailed": "Failed to add font",
   "about": "About",
+  "aboutDescription": "A visual workflow editor and Mini App workspace.",
   "aboutInfo": "Information",
   "aboutVersion": "Current Version",
   "aboutLatestVersion": "Latest Version",

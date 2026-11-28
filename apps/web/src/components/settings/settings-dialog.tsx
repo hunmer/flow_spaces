@@ -4,12 +4,15 @@
  * 设置对话框：左侧竖排 Tabs（下划线 + 图标前置，参考 coss p-tabs-11）。
  * 首个 Tab 为【外观】（主题模式 + 鼠标指针/react-cursor-studio），
  * 其余 Tab：【通用】语言与 Mini App 加载设置、【模型】服务商与模型列表、
- * 【商店源】plugins / workflows / mini-app 商店地址、【账号】个人资料与头像。
+ * 【商店源】plugins / workflows / mini-app 商店地址、【账号】个人资料与头像、【关于】软件信息与更新检查。
  * 各面板实现在同目录独立文件：appearance-panel / general-panel /
- * model-settings-panel / store-sources-panel / account-panel。
+ * model-settings-panel / store-sources-panel / account-panel / about-panel。
  */
 
 import { useTranslations } from 'next-intl';
+import { RiInformationLine } from '@remixicon/react';
+import { AboutPanel } from './about-panel';
+import { ScrollFade, useScrollFade } from '@/components/foundations/scroll-fade/scroll-fade';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +42,7 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const t = useTranslations('settings');
+  const aboutFade = useScrollFade();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,6 +75,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 <UserIcon aria-hidden="true" />
                 {t('accountTab')}
               </Tab>
+              <Tab id="about"><RiInformationLine aria-hidden="true" />{t('about')}</Tab>
             </TabList>
           </div>
           <TabPanel id="appearance" className="min-w-0 flex-1 p-6">
@@ -100,6 +105,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
           </TabPanel>
           <TabPanel id="account" className="min-w-0 flex-1 p-6">
             <AccountPanel />
+          </TabPanel>
+          <TabPanel id="about" className="relative min-h-0 min-w-0 flex-1">
+            <div className="h-full overflow-y-auto p-6" onScroll={aboutFade.onScroll}><AboutPanel /></div>
+            <ScrollFade progress={aboutFade.progress} />
           </TabPanel>
         </Tabs>
       </DialogContent>

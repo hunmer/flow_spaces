@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          node scripts/electron-build.mjs -- ${{ matrix.build-args }} \
+          node scripts/electron-build.mjs -- ${{ matrix.build-args }} --publish never \
             -c.extraMetadata.version="$VERSION" \
             -c.mac.identity=null
 
@@ -59,6 +59,8 @@ jobs:
             apps/web/electron-build/out/*.dmg
             apps/web/electron-build/out/*.zip
             apps/web/electron-build/out/*.exe
+            apps/web/electron-build/out/*.yml
+            apps/web/electron-build/out/*.blockmap
 
   release:
     name: GitHub Release

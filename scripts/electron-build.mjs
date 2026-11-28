@@ -15,8 +15,19 @@ import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, readlinkSync, readdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { build } from "esbuild";
+import { createRequire } from "node:module";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const webRequire = createRequire(path.join(root, 'apps/web/package.json'));
+await build({
+  entryPoints: [webRequire.resolve('electron-updater')],
+  outfile: path.join(root, 'apps/web/electron/updater.cjs'),
+  bundle: true,
+  platform: 'node',
+  format: 'cjs',
+  external: ['electron'],
+});
 const args = process.argv.slice(2);
 const skipBuild = args.includes("--skip-build");
 const passthrough = args.includes("--") ? args.slice(args.indexOf("--") + 1) : [];

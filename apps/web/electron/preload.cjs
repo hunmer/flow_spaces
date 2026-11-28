@@ -31,6 +31,10 @@ const windowControls = {
 contextBridge.exposeInMainWorld("electronAPI", {
   isElectron: true,
   platform: process.platform,
+  appInfo: {
+    getInfo: () => ipcRenderer.invoke('appInfo:get'),
+    checkUpdate: () => ipcRenderer.invoke('appInfo:checkUpdate'),
+  },
   clientPlugins,
   ...(process.platform === "win32" ? {
     miniApps: {

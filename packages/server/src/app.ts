@@ -65,6 +65,7 @@ import llmRouter from './routes/llm.js';
 import modelCatalogRouter from './routes/model-catalog.js';
 import authRouter from './routes/auth.js';
 import accountRouter from './routes/account.js';
+import appInfoRouter from './routes/app-info.js';
 import folderRouter from './routes/folder.js';
 import skillRouter from './routes/skill.js';
 import mcpRouter from './routes/mcp.js';
@@ -171,6 +172,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/account', accountRouter);
+app.use('/api/app-info', appInfoRouter);
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   const file = req.file;

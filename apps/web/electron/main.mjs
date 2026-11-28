@@ -6,6 +6,7 @@
 //   数据写入 userData/data（FLOW_SPACES_DATA_DIR），与开发环境的 ~/.flow-spaces-data 隔离。
 import { app, BrowserWindow, WebContentsView, ipcMain, nativeImage, shell } from "electron";
 import { attachWindowLoader } from "./window-loader.mjs";
+import { createAppInfoApi } from "./app-info.mjs";
 import { spawn } from "node:child_process";
 import net from "node:net";
 import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
@@ -51,6 +52,14 @@ async function waitForServer(url, timeoutMs = 30000) {
 
 const DEV_ORIGIN = new URL(DEV_URL).origin;
 let appOrigin = DEV_ORIGIN; // 生产模式下启动后更新
+
+const appInfoApi = createAppInfoApi(app, async () => (await import('./updater.cjs')).default);
+for (const [channel, handler] of [['appInfo:get', appInfoApi.getInfo], ['appInfo:checkUpdate', appInfoApi.checkUpdate]]) {
+  ipcMain.handle(channel, (event) => {
+    if (new URL(event.sender.getURL()).origin !== appOrigin) throw new Error('Untrusted app origin');
+    return handler();
+  });
+}
 
 // 主/子窗口统一默认外观：尺寸 + 开发模式任务栏图标。
 // Windows 下窗口图标必须用 .ico（PNG 会被静默忽略）；其余平台用 .png。

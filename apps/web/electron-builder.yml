@@ -16,6 +16,10 @@ productName: Flow Spaces
 extraMetadata:
   name: flow-spaces
 artifactName: flow-spaces-${version}-${os}-${arch}.${ext}
+publish:
+  provider: github
+  owner: hunmer
+  repo: flow_spaces
 
 # 应用图标（buildResources 默认目录 apps/web/build/）：
 # win ← icon.ico / mac ← icon.icns / linux ← icon.png
@@ -24,7 +28,7 @@ icon: "build/icon"
 directories:
   output: electron-build/out
 
-# asar 只装 Electron 壳：main/preload 不依赖任何 npm 包（仅 electron 内置）。
+# asar 装 Electron 壳及单独 bundle 的 updater。
 # apps/web 的运行时依赖已全部打进 vite bundle；显式排除 node_modules ——
 # electron-builder 的依赖收集独立于 files 白名单，不排除会把 web 全量依赖塞进 asar（+438M）。
 files:

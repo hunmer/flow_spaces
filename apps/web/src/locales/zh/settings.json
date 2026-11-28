@@ -97,6 +97,7 @@
   "fontAdded": "字体已添加",
   "fontAddFailed": "字体添加失败",
   "about": "关于",
+  "aboutDescription": "工作流可视化编辑器与 Mini App 工作空间。",
   "aboutInfo": "项目信息",
   "aboutVersion": "当前版本",
   "aboutLatestVersion": "最新版本",
