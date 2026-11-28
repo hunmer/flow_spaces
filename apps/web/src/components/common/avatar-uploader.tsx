@@ -2,13 +2,12 @@
 
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { useTheme } from "@/components/layout/theme-provider";
 import { AgentIcon } from "@/components/common/agent-icon";
 import { AvatarPicker } from "@/components/sidebar/settings/avatar-picker";
 import { ImagePickerDialog } from "@/components/ui/image-picker-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { X, ImagePlus, Smile } from "lucide-react";
-import EmojiPicker, { Theme } from "emoji-picker-react";
+import { IconPicker } from "@/components/common/icon-picker";
 
 export interface AvatarUploaderProps {
   name: string;
@@ -35,7 +34,6 @@ export function AvatarUploader({
   onUploadDataUrl,
 }: AvatarUploaderProps) {
   const t = useTranslations("agent");
-  const { resolvedTheme } = useTheme();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
   const [avatarSrc, setAvatarSrc] = useState("");
@@ -124,16 +122,11 @@ export function AvatarUploader({
 
             {/* Tab content */}
             {tab === "emoji" ? (
-              <EmojiPicker
-                theme={resolvedTheme === "dark" ? Theme.DARK : Theme.LIGHT}
-                onEmojiClick={(emoji) => {
-                  onIconChange(emoji.emoji);
+              <IconPicker
+                onSelect={(emoji) => {
+                  onIconChange(emoji);
                   setPopoverOpen(false);
                 }}
-                width={280}
-                height={300}
-                previewConfig={{ showPreview: false }}
-                skinTonesDisabled
               />
             ) : (
               <div className="p-3 flex flex-col items-center gap-2">

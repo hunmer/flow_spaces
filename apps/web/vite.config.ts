@@ -102,12 +102,8 @@ export default defineConfig(({ command }) => {
             id.includes("node_modules/date-fns")
           )
             return "vendor-aria";
-          // 媒体/表情重库：lightgallery + emoji-picker-react（≈720K）
-          if (
-            id.includes("node_modules/lightgallery") ||
-            id.includes("node_modules/emoji-picker-react")
-          )
-            return "vendor-media";
+          // 媒体重库：lightgallery
+          if (id.includes("node_modules/lightgallery")) return "vendor-media";
           if (
             id.includes("node_modules/framer-motion") ||
             id.includes("node_modules/motion")

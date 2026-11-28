@@ -3,11 +3,11 @@
 ## 关键运行时依赖（package.json 摘要）
 
 - 框架：React 19 + react-router-dom（SPA）、Vite 7、Tailwind CSS v4（@tailwindcss/vite）。
-- 编辑器/画布：@xyflow/react（工作流画布）、@uiw/react-codemirror + @codemirror/*（CodeMirror 6 代码编辑）、@tiptap/*（富文本）。
+- 编辑器/画布：@xyflow/react（工作流画布）、@uiw/react-codemirror + @codemirror/*（CodeMirror 6 代码编辑，语言白名单见 `src/lib/code-languages.ts`：仅前端技术/js/ts、css/less/scss、html/xml、markdown、json + Python + 配置文件 yaml/ini/toml/dockerfile，其余回落 plaintext）、@tiptap/*（富文本）。
 - AI 流：@ai-sdk/react + anthropic/google/openai providers（浏览器侧直连可选路径）。
 - UI：react-aria-components、@radix-ui/*、@dnd-kit/*、@tanstack/react-table、sonner、framer-motion、lucide-react + @remixicon/react + @tabler/icons-react。
 - workspace 包：`@flow-spaces/sdk`、`@flow-spaces/shared`。
-- 其他重库：@babel/standalone（mini-app 预览 JSX 沙箱，动态 import）、recharts、flexlayout-react、lightgallery、emoji-picker-react。
+- 其他重库：@babel/standalone（mini-app 预览 JSX 沙箱，动态 import）、recharts、flexlayout-react、lightgallery。emoji-picker-react 已移除（2026-11，省 39MB）：agent 头像图标选择改用自研轻量组件 `src/components/common/icon-picker.tsx`（BoardUI token + 内置静态 emoji 分组）。
 
 ## 配置文件
 
