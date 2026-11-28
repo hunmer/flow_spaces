@@ -226,7 +226,7 @@
     @apply border-border outline-ring/50;
   }
   html[data-custom-font="true"] body,
-  html[data-custom-font="true"] body :where(:not(.cm-editor, .cm-editor *, .xterm, .xterm *)) {
+  html[data-custom-font="true"] body :where(:not(.cm-editor, .cm-editor *)) {
     font-family: var(--font-app) !important;
   }
   body {

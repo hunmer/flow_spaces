@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { WorkspaceWS } from '@/lib/ws';
 import { toast } from 'sonner';
-import { disposeAllTerminalSessions } from '@/lib/terminal-registry';
 
 /**
  * 单终端（SingleTerminal）会话 id 前缀。这类会话由独立的单终端 tab 自管理，
@@ -60,7 +59,6 @@ export const useTerminalStore = create<TerminalState>((set, get) => ({
     if (state._initialized && state.ws === ws) return;
     const workspaceChanged = state.workspaceId !== ws.workspaceId;
     if (workspaceChanged) {
-      disposeAllTerminalSessions(state.ws);
       sessionBufferCache.clear();
     }
     set({
