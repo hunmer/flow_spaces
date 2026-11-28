@@ -221,6 +221,8 @@ export default defineConfig(({ command }) => {
     },
   },
   server: {
+    // 与 Electron 的 DEV_URL 保持一致，避免 localhost 仅监听 IPv6 ::1。
+    host: "127.0.0.1",
     port: 5173,
     proxy: {
       "/api": { target: SERVER_TARGET, changeOrigin: true },
