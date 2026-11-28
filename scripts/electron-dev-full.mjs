@@ -30,14 +30,14 @@ const start = (name, cmd, cmdArgs) => {
 };
 
 const vite = start("vite", "pnpm", ["exec", "vite", "--host", "127.0.0.1"]);
-const electron = start("electron", "pnpm", ["exec", "electron", "electron/main.mjs"]);
+const electron = start("electron", process.execPath, [path.join(root, "scripts", "electron-dev.mjs")]);
 
 let exiting = false;
 function killTree(child) {
   if (!child || child.exitCode !== null || !child.pid) return;
   if (win) {
     // win 上 child.kill 只杀 pnpm 壳，需 taskkill /T 收整个子树
-    spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" });
+    spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true });
   } else {
     child.kill("SIGTERM");
   }

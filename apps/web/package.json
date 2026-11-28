@@ -8,8 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "electron:dev": "electron electron/main.mjs",
-    "electron:dev:full": "vite & sleep 2 && electron electron/main.mjs; kill %1 2>/dev/null || true",
+    "electron:dev": "node ../../scripts/electron-dev.mjs",
+    "electron:dev:full": "node ../../scripts/electron-dev-full.mjs",
     "electron:builder": "electron-builder",
     "typecheck": "tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p tsconfig.node.json"
   },
