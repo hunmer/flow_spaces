@@ -129,23 +129,15 @@ function NavItem({
       aria-label={label}
       title={collapsed ? label : undefined}
       className={cx(
+        // `relative`（定位、DOM 在滑块之后）让行内容绘制在共享滑块之上；选中背景
+        // 由 NavRows 的滑块承载，行本身保持透明背景。
         "relative flex items-center justify-between overflow-hidden rounded-2lg p-2",
         "transition-[width,background-color] duration-300 ease-in-out",
         collapsed ? "w-9" : "w-full",
         !isSelected && "hover:bg-background-secondary-hover",
       )}
     >
-      {/* 激活态填充：渐变背景（background-image）与阴影无法被 CSS transition 补间，
-          所以把激活样式搬到这层绝对定位覆盖层上，靠 opacity/scale 在新旧激活项间淡入淡出。 */}
-      <span
-        aria-hidden
-        className={cx(
-          "absolute inset-0 rounded-2lg bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected",
-          "transition-[opacity,transform] duration-300 ease-in-out",
-          isSelected ? "scale-100 opacity-100" : "scale-90 opacity-0",
-        )}
-      />
-      <span className="relative flex min-w-0 items-center gap-2">
+      <span className="flex min-w-0 items-center gap-2">
         <Icon
           className={cx(
             "size-5 shrink-0 transition-colors duration-300 ease-in-out",
@@ -164,7 +156,7 @@ function NavItem({
           </span>
         </Collapsible>
       </span>
-      {badge && <Collapsible collapsed={collapsed} className="relative">{badge}</Collapsible>}
+      {badge && <Collapsible collapsed={collapsed}>{badge}</Collapsible>}
     </a>
   ));
 }
@@ -219,7 +211,27 @@ function NavRows({
   if (shown.length === 0 && !secondaryMatch && !collapsed) {
     return localize(<p className="px-2 py-3 text-body-regular text-text-tertiary">No results</p>);
   }
-  return shown.map((item) => {
+  // 共享滑块：所有行恒高 36px（p-2 + 20px 内容，文字/徽标高度都不超过 icon 的 20px）、
+  // nav 行间距 gap-1（4px），所以激活位置 = 序号 × (100% + 4px) —— 无需测量 DOM。
+  // 切换激活项时 React 只更新这个序号，位移/淡出全由 CSS transition 补间；
+  // 选中项被搜索过滤掉时序号为 -1，滑块淡出。
+  const activeIndex = shown.findIndex((item) => item.key === selected);
+  const slider = (
+    <span
+      aria-hidden
+      className={cx(
+        "pointer-events-none absolute top-0 h-9 rounded-2lg bg-linear-to-b from-accent-500 to-accent-600 shadow-nav-selected",
+        "transition-[transform,opacity,left,right] duration-300 ease-in-out",
+        // 展开态 nav 有 px-0.5（2px 内缩），滑块同步内缩对齐每行；折叠态 nav 无内缩。
+        collapsed ? "inset-x-0" : "inset-x-0.5",
+        activeIndex >= 0 ? "opacity-100" : "opacity-0",
+      )}
+      style={{ transform: `translateY(calc(${activeIndex < 0 ? 0 : activeIndex} * (100% + 4px)))` }}
+    />
+  );
+  return [
+    slider,
+    ...shown.map((item) => {
       const isSelected = selected === item.key;
       return (
         <NavItem
@@ -231,12 +243,18 @@ function NavRows({
           collapsed={collapsed}
           badge={
             item.badge !== undefined ? (
-              <Badge color={isSelected ? "primary" : "neutral"}>{item.badge}</Badge>
+              <Badge
+                color={isSelected ? "primary" : "neutral"}
+                className="transition-colors duration-300 ease-in-out"
+              >
+                {item.badge}
+              </Badge>
             ) : undefined
           }
         />
       );
-    });
+    }),
+  ];
 }
 
 export function DashboardSidebar({
@@ -445,7 +463,7 @@ export function DashboardSidebar({
               collapsed column is exactly as wide as a 36px item, so padding
               here pushes every item 2px right and the rail's own clip shaves
               that much off its selected fill and hover state. */}
-          <nav className={cx("flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
+          <nav className={cx("relative flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
             <NavRows
               items={items}
               query={normalizedQuery}
