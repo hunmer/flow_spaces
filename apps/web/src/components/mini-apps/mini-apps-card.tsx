@@ -17,6 +17,7 @@ import { FeatureCard } from '@/components/ui/feature-card';
 import { sdk } from '@/lib/sdk';
 import { resolveServerAssetUrl } from '@/lib/server';
 import { miniAppPreviewUrl } from '@/lib/mini-app-preview';
+import { miniAppShortcutIcon } from '@/lib/mini-app-shortcut-icon';
 import { Avatar } from '@/components/base/avatar/avatar';
 
 interface MiniAppCardProps {
@@ -31,14 +32,16 @@ interface MiniAppCardProps {
 export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlugins }: MiniAppCardProps) {
   const t = useTranslations('mini-apps');
   const shortcutApi = typeof window === 'undefined' ? undefined : (window as typeof window & {
-    electronAPI?: { miniApps?: { createDesktopShortcut: (project: { id: string; name: string }) => Promise<void> } };
+    electronAPI?: { miniApps?: { createDesktopShortcut: (project: { id: string; name: string; iconBuffer: ArrayBuffer }) => Promise<void> } };
   }).electronAPI?.miniApps;
   const [creatingShortcut, setCreatingShortcut] = useState(false);
   const handleCreateShortcut = async () => {
     if (!shortcutApi || creatingShortcut) return;
     setCreatingShortcut(true);
     try {
-      await shortcutApi.createDesktopShortcut({ id: project.id, name: project.name });
+      const iconBuffer = await miniAppShortcutIcon(project.name, project.icon,
+        project.avatarUrl ? sdk.miniApp.getAvatarUrl(project.id) : undefined);
+      await shortcutApi.createDesktopShortcut({ id: project.id, name: project.name, iconBuffer });
       toast.success(t('card.shortcutCreated'));
     } catch {
       toast.error(t('card.shortcutFailed'));

@@ -7,7 +7,7 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { spawn } from "node:child_process";
 import net from "node:net";
-import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut } from "./mini-app-shortcuts.mjs";
+import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -240,10 +240,11 @@ ipcMain.handle("miniApps:createDesktopShortcut", (event, project) => {
     appPath: path.join(__dirname, "main.mjs"),
     packaged: IS_PACKAGED,
   });
+  const icon = saveMiniAppShortcutIcon(path.join(app.getPath("userData"), "mini-app-icons"), project.id, project.iconBuffer);
   if (!shell.writeShortcutLink(path.join(app.getPath("desktop"), filename), "create", {
     ...options,
     cwd: path.dirname(process.execPath),
-    icon: DEV_WINDOW_ICON || process.execPath,
+    icon,
     iconIndex: 0,
   })) throw new Error("Failed to create desktop shortcut");
 });
