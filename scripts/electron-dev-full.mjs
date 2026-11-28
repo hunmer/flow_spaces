@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 一键 Electron 开发模式：并发拉起 Vite dev server 与 Electron 主进程。
+// Electron 开发模式：复用已有 Vite，否则并发启动 Vite 与 Electron。
 //
 // 用法：node scripts/electron-dev-full.mjs
 //   （procm-commands.json 的 electron:dev:full 条目指向本脚本）
@@ -23,13 +23,22 @@ const start = (name, cmd, cmdArgs) => {
   const child = spawn(cmd, cmdArgs, {
     cwd: webDir,
     stdio: "inherit",
-    shell: win, // Windows 下 pnpm/.cmd 垫片需经 cmd 解析
+    shell: false, // 直接运行 Node，兼容包含空格的安装路径。
   });
   console.log(`[dev-full] ${name} started pid=${child.pid}`);
   return child;
 };
 
-const vite = start("vite", "pnpm", ["exec", "vite", "--host", "127.0.0.1"]);
+const devUrl = process.env.ELECTRON_DEV_URL || "http://127.0.0.1:5173";
+let serverReady = false;
+try {
+  serverReady = (await fetch(devUrl, { signal: AbortSignal.timeout(2000) })).ok;
+} catch { /* 未启动，由本脚本拉起默认 Vite */ }
+// 显式指定的服务由调用者管理，不替换其地址。
+const vite = !serverReady && !process.env.ELECTRON_DEV_URL
+  ? start("vite", process.execPath, [path.join(webDir, "node_modules", "vite", "bin", "vite.js"), "--host", "127.0.0.1", "--port", "5173", "--strictPort"])
+  : null;
+console.log(`[dev-full] ${serverReady ? "复用前端服务" : "等待前端服务"} ${devUrl}`);
 const electron = start("electron", process.execPath, [path.join(root, "scripts", "electron-dev.mjs")]);
 
 let exiting = false;
@@ -54,8 +63,16 @@ function shutdown(exitCode) {
 
 // 任一成员退出即整体收尾：electron 关窗 = 正常结束；vite 崩溃也不留孤儿窗口
 for (const [name, child] of [["vite", vite], ["electron", electron]]) {
+  if (!child) continue;
+  child.on("error", (error) => {
+    console.error(`[dev-full] ${name} 启动失败: ${error.message}`);
+    shutdown(1);
+  });
   child.on("exit", (code) => {
     console.log(`[dev-full] ${name} exited code=${code}`);
     shutdown(name === "electron" ? (code ?? 0) : 1);
   });
+}
+for (const signal of ["SIGINT", "SIGTERM"]) {
+  process.on(signal, () => shutdown(0));
 }

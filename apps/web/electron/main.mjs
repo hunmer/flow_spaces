@@ -169,14 +169,17 @@ async function createWindow() {
       return win;
     }
   } else {
+    console.log(`[electron] 等待前端服务 ${DEV_URL}`);
     const up = await waitForServer(DEV_URL);
     if (!up) {
+      console.error(`[electron] 前端服务连接超时: ${DEV_URL}`);
       await win.loadURL(`data:text/html,<h3>无法连接 ${DEV_URL}</h3><p>请先运行 pnpm dev</p>`);
       return win;
     }
     loadTarget = DEV_URL;
   }
   await win.loadURL(loadTarget);
+  console.log(`[electron] 页面已加载 ${loadTarget}`);
   return win;
 }
 
@@ -190,6 +193,7 @@ ipcMain.handle("clientPlugins:uninstall", () => ({ success: false }));
 
 // 单实例锁：避免双开时两个内嵌 server 同写一个数据目录
 if (!app.requestSingleInstanceLock()) {
+  console.log("[electron] 已有实例运行，正在激活已有窗口");
   app.quit();
 } else {
   app.on("second-instance", () => {
@@ -205,6 +209,9 @@ if (!app.requestSingleInstanceLock()) {
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
+  }).catch((error) => {
+    console.error("[electron] 启动失败:", error);
+    app.exit(1);
   });
 
   app.on("window-all-closed", () => {
