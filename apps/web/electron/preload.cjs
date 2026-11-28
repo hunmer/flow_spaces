@@ -30,5 +30,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   isElectron: true,
   platform: process.platform,
   clientPlugins,
+  ...(process.platform === "win32" ? {
+    miniApps: {
+      createDesktopShortcut: (project) => ipcRenderer.invoke("miniApps:createDesktopShortcut", project),
+    },
+  } : {}),
   windowControls,
 });

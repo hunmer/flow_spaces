@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { RiComputerLine } from '@remixicon/react';
+import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import type { MiniAppProject } from '@flow-spaces/sdk';
 import { cn } from '@/lib/utils';
@@ -28,6 +30,22 @@ interface MiniAppCardProps {
 
 export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlugins }: MiniAppCardProps) {
   const t = useTranslations('mini-apps');
+  const shortcutApi = typeof window === 'undefined' ? undefined : (window as typeof window & {
+    electronAPI?: { miniApps?: { createDesktopShortcut: (project: { id: string; name: string }) => Promise<void> } };
+  }).electronAPI?.miniApps;
+  const [creatingShortcut, setCreatingShortcut] = useState(false);
+  const handleCreateShortcut = async () => {
+    if (!shortcutApi || creatingShortcut) return;
+    setCreatingShortcut(true);
+    try {
+      await shortcutApi.createDesktopShortcut({ id: project.id, name: project.name });
+      toast.success(t('card.shortcutCreated'));
+    } catch {
+      toast.error(t('card.shortcutFailed'));
+    } finally {
+      setCreatingShortcut(false);
+    }
+  };
   const [shareOpen, setShareOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -95,6 +113,11 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
               <DropdownMenuItem onClick={handleExportZip}>
                 <Download className="h-3.5 w-3.5 mr-2" /> {t('card.exportZip')}
               </DropdownMenuItem>
+              {shortcutApi && (
+                <DropdownMenuItem disabled={creatingShortcut} onClick={handleCreateShortcut}>
+                  <RiComputerLine className="size-3.5 me-2" /> {t('card.createDesktopShortcut')}
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={handleRevealFolder}>
                 <FolderOpen className="h-3.5 w-3.5 mr-2" /> {t('card.revealFolder')}
               </DropdownMenuItem>

@@ -7,6 +7,7 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { spawn } from "node:child_process";
 import net from "node:net";
+import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut } from "./mini-app-shortcuts.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -168,7 +169,7 @@ function killEmbeddedServer() {
   serverChild = null;
 }
 
-async function createWindow() {
+async function createWindow(miniAppId) {
   const win = new BrowserWindow({
     ...DEFAULT_WINDOW_OPTIONS,
     webPreferences: {
@@ -202,10 +203,50 @@ async function createWindow() {
     }
     loadTarget = DEV_URL;
   }
-  await win.loadURL(loadTarget);
+  await win.loadURL(miniAppId ? miniAppLaunchUrl(appOrigin, miniAppId) : loadTarget);
   console.log(`[electron] 页面已加载 ${loadTarget}`);
   return win;
 }
+
+// 快捷方式保存 ID，启动时解析当前动态 server 端口。
+async function openMiniApp(id) {
+  const url = miniAppLaunchUrl(appOrigin, id);
+  const existing = BrowserWindow.getAllWindows().find((win) => win.webContents.getURL() === url);
+  if (existing) {
+    if (existing.isMinimized()) existing.restore();
+    existing.focus();
+    return;
+  }
+  const win = new BrowserWindow({
+    ...DEFAULT_WINDOW_OPTIONS,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.cjs"),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  applyWindowOpenHandler(win);
+  await win.loadURL(url);
+}
+
+ipcMain.handle("miniApps:createDesktopShortcut", (event, project) => {
+  if (process.platform !== "win32" || new URL(event.sender.getURL()).origin !== appOrigin) {
+    throw new Error("Desktop shortcuts are unavailable");
+  }
+  const { filename, options } = miniAppShortcut({
+    id: project?.id,
+    name: project?.name,
+    executable: process.execPath,
+    appPath: path.join(__dirname, "main.mjs"),
+    packaged: IS_PACKAGED,
+  });
+  if (!shell.writeShortcutLink(path.join(app.getPath("desktop"), filename), "create", {
+    ...options,
+    cwd: path.dirname(process.execPath),
+    icon: DEV_WINDOW_ICON || process.execPath,
+    iconIndex: 0,
+  })) throw new Error("Failed to create desktop shortcut");
+});
 
 // —— clientPlugins 命名空间 IPC（最小实现：无本地插件管理器时返回空/失败） ——
 ipcMain.handle("clientPlugins:listWorkflowPlugins", () => []);
@@ -237,7 +278,13 @@ if (!app.requestSingleInstanceLock()) {
   console.log("[electron] 已有实例运行，正在激活已有窗口");
   app.quit();
 } else {
-  app.on("second-instance", () => {
+  let startup;
+  app.on("second-instance", (_event, argv) => {
+    const id = miniAppLaunchId(argv);
+    if (id) {
+      startup.then(() => openMiniApp(id)).catch((error) => console.error("[electron] Mini App 打开失败:", error));
+      return;
+    }
     const win = BrowserWindow.getAllWindows()[0];
     if (win) {
       if (win.isMinimized()) win.restore();
@@ -245,8 +292,8 @@ if (!app.requestSingleInstanceLock()) {
     }
   });
 
-  app.whenReady().then(async () => {
-    await createWindow();
+  startup = app.whenReady().then(async () => {
+    await createWindow(miniAppLaunchId(process.argv));
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

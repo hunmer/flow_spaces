@@ -44,6 +44,10 @@
     "selected": "已选择 {count} 项"
   },
   "card": {
+    "createDesktopShortcut": "创建桌面快捷方式",
+    "shortcutCreated": "桌面快捷方式已创建",
+    "shortcutFailed": "创建桌面快捷方式失败",
+
     "unlink": "移除",
     "unlinkTitle": "移除本地应用",
     "unlinkConfirm": "将「{name}」从列表移除？原文件夹及文件会保留。",

@@ -44,6 +44,10 @@
     "selected": "{count} selected"
   },
   "card": {
+    "createDesktopShortcut": "Create desktop shortcut",
+    "shortcutCreated": "Desktop shortcut created",
+    "shortcutFailed": "Failed to create desktop shortcut",
+
     "unlink": "Remove",
     "unlinkTitle": "Remove local app",
     "unlinkConfirm": "Remove {name} from the list? Its original folder and files will be kept.",
