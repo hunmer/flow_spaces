@@ -13,7 +13,7 @@
 ```
 
 - 商店仓库：运行 `node generate-index.mjs`，同时生成轻量 `index.json`、各应用 `files.json` 和 `checksums.json`。发布时一起提交。
-- `game-asset-canvas` 独立仓库：运行 `node pack.mjs`，同时生成轻量 `app.json`、`files.json` 和 `checksums.json`。发布时一起提交。
+- `game-asset-canvas` 独立仓库：运行 `node pack.mjs`，读取现有 `manifest.json`，生成 `files.json` 和 `checksums.json`。发布时一起提交。
 
 整体 MD5 包含文件路径、运行文件和 `development` 文件的 MD5。源码内容变化、文件新增、删除、改名都会改变校验值；生成文件本身不参与校验。
 
@@ -21,7 +21,7 @@
 
 从商店安装时，`storeUrl` 保存应用目录，检查时读取其父目录的 `checksums.json`，安装或更新时读取应用目录的 `files.json`。
 
-从独立 GitHub 仓库安装时，`storeUrl` 保存 `app.json` 的完整 raw 地址；检查时读取同目录下的 `checksums.json`，安装或更新时读取同目录下的 `files.json`。保留原地址的代理及分支。
+从独立 GitHub 仓库安装时，`storeUrl` 保存 `manifest.json` 的完整 raw 地址；检查时读取同目录下的 `checksums.json`，安装或更新时读取同目录下的 `files.json`。保留原地址的代理及分支。
 
 没有安装来源的本地应用按 ID 尝试匹配当前商店，不存在则跳过。缺少旧版 `storeChecksum` 时提供一次更新，以建立校验基线。
 

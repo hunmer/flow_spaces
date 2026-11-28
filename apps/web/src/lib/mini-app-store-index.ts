@@ -5,6 +5,9 @@ export interface ExternalMiniApp {
   id: string;
   repository: string;
   branch?: string;
+  iconUrl?: string;
+  hasIntro?: boolean;
+  hasDevelopment?: boolean;
 }
 
 type LoadIndex = <T>(path: string, options?: { rememberSource?: boolean }) => Promise<T[]>;
@@ -29,23 +32,30 @@ export async function loadMiniAppStoreIndex(
       throw new Error('Invalid external mini-app repository');
     }
     const baseUrl = githubBaseUrl(match[1], match[2], entry.branch ?? 'main');
-    const storeUrl = `${baseUrl}/app.json`;
+    const storeUrl = `${baseUrl}/manifest.json`;
     const response = await request(storeUrl, { cache: 'no-store', signal: AbortSignal.timeout(15_000) });
     if (!response.ok) throw new Error(`fetch ${storeUrl} failed: ${response.status}`);
     const app = await response.json();
+    const checksumResponse = await request(`${baseUrl}/checksums.json`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) });
+    if (!checksumResponse.ok) throw new Error('Failed to fetch external mini-app checksums');
+    const checksums = await checksumResponse.json();
+    const md5 = checksums?.[entry.id];
+    if (typeof md5 !== 'string' || !/^[a-f0-9]{32}$/i.test(md5)) throw new Error('Invalid external mini-app checksum');
     if (!app || (app.id && app.id !== entry.id) || !app.name) {
       throw new Error(`Invalid external mini-app manifest: ${entry.id}`);
     }
     const paths = new Set((app.files ?? []).map((file: { path: string }) => file.path));
-    const icon = [app.iconUrl, app.avatarUrl, app.icon, 'icon.png', 'avatar.png', 'icon.svg']
-      .find(path => typeof path === 'string' && (path === app.iconUrl || /^https?:\/\//.test(path) || paths.has(path)));
+    const icon = [entry.iconUrl, app.iconUrl, app.avatarUrl, app.icon, 'icon.png', 'avatar.png', 'icon.svg']
+      .find(path => typeof path === 'string' && (path === entry.iconUrl || path === app.iconUrl || /^https?:\/\//.test(path) || paths.has(path)));
     return {
       ...app,
       id: entry.id,
+      md5,
+      hasDevelopment: app.hasDevelopment ?? entry.hasDevelopment,
       baseUrl,
       storeUrl,
       iconUrl: icon ? (/^https?:\/\//.test(icon) ? icon : `${baseUrl}/${icon.replace(/^\/+/, '')}`) : undefined,
-      hasIntro: app.hasIntro ?? paths.has('README.md'),
+      hasIntro: app.hasIntro ?? entry.hasIntro ?? paths.has('README.md'),
       introUrl: `${baseUrl}/README.md`,
     };
   }));

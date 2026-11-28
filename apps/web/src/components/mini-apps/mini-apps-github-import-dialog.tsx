@@ -20,7 +20,7 @@ interface MiniAppGithubImportDialogProps {
 
 /**
  * 从 GitHub 仓库地址安装独立 mini-app：
- * 拉取仓库根 app.json 元数据与 files.json 文件级 md5 清单，交给 server 增量安装。
+ * 拉取仓库根 manifest.json 元数据与 files.json 文件级 md5 清单，交给 server 增量安装。
  * 入口在页面 header 的「导入」下拉菜单第二项。
  */
 export function MiniAppGithubImportDialog({ open, onOpenChange, onImported }: MiniAppGithubImportDialogProps) {
@@ -47,7 +47,7 @@ export function MiniAppGithubImportDialog({ open, onOpenChange, onImported }: Mi
     try {
       const manifestUrl = githubAppManifestUrl(repoInfo.owner, repoInfo.repo);
       const res = await fetch(manifestUrl);
-      if (!res.ok) throw new Error(`fetch app.json failed: ${res.status}`);
+      if (!res.ok) throw new Error(`fetch manifest.json failed: ${res.status}`);
       const app = (await res.json()) as {
         id?: string;
         name?: string;

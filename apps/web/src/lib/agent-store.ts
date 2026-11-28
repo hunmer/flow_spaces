@@ -109,7 +109,7 @@ export async function fetchStoreIndex<T>(path: string, { rememberSource = true }
 }
 
 // ---- 从 GitHub 仓库地址安装 mini-app ----
-// 约定：仓库根放构建产物 app.json（元数据 + 文件级 md5 清单），server 按清单增量安装，无需 zip。
+// 约定：仓库根提供 manifest.json 元数据与 files.json 文件级 md5 清单，server 按清单增量安装，无需 zip。
 
 /** 解析 GitHub 仓库地址（支持 github.com/owner/repo 及 /tree/branch 等变体） */
 export function parseGithubRepoUrl(input: string): { owner: string; repo: string } | null {
@@ -125,7 +125,7 @@ export function githubRepoRawUrl(owner: string, repo: string, branch = 'main'): 
   return `https://gh-proxy.org/https://github.com/${owner}/${repo}/raw/refs/heads/${branch.split('/').map(encodeURIComponent).join('/')}`;
 }
 
-/** mini-app 独立仓库的 app.json（安装清单）地址 */
+/** mini-app 独立仓库的 manifest.json（应用元数据）地址 */
 export function githubAppManifestUrl(owner: string, repo: string): string {
-  return `${githubRepoRawUrl(owner, repo)}/app.json`;
+  return `${githubRepoRawUrl(owner, repo)}/manifest.json`;
 }

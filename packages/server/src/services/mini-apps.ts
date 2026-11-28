@@ -477,14 +477,14 @@ export async function installFromStore(input: {
     version?: string;
     tags?: string[];
     icon?: string;
-    /** 商店清单（index.json / app.json 顶层）可直接携带，免去再拉磁盘 manifest */
+    /** 商店清单（index.json / manifest.json 顶层）可直接携带，免去再拉磁盘 manifest */
     enabledPlugins?: string[];
     /** 依赖的工作流声明（模板 id/name），预览页核查缺失用 */
     enabledWorkflows?: string[];
     mainFile?: string;
   };
   files: StoreFileEntry[];
-  /** app.json 中仅开发版需要的附加文件 */
+  /** files.json 中仅开发版需要的附加文件 */
   development?: StoreFileEntry[];
   installDevelopment?: boolean;
   storeUrl?: string;
@@ -509,7 +509,7 @@ export async function installFromStore(input: {
   onProgress?.({ total: files.length, completed: 0, downloaded: 0, skipped: 0, installDevelopment });
 
   // 远端 manifest.json（清单内含）兜底合并——enabledPlugins/enableAgents 等字段不进商店索引，只存在 manifest 里；
-  // input.manifest 已带（app.json 顶层）时直接采用
+  // input.manifest 已带（manifest.json 顶层）时直接采用
   let remoteManifest: Record<string, any> = {};
   const manifestEntry = files.find((f) => f.path === 'manifest.json');
   if (manifestEntry && input.manifest?.enabledPlugins === undefined && input.manifest?.mainFile === undefined) {

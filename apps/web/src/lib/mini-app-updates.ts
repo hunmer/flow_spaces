@@ -42,9 +42,9 @@ export async function checkMiniAppUpdates(projects: MiniAppProject[], storeBase:
     if (project.localPath) { skipped++; return; }
     // 旧 ZIP 商店地址已退役，改从当前商店来源检查。
     const savedUrl = project.storeUrl?.endsWith('.zip') ? undefined : project.storeUrl?.replace(/\/+$/, '');
-    const standalone = savedUrl?.endsWith('/app.json') || /\/raw\/refs\/heads\/[^/]+$/.test(savedUrl ?? '');
+    const standalone = /\/(?:app|manifest)\.json$/.test(savedUrl ?? '') || /\/raw\/refs\/heads\/[^/]+$/.test(savedUrl ?? '');
     const baseUrl = standalone
-      ? savedUrl!.replace(/\/app\.json$/, '')
+      ? savedUrl!.replace(/\/(?:app|manifest)\.json$/, '')
       : savedUrl ?? `${storeBase.replace(/\/+$/, '')}/${project.id}`;
     const rootUrl = standalone ? baseUrl : baseUrl.slice(0, baseUrl.lastIndexOf('/'));
     const checksumUrl = `${rootUrl}/checksums.json`;
@@ -72,7 +72,7 @@ export async function checkMiniAppUpdates(projects: MiniAppProject[], storeBase:
         updates.push({
           id: project.id, name: project.name, md5, baseUrl,
           manifestUrl: `${baseUrl}/files.json`,
-          storeUrl: standalone ? `${baseUrl}/app.json` : baseUrl,
+          storeUrl: standalone ? `${baseUrl}/manifest.json` : baseUrl,
         });
       }
     } catch {

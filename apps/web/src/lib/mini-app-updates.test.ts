@@ -94,3 +94,14 @@ test('linked local apps are skipped without fetching remote updates', async () =
   assert.equal(result.failed, 0);
   assert.deepEqual(calls, []);
 });
+
+test('manifest.json source preserves branch and migrates the saved address', async () => {
+  const base = 'https://proxy.example/owner/game/raw/refs/heads/dev';
+  for (const file of ['manifest.json', 'app.json']) {
+    const { request, calls } = mockFetch({ [base + '/checksums.json']: { game: newMd5 } });
+    const result = await checkMiniAppUpdates([project('game', { storeUrl: base + '/' + file })], storeBase, request);
+    assert.deepEqual(calls, [base + '/checksums.json']);
+    assert.equal(result.updates[0].storeUrl, base + '/manifest.json');
+    assert.equal(result.updates[0].manifestUrl, base + '/files.json');
+  }
+});
