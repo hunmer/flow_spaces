@@ -64,7 +64,7 @@
     "adding": "Adding…",
     "cancel": "Cancel",
     "duplicate": "An app with the same name or ID already exists. Remove it from the list before adding this folder.",
-    "failed": "Could not add app. Check manifest.json and the entry file under src/."
+    "failed": "Could not add app: {reason}"
   },
   "create": {
     "title": "Create Custom Page",

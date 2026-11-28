@@ -64,7 +64,7 @@
     "adding": "添加中…",
     "cancel": "取消",
     "duplicate": "同名或同 ID 的应用已存在，请先从列表移除后再添加。",
-    "failed": "添加失败，请确认目录包含有效的 manifest.json 和 src 入口文件。"
+    "failed": "添加失败：{reason}"
   },
   "create": {
     "title": "创建自定义页面",

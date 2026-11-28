@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ApiError } from '@flow-spaces/sdk';
 import { RiFolderAddLine } from '@remixicon/react';
 import { sdk } from '@/lib/sdk';
+import { getApiErrorStatus, readApiErrorMessage } from '@/lib/api-error';
 import { Button } from '@/components/base/buttons/button';
 import { FolderPicker } from '@/components/ui/folder-picker';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -34,7 +34,10 @@ export function MiniAppLocalImportDialog({ open, onOpenChange, onImported }: Pro
       await onImported();
       onOpenChange(false);
     } catch (err) {
-      setError(t(err instanceof ApiError && err.status === 409 ? 'localImport.duplicate' : 'localImport.failed'));
+      console.error('[MiniAppLocalImport] Failed to add local app', { path: path.trim(), error: err });
+      setError(getApiErrorStatus(err) === 409
+        ? t('localImport.duplicate')
+        : t('localImport.failed', { reason: readApiErrorMessage(err) }));
     } finally {
       setAdding(false);
     }

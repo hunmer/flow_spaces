@@ -204,7 +204,7 @@ FEATURES = [
     ("web.i18n", "国际化", "en/zh 双语消息（next-intl shim）", "🌍"),
     ("web.shims", "Next 兼容层", "next/* → SPA shim（dynamic/image/navigation/next-intl）", "🌉"),
     ("web.styles", "样式与工具", "globals.css/typography.css、cx 等工具", "🖌️"),
-    ("web.electron", "Electron 桌面", "main.mjs/preload.mjs", "🖥️"),
+    ("web.electron", "Electron 桌面", "main.mjs/preload.cjs", "🖥️"),
     ("web.assets", "静态资源", "public/icons 1085 个图标、CodeMirror 依赖打包等", "🖼️"),
 ]
 

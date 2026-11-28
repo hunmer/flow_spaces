@@ -50,6 +50,9 @@ let appOrigin = DEV_ORIGIN; // 生产模式下启动后更新
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
 // 外部链接交给系统浏览器。子窗口递归应用同一规则。
 function applyWindowOpenHandler(w) {
+  w.webContents.on("preload-error", (_event, preloadPath, error) => {
+    console.error(`[electron] preload failed: ${preloadPath}`, error);
+  });
   w.webContents.setWindowOpenHandler(({ url }) => {
     try {
       if (new URL(url).origin === appOrigin) {
@@ -57,7 +60,7 @@ function applyWindowOpenHandler(w) {
           action: "allow",
           overrideBrowserWindowConfiguration: {
             webPreferences: {
-              preload: path.join(__dirname, "preload.mjs"),
+              preload: path.join(__dirname, "preload.cjs"),
               contextIsolation: true,
               nodeIntegration: false,
             },
@@ -136,7 +139,7 @@ async function createWindow() {
     width: 1440,
     height: 900,
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs"),
+      preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
     },
