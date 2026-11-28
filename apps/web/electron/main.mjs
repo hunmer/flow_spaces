@@ -138,6 +138,8 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1440,
     height: 900,
+    // 开发模式任务栏/窗口图标（打包后 win 用 exe 内嵌 ico、mac 用 Dock 图标）
+    ...(IS_PACKAGED ? {} : { icon: path.join(__dirname, "..", "build", "icon.png") }),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,

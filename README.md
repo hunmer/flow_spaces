@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="icon_light.png" />
+    <img src="icon_dark.png" width="160" alt="Flow Spaces" />
+  </picture>
+</p>
+
 # Flow Spaces
 
 Workflow 可视化编辑器 + Mini-Apps 平台。自 flow-spaces（Next.js 16 monorepo）迁移而来，现为 pnpm workspace 独立项目（迁移笔记已不随仓分发）。

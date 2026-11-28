@@ -17,6 +17,10 @@ extraMetadata:
   name: flow-spaces
 artifactName: flow-spaces-${version}-${os}-${arch}.${ext}
 
+# 应用图标（buildResources 默认目录 apps/web/build/）：
+# win ← icon.ico / mac ← icon.icns / linux ← icon.png
+icon: "build/icon"
+
 directories:
   output: electron-build/out
 
