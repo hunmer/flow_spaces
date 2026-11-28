@@ -50,7 +50,7 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
   return (
     <FeatureCard
       color="blue"
-      className="cursor-pointer h-[260px]"
+      className="cursor-pointer aspect-[9/16]"
       centerIcon={
         <AgentIcon
           name={item.name}

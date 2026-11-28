@@ -68,7 +68,7 @@ export function MiniAppCard({ project, onDelete, onDuplicate, onUpdated, allPlug
       <FeatureCard
         backgroundImage={backgroundUrl}
         color="blue"
-        className="cursor-pointer h-[260px]"
+        className="cursor-pointer aspect-[9/16]"
         centerIcon={
           <AgentIcon
             name={project.name}
