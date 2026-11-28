@@ -515,7 +515,7 @@ export function DashboardSidebar({
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        planArtSrc="/templates/settings-plan-art.png"
+        planArtSrc="/templates/settings-plan-art.webp"
       />
       )}
     </aside>

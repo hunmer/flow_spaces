@@ -49,7 +49,7 @@ export const DEVICE_FRAMES: Record<string, {
   pc: {
     label: 'PC',
     icon: Monitor,
-    frame: '/devices/macbook-pro-16.png',
+    frame: '/devices/macbook-pro-16.webp',
     // 实测 alpha 镂空：屏幕 inset 上下 10.33%、左右 9.80%
     screen: { top: '10.33%', right: '9.8%', bottom: '10.33%', left: '9.8%' },
     maxWidth: '1400px',

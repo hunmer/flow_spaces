@@ -38,6 +38,11 @@ files:
 
 asar: true
 
+# 应用目前仅提供中英界面；其他 Chromium 语言资源不随包分发。
+electronLanguages:
+  - en-US
+  - zh-CN
+
 extraResources:
   - from: ../../packages/server/dist
     to: server/dist
@@ -59,6 +64,10 @@ extraResources:
     to: server/web
   - from: electron-build/server-node/node_modules
     to: server/node_modules
+    filter:
+      - "**/*"
+      - "!**/*.map"
+      - "!**/*.pdb"
   - from: electron-build/server-node/package.json
     to: server/package.json
 

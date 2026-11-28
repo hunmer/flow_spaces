@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { cx } from "@/utils/cx";
 
 /**
- * The "Current plan" artwork (settings-plan-art.png) rendered through a WebGL
+ * The "Current plan" artwork (settings-plan-art.webp) rendered through a WebGL
  * fragment shader as a burning, wind-torn flag:
  *
  *   wave   the image UVs ripple with two crossed sine waves plus low-freq
