@@ -226,7 +226,6 @@ export function MiniAppEditDialog({ project, open, onOpenChange, onUpdated }: Mi
                 );
               })}
             </ToggleGroup>
-            <p className="text-[11px] text-muted-foreground">{t('edit.devicesHint')}</p>
           </div>
         </div>
         <DialogFooter>
