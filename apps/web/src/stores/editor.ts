@@ -2,14 +2,13 @@ import { create } from 'zustand';
 import type { FileNode } from '@flow-spaces/shared';
 import { sdk } from '@/lib/sdk';
 
-export type MediaType = 'image' | 'video' | 'audio' | 'svg' | 'markdown' | 'mermaid';
+export type MediaType = 'image' | 'video' | 'audio' | 'svg' | 'markdown';
 
 const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.ico']);
 const VIDEO_EXTS = new Set(['.mp4', '.webm', '.ogg', '.mov']);
 const AUDIO_EXTS = new Set(['.mp3', '.wav', '.flac', '.aac', '.m4a', '.opus']);
 const SVG_EXTS = new Set(['.svg']);
 const MD_EXTS = new Set(['.md', '.mdx']);
-const MERMAID_EXTS = new Set(['.mermaid', '.mmd']);
 
 export function getMediaType(path: string): MediaType | null {
   const ext = '.' + path.split('.').pop()?.toLowerCase();
@@ -18,7 +17,6 @@ export function getMediaType(path: string): MediaType | null {
   if (AUDIO_EXTS.has(ext)) return 'audio';
   if (SVG_EXTS.has(ext)) return 'svg';
   if (MD_EXTS.has(ext)) return 'markdown';
-  if (MERMAID_EXTS.has(ext)) return 'mermaid';
   return null;
 }
 

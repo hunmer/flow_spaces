@@ -3,14 +3,12 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import "@/components/editor/code-editor-clipboard";
 import { Code, Eye, FileText, AlignLeft, Binary } from "lucide-react";
-import { useTheme } from "@/components/layout/theme-provider";
 import { useTranslations } from "next-intl";
 import type { MediaType, OpenFile } from "@/stores/editor";
 import { EditorMenuBar } from "./code-editor-menu-bar";
 import { getLanguage } from "@/lib/code-languages";
 import { CodeEditor, type CodeEditorHandle, type CodeEditorOptions } from "./code-editor";
 import { Markdown } from "@/components/ui/markdown";
-import { MermaidPreview } from "@/components/ui/mermaid-preview";
 
 function getDefaultReadOnly() {
   if (typeof window === "undefined") return false;
@@ -99,7 +97,6 @@ export function CommonCodeEditor({
   onRefreshActiveFile,
   onClearPendingJump,
 }: CommonCodeEditorProps) {
-  const { resolvedTheme } = useTheme();
   const t = useTranslations("editor");
   const editorHandleRef = useRef<CodeEditorHandle | null>(null);
   const wheelZoomCleanupRef = useRef<(() => void) | null>(null);
@@ -113,8 +110,8 @@ export function CommonCodeEditor({
   });
   const [showPreview, setShowPreview] = useState(true);
 
-  const isPreviewable = mediaType === "image" || mediaType === "video" || mediaType === "audio" || mediaType === "svg" || mediaType === "markdown" || mediaType === "mermaid";
-  const isCodePreviewToggle = mediaType === "svg" || mediaType === "markdown" || mediaType === "mermaid";
+  const isPreviewable = mediaType === "image" || mediaType === "video" || mediaType === "audio" || mediaType === "svg" || mediaType === "markdown";
+  const isCodePreviewToggle = mediaType === "svg" || mediaType === "markdown";
 
   useEffect(() => { setShowPreview(true); }, [activeFilePath]);
 
@@ -235,7 +232,7 @@ export function CommonCodeEditor({
         }}
       />
       <div className="relative flex-1 min-h-0 bg-background">
-        {isPreviewable && showPreview && (mediaUrl || mediaType === "markdown" || mediaType === "mermaid") ? (
+        {isPreviewable && showPreview && (mediaUrl || mediaType === "markdown") ? (
           <div className="relative flex justify-center h-full bg-muted/20 overflow-auto">
             {isCodePreviewToggle && (
               <button
@@ -265,11 +262,6 @@ export function CommonCodeEditor({
             {mediaType === "markdown" && activeContent && (
               <div className="prose prose-sm dark:prose-invert max-w-none w-full max-w-4xl mx-auto">
                 <Markdown content={activeContent} workspaceId={workspaceIdForMarkdown} />
-              </div>
-            )}
-            {mediaType === "mermaid" && activeContent && (
-              <div className="w-full mx-auto">
-                <MermaidPreview chart={activeContent} theme={resolvedTheme} />
               </div>
             )}
           </div>

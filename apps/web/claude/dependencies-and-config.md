@@ -3,7 +3,7 @@
 ## 关键运行时依赖（package.json 摘要）
 
 - 框架：React 19 + react-router-dom（SPA）、Vite 7、Tailwind CSS v4（@tailwindcss/vite）。
-- 编辑器/画布：@xyflow/react（工作流画布）、@uiw/react-codemirror + @codemirror/*（CodeMirror 6 代码编辑）、@tiptap/*（富文本）、mermaid（预览渲染，闭包拆 chunk）。
+- 编辑器/画布：@xyflow/react（工作流画布）、@uiw/react-codemirror + @codemirror/*（CodeMirror 6 代码编辑）、@tiptap/*（富文本）。
 - AI 流：@ai-sdk/react + anthropic/google/openai providers（浏览器侧直连可选路径）。
 - UI：react-aria-components、@radix-ui/*、@dnd-kit/*、@tanstack/react-table、sonner、framer-motion、lucide-react + @remixicon/react + @tabler/icons-react。
 - workspace 包：`@flow-spaces/sdk`、`@flow-spaces/shared`。

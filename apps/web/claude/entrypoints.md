@@ -23,7 +23,7 @@ pnpm dev:all        # build:packages 后同时起 server 与 web
 
 ## 构建流程
 
-- `vite build`：React 插件 + tailwindcss v4 + dev-inspector（仅 dev）；rollup manualChunks 按库拆 vendor（mermaid 闭包 BFS 逻辑见 `vite.config.ts` 头部注释，勿随意改动分组顺序）。
+- `vite build`：React 插件 + tailwindcss v4 + dev-inspector（仅 dev）；rollup manualChunks 按库拆 vendor（共享依赖保留在 misc，避免循环引用）。
 - `electron:dev`：起 vite 后 `electron electron/main.mjs`。
 
 ## 运行时初始化要点

@@ -1,7 +1,7 @@
 # apps/web 常见问题
 
 **Q: 页面空白/控制台 TDZ "Cannot access ... before initialization"？**
-vendor chunk 分组被改动导致 mermaid 簇被切断。看 `vite.config.ts` 的 `buildMermaidClosure`；恢复注释中的分组顺序，本地 `pnpm build` 验证。
+检查 `vite.config.ts` 的 manualChunks 分组是否形成循环引用；共享基础库保留在 vendor-misc，并通过 `pnpm build` 验证。
 
 **Q: 代码编辑器渲染异常？**
 编辑器为 CodeMirror 6（@uiw/react-codemirror），全部依赖走 bundle（vendor-codemirror chunk）。升级依赖后重新 `pnpm build` 即可。

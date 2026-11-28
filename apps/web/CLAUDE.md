@@ -7,7 +7,7 @@ Vite + React 19 SPA 前端（自 flow-spaces Next.js 迁移）。三大界面域
 - 写 UI 前先查 `components/base|application/`；BoardUI 规则全文见 `AGENTS.md`（boardui:rules 区块）：颜色/排版只用语义 token 与组合工具类。
 - 后端调用一律走 `lib/sdk.ts` 的 SDK 实例；WS 走 `lib/ws.ts`。
 - 新路由改 `src/app/router.tsx`；文案进 `src/locales/{en,zh}/`，提交前跑根 `scripts/check-locale-parity.mjs`。
-- 勿新增 `next/*` 导入（alias 到 shims，仅为兼容存量）；勿改 `vite.config.ts` mermaid 闭包逻辑。
+- 勿新增 `next/*` 导入（alias 到 shims，仅为兼容存量）。
 - dev 5173 代理到 server 3110；`pnpm typecheck` 两套 tsconfig 都要过。
 
 ## 文件索引

@@ -8,7 +8,7 @@
 #   resources/server/web        ← vite 产物（前端静态 + SPA fallback）
 #   resources/server/templates  ← packages/templates（agents/mcps/skills 内置模板）
 #   resources/server/public     ← 静态资源（排除用户数据 uploads/avatars）
-#   resources/server/node_modules ← pnpm deploy 的生产依赖（Node-API 原生模块）
+#   resources/server/node_modules ← 冻结 lockfile 的扁平生产依赖（按 Electron ABI 准备原生模块）
 appId: com.flowspaces.desktop
 productName: Flow Spaces
 # 覆盖 asar 内 package.json 的 name（Electron 用它决定 userData 目录）：

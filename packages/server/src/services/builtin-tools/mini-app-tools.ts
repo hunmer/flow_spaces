@@ -125,7 +125,7 @@ const MINI_APP_COMPONENT_CATEGORIES: Array<{
     components: [
       'Avatar', 'AvatarFallback', 'AvatarGroup', 'AvatarImage', 'ChartContainer', 'ChartLegend',
       'ChartLegendContent', 'ChartStyle', 'ChartTooltip', 'ChartTooltipContent', 'Markdown',
-      'MermaidPreview', 'Table', 'TableBody', 'TableCaption', 'TableCell', 'TableFooter',
+      'Table', 'TableBody', 'TableCaption', 'TableCell', 'TableFooter',
       'TableHead', 'TableHeader', 'TableRow',
     ],
   },

@@ -156,7 +156,6 @@ export {
   Workflow,
   X,
 } from 'lucide-react';
-export { MermaidPreview } from '@/components/ui/mermaid-preview';
 export { DiffViewer } from '@/components/viewers/diff-viewer';
 export { CodeEditor } from '@/components/editor/code-editor';
 export type { CodeEditorProps } from '@/components/editor/code-editor';

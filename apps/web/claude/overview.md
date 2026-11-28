@@ -11,7 +11,7 @@
 ## 运行形态
 
 - 开发：`vite`（端口 5173），`/api`、`/ws`、`/public`、`/static` 代理到 flow-spaces server（默认 `http://127.0.0.1:3110`，可用 `SERVER_URL` 覆盖）。
-- 构建：`vite build`，rollup `manualChunks` 按库拆 vendor chunk（mermaid/codemirror/katex/tiptap/xyflow/recharts/babel/elk/icons/aria/media/framer-motion/react/misc）。
+- 构建：`vite build`，rollup `manualChunks` 按库拆 vendor chunk（codemirror/katex/tiptap/xyflow/recharts/babel/elk/icons/aria/media/framer-motion/react/misc）。
 - 桌面：`electron/main.mjs` + `preload.mjs`（`pnpm electron:dev`）。
 - 部署产物由 server 静态服务（server 仓库 `public/` + `/static` 路由）。
 
@@ -19,7 +19,6 @@
 
 - **Next 兼容 shim**：原代码 `next/*`、`next-intl` 导入通过 vite alias 重写到 `src/shims/`，业务文件零改动完成 SPA 化。
 - **BoardUI 源码级组件**（`components/base|application|foundations`）随仓库持有，配 `boardui.json` alias 与 BoardUI MCP 安装/更新；颜色/字体必须走语义 token（见 `AGENTS.md` 规则）。
-- **mermaid 闭包拆 chunk**：mermaid dist 是循环依赖 ESM 簇，`vite.config.ts` 用 rollup getModuleInfo 双向 BFS 收集闭包整体归入 `vendor-mermaid`，防 TDZ 空白页——改 chunk 分组时勿破坏此逻辑。
 - **SDK 单例**：所有后端调用经 `@flow-spaces/sdk`（`src/lib/sdk.ts` 创建），组件不直接 fetch。
 - **#root 高度链**：`styles/app-root.css` + `ViewportInsets`（`--app-content-height`）支撑编辑器等 `h-full` 页面，键盘弹出/视口变化时保持布局。
 

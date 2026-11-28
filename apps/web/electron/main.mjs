@@ -1,8 +1,8 @@
 // Electron 主进程。
 // - 开发模式（未打包）：加载 Vite dev server（端口与 vite.config.ts 的 5173 对齐）。
 // - 生产模式（app.isPackaged）：以 ELECTRON_RUN_AS_NODE 子进程启动内嵌 server
-//   （resources/server/dist/app.js，Node-API 原生模块与 Electron 内嵌 Node 兼容，
-//   无需 electron-rebuild），前端由 server 静态服务（resources/server/web）。
+//   （resources/server/dist/app.js，原生依赖由打包脚本按 Electron ABI 准备），
+//   前端由 server 静态服务（resources/server/web）。
 //   数据写入 userData/data（FLOW_SPACES_DATA_DIR），与开发环境的 ~/.flow-spaces-data 隔离。
 import { app, BrowserWindow, WebContentsView, ipcMain, nativeImage, shell } from "electron";
 import { attachWindowLoader } from "./window-loader.mjs";
