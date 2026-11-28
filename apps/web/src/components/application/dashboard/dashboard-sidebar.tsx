@@ -2,39 +2,10 @@
 
 import { useTemplateCopy } from "@/components/foundations/template-copy/template-copy";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ComponentType,
-  type ReactNode,
-} from "react";
+import { useCallback, useState, type ComponentType, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  RiAsterisk,
-  RiBankLine,
-  RiCalendarLine,
-  RiChatAiLine,
-  RiCloseLine,
-  RiCustomerServiceLine,
-  RiHomeLine,
-  RiImageAiLine,
-  RiKanbanView2,
-  RiMegaphoneLine,
-  RiSearchLine,
-  RiSettings4Line,
-  RiSideBarFill,
-  RiUserSmileLine,
-} from "@remixicon/react";
-import { SettingsModal } from "@/components/application/settings/settings-modal";
-import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { Badge } from "@/components/base/badges/badge";
-import { CloseButton } from "@/components/base/buttons/close-button";
-import { Kbd } from "@/components/base/kbd/kbd";
 import { cx } from "@/utils/cx";
-import { DashboardTeamMenu } from "./dashboard-team-menu";
-import { DashboardUserMenu } from "./dashboard-user-menu";
 
 /**
  * Figma sources:
@@ -173,19 +144,6 @@ export interface DashboardNavItem {
 /** Kept as a name for callers that typed their `selected` prop; any key works. */
 export type DashboardNavKey = string;
 
-/** The Pro dashboard's navigation, the default set. */
-export const DASHBOARD_NAV: DashboardNavItem[] = [
-  { key: "home", label: "Home", icon: RiHomeLine, href: "/templates/dashboard", badge: 152 },
-  { key: "project-board", label: "Project board", icon: RiKanbanView2, href: "/templates/project-board" },
-  { key: "marketing", label: "Marketing", icon: RiMegaphoneLine, href: "/templates/marketing" },
-  { key: "calendar", label: "Calendar", icon: RiCalendarLine, href: "/templates/calendar" },
-  { key: "finance", label: "Finance", icon: RiBankLine, href: "/templates/finance" },
-  { key: "medical", label: "Medical Report", icon: RiAsterisk, href: "/templates/medical-profile" },
-  { key: "ai-chat", label: "AI Chat", icon: RiChatAiLine, href: "/templates/ai-chat" },
-  { key: "ai-image", label: "AI Image Generation", icon: RiImageAiLine, href: "/templates/ai-image-generation" },
-  { key: "profile", label: "Profile", icon: RiUserSmileLine, href: "/templates/ai-profile" },
-];
-
 /**
  * The primary rows. A component of its own so the closures over `collapsed`
  * and the search query live here: built inline in the sidebar, the compiler
@@ -261,17 +219,12 @@ export function DashboardSidebar({
   mobile = false,
   onClose,
   fluid = false,
-  showThemeToggle = true,
   selected = "home",
-  items = DASHBOARD_NAV,
+  items,
   flat = false,
   className,
   collapsed: collapsedControlled,
   onCollapsedChange,
-  hideUserMenu = false,
-  hideTeamMenu = false,
-  hideSecondaryNav = false,
-  hideSearch = false,
 }: {
   /** Rendered inside the mobile drawer: always expanded, close button instead of collapse. */
   mobile?: boolean;
@@ -282,36 +235,19 @@ export function DashboardSidebar({
    *  whole point of collapsing is to shrink, so it must never get
    *  overridden back to full width. */
   fluid?: boolean;
-  /** Hide the app-level theme control when the sidebar is used as marketing artwork. */
-  showThemeToggle?: boolean;
   /** Which nav item shows the selected (filled blue) state. */
   selected?: DashboardNavKey;
-  /** Primary navigation rows. The Pro dashboard's set unless a screen brings its own. */
-  items?: DashboardNavItem[];
+  /** Primary navigation rows. */
+  items: DashboardNavItem[];
   /** Removes the floating panel treatment for a sidebar revealed beneath mobile content. */
   flat?: boolean;
   className?: string;
   /** Controlled collapse state (e.g. a host layout animating its own rail width). */
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  /** Hide the template's demo workspace-switcher/user menu (host renders its own account row). */
-  hideUserMenu?: boolean;
-  /** Hide the template's demo team card. */
-  hideTeamMenu?: boolean;
-  /** Hide the template's Support/Settings rows and its demo SettingsModal. */
-  hideSecondaryNav?: boolean;
-  /** Hide the ⌘L quick-search field (redundant for tiny nav sets). */
-  hideSearch?: boolean;
-} = {}) {
+}) {
   const localize = useTemplateCopy();
   const [collapsedState, setCollapsed] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [suppressUserHover, setSuppressUserHover] = useState(false);
-  const [searchActive, setSearchActive] = useState(false);
-  const [query, setQuery] = useState("");
-  const searchTriggerRef = useRef<HTMLButtonElement>(null);
-  const searchFieldRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const toggleCollapsed = useCallback(
     (next: boolean) => {
       setCollapsed(next);
@@ -322,55 +258,6 @@ export function DashboardSidebar({
   const collapsed = mobile
     ? false
     : (collapsedControlled ?? collapsedState);
-  const normalizedQuery = query.trim().toLocaleLowerCase();
-  const matches = (label: string) => label.toLocaleLowerCase().includes(normalizedQuery);
-  const secondaryLabels = ["Support", "Settings"];
-  const secondaryMatch = secondaryLabels.some(matches);
-
-  const activateSearch = useCallback(() => {
-    if (!mobile) setCollapsed(false);
-    setSearchActive(true);
-  }, [mobile]);
-
-  const deactivateSearch = useCallback((restoreFocus: boolean) => {
-    setQuery("");
-    setSearchActive(false);
-    if (restoreFocus) {
-      window.requestAnimationFrame(() => searchTriggerRef.current?.focus());
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!searchActive) return;
-    const frame = window.requestAnimationFrame(() => searchInputRef.current?.focus());
-    return () => window.cancelAnimationFrame(frame);
-  }, [searchActive]);
-
-  useEffect(() => {
-    if (!searchActive) return;
-
-    const onOutsideClick = (event: MouseEvent) => {
-      const target = event.target;
-      if (target instanceof Node && searchFieldRef.current?.contains(target)) return;
-      deactivateSearch(false);
-    };
-
-    document.addEventListener("click", onOutsideClick);
-    return () => document.removeEventListener("click", onOutsideClick);
-  }, [deactivateSearch, searchActive]);
-
-  useEffect(() => {
-    const onShortcut = (event: KeyboardEvent) => {
-      if (hideSearch) return;
-      if (event.key.toLocaleLowerCase() === "l" && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault();
-        activateSearch();
-      }
-    };
-
-    window.addEventListener("keydown", onShortcut);
-    return () => window.removeEventListener("keydown", onShortcut);
-  }, [activateSearch, hideSearch]);
 
   return localize((
     <aside
@@ -401,64 +288,6 @@ export function DashboardSidebar({
       >
       
         <div className="flex w-full flex-col gap-3">
-          {/* Quick search */}
-          {!flat && !hideSearch && (searchActive && !collapsed ? (
-            <div
-              ref={searchFieldRef}
-              className="flex w-full items-center gap-2 rounded-full bg-background-tertiary-default py-2 pe-2.5 ps-2 ring-2 ring-inset ring-border-button-active transition-[background-color,box-shadow] duration-[var(--input-transition-ms)] ease"
-            >
-              <RiSearchLine className="size-5 shrink-0 text-foreground-icon-secondary" aria-hidden />
-              <input
-                ref={searchInputRef}
-                type="search"
-                aria-label="Filter template navigation"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") {
-                    event.preventDefault();
-                    deactivateSearch(true);
-                  }
-                }}
-                placeholder="Search navigation…"
-                className="min-w-0 flex-1 bg-transparent text-body-medium text-text-primary outline-none placeholder:text-text-tertiary"
-              />
-              <CloseButton
-                size="2xs"
-                aria-label="Clear navigation search"
-                onClick={() => deactivateSearch(true)}
-                className="bg-background-tertiary-hover"
-              />
-            </div>
-          ) : (
-            <button
-              ref={searchTriggerRef}
-              type="button"
-              aria-label="Quick Search"
-              title={collapsed ? "Quick Search" : undefined}
-              onClick={activateSearch}
-              className={cx(
-                "flex cursor-pointer items-center gap-2 p-2 hover:bg-background-tertiary-hover/55",
-                "transition-[width,border-radius,background-color] duration-300 ease-in-out",
-                collapsed
-                  ? "w-9 rounded-full bg-background-tertiary-default"
-                  : "w-full rounded-full bg-background-tertiary-default",
-              )}
-            >
-              <span className={cx("flex min-w-0 items-center gap-2", !collapsed && "flex-1")}>
-                <RiSearchLine className="size-5 shrink-0 text-foreground-icon-secondary" aria-hidden />
-                <Collapsible collapsed={collapsed}>
-                  <span className="text-body-medium whitespace-nowrap text-text-secondary">
-                    Quick Search
-                  </span>
-                </Collapsible>
-              </span>
-              <Collapsible collapsed={collapsed}>
-                <Kbd>⌘L</Kbd>
-              </Collapsible>
-            </button>
-          ))}
-
           {/* Primary nav. The 2px inset is for the expanded rail only: the
               collapsed column is exactly as wide as a 36px item, so padding
               here pushes every item 2px right and the rail's own clip shaves
@@ -466,57 +295,14 @@ export function DashboardSidebar({
           <nav className={cx("relative flex w-full flex-col gap-1", !collapsed && "px-0.5")}>
             <NavRows
               items={items}
-              query={normalizedQuery}
+              query=""
               selected={selected}
               collapsed={collapsed}
-              secondaryMatch={secondaryMatch}
+              secondaryMatch={false}
             />
           </nav>
         </div>
       </div>
-
-      <div className="flex w-full shrink-0 flex-col gap-3">
-        {showThemeToggle &&
-          (collapsed ? (
-            <ThemeToggle collapsed />
-          ) : (
-            <ThemeToggle
-              appearance="sidebar-segmented"
-              className={flat ? "!bg-background-secondary-default" : undefined}
-            />
-          ))}
-        {/* Secondary nav */}
-        {!hideSecondaryNav && (
-        <nav className="flex w-full flex-col gap-1">
-          {matches("Support") && (
-            <NavItem icon={RiCustomerServiceLine} label="Support" collapsed={collapsed} />
-          )}
-          {matches("Settings") && (
-            <NavItem
-              icon={RiSettings4Line}
-              label="Settings"
-              collapsed={collapsed}
-              onClick={() => setSettingsOpen(true)}
-            />
-          )}
-        </nav>
-        )}
-
-        {/* Team card → opens the profile menu next to the sidebar */}
-        {!hideTeamMenu && (
-        <DashboardTeamMenu
-          collapsed={collapsed}
-          className={flat ? "!bg-background-secondary-default" : undefined}
-        />
-        )}
-      </div>
-
-      {!hideSecondaryNav && (
-      <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      />
-      )}
     </aside>
   ));
 }

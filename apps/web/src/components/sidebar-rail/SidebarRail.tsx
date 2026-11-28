@@ -730,11 +730,6 @@ export function SidebarRail() {
                 selected={active}
                 collapsed={collapsed}
                 onCollapsedChange={setCollapsed}
-                hideUserMenu
-                hideTeamMenu
-                hideSecondaryNav
-                hideSearch
-                showThemeToggle={false}
                 className="min-h-0 flex-1 !w-full !rounded-none !border-0 !bg-transparent !shadow-none"
               />
               <div className={styles.iconRow}>
