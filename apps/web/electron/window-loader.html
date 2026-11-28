@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+  <title>正在加载 Flow Spaces</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background-primary-default: Canvas;
+      --foreground-icon-primary: CanvasText;
+      --border-button-default: color-mix(in srgb, CanvasText 12%, Canvas);
+      background: var(--background-primary-default);
+      color: var(--foreground-icon-primary);
+    }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { display: grid; place-items: center; }
+    /* 无边框窗口在启动期间仍可拖动。 */
+    body::before { content: ''; position: fixed; inset: 0 0 auto; height: 32px; -webkit-app-region: drag; }
+    svg { width: 48px; height: 48px; animation: spin 3s linear infinite; }
+    path { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    #active { stroke: currentColor; }
+    #track { stroke: var(--border-button-default); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { svg { animation: none; } }
+  </style>
+</head>
+<body>
+  <div role="progressbar" aria-label="正在加载 Flow Spaces" aria-valuemin="0" aria-valuemax="100">
+    <svg viewBox="0 0 55.2 55.2" aria-hidden="true"><path id="track"/><path id="active"/></svg>
+  </div>
+  <script>
+    // 附件 M3 Expressive 波浪圆环的不定进度几何（matraic/m3e，MIT）。
+    const active = document.getElementById('active');
+    const track = document.getElementById('track');
+    const radius = 24, center = 27.6, amplitude = 1.6;
+    const waves = 2 * Math.PI * radius / 15;
+    const phase = Math.PI / 2 * (waves - 1);
+    const gap = 4 * 360 / (2 * Math.PI * radius);
+    const radians = degrees => (degrees - 90) * Math.PI / 180;
+    const point = degrees => [center + radius * Math.cos(radians(degrees)), center + radius * Math.sin(radians(degrees))];
+    const smooth = p => p * p * (3 - 2 * p);
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const start = performance.now();
+    function draw(now) {
+      const t = ((now - start) / 1575) % 4;
+      const min = 18 + gap * 2, max = 280 - gap * 2;
+      const progress = t < 1 ? 0 : t < 2 ? smooth(t - 1) : t < 3 ? 1 : 1 - smooth(t - 3);
+      const sweep = reduced.matches ? 100 : min + (max - min) * progress;
+      let d = '';
+      for (let i = 0; i <= 200; i++) {
+        const angle = radians(sweep * i / 200);
+        const r = radius - amplitude * Math.sin(angle * waves + phase);
+        d += `${i ? 'L' : 'M'} ${center + r * Math.cos(angle)},${center + r * Math.sin(angle)} `;
+      }
+      active.setAttribute('d', d);
+      const span = 360 - sweep - gap * 2;
+      track.setAttribute('d', `M ${point(sweep + gap)} A ${radius} ${radius} 0 ${span > 180 ? 1 : 0} 1 ${point(360 - gap)}`);
+      if (!reduced.matches) requestAnimationFrame(draw);
+    }
+    reduced.addEventListener('change', () => { if (!reduced.matches) requestAnimationFrame(draw); });
+    draw(start);
+  </script>
+</body>
+</html>

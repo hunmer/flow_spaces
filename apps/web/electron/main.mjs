@@ -4,7 +4,8 @@
 //   （resources/server/dist/app.js，Node-API 原生模块与 Electron 内嵌 Node 兼容，
 //   无需 electron-rebuild），前端由 server 静态服务（resources/server/web）。
 //   数据写入 userData/data（FLOW_SPACES_DATA_DIR），与开发环境的 ~/.flow-spaces-data 隔离。
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { app, BrowserWindow, WebContentsView, ipcMain, shell } from "electron";
+import { attachWindowLoader } from "./window-loader.mjs";
 import { spawn } from "node:child_process";
 import net from "node:net";
 import { miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut, saveMiniAppShortcutIcon } from "./mini-app-shortcuts.mjs";
@@ -71,6 +72,7 @@ const DEFAULT_WINDOW_OPTIONS = {
 // window.open 接管：同源（dev server / 应用自身）用新 Electron 窗口打开；
 // 外部链接交给系统浏览器。子窗口递归应用同一规则。
 function applyWindowOpenHandler(w) {
+  attachWindowLoader(w, WebContentsView);
   w.webContents.on("preload-error", (_event, preloadPath, error) => {
     console.error(`[electron] preload failed: ${preloadPath}`, error);
   });

@@ -86,7 +86,7 @@ test("Electron cold start, second instance, and shortcut IPC route to the reques
     .replace(/^import .*;\r?$/gm, "")
     .replace(/^const __dirname = .*;\r?$/m, 'const __dirname = "E:/flow spaces/electron";');
   vm.runInNewContext(source, {
-    app, BrowserWindow: FakeWindow, path, URL, console,
+    app, BrowserWindow: FakeWindow, WebContentsView: class {}, attachWindowLoader() {}, path, URL, console,
     miniAppLaunchId, miniAppLaunchUrl, miniAppShortcut,
     saveMiniAppShortcutIcon: () => "C:/icons/app.ico",
     process: { env: {}, platform: "win32", execPath: input.executable, argv: ["electron", "--mini-app=cold"] },
