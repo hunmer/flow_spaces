@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import inspectorPlugin from "@react-dev-inspector/babel-plugin";
+import inspectorPlugin from "./inspector-babel-plugin";
 import { inspectorServer } from "@react-dev-inspector/vite-plugin";
 
 /**
