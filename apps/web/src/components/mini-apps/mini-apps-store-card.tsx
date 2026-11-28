@@ -59,36 +59,35 @@ export function MiniAppStoreCard({ item, status, onOpenDetail }: MiniAppStoreCar
       backgroundImage={item.coverUrl ? (/^https?:\/\//.test(item.coverUrl) ? item.coverUrl : resolveStoreUrl(item.coverUrl)) : undefined}
       onClick={() => onOpenDetail(item)}
     >
-      {/* Horizontal content: icon + info + action */}
-      <div className="flex h-full items-center gap-3 p-3">
-        <AgentIcon
-          name={item.name}
-          avatarUrl={item.iconUrl ? (/^https?:\/\//.test(item.iconUrl) ? item.iconUrl : resolveStoreUrl(item.iconUrl)) : undefined}
-          icon={item.icon}
-          bordered={false}
-          textSize="text-2xl"
-          rounded="rounded-xl"
-          className="size-14 shrink-0 transition-transform duration-200 group-hover:scale-110"
-        />
-        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-          {/* Name + type chip + installed badge */}
-          <div className="flex items-center gap-2 min-w-0">
+      {/* Vertical layout: icon + info (flex-1), installed badge at top-end, full-width action at bottom */}
+      <div className="relative flex h-full flex-col gap-2 p-3">
+        {status === 'installed' && (
+          <Chip variant="caption" color="lime" className="absolute end-2 top-2 gap-1 drop-shadow-[0_1px_2px_rgb(0_0_0/0.4)]">
+            <Check className="size-3" />
+            {t('store.installed')}
+          </Chip>
+        )}
+        <div className="flex min-h-0 flex-1 items-center gap-3">
+          <AgentIcon
+            name={item.name}
+            avatarUrl={item.iconUrl ? (/^https?:\/\//.test(item.iconUrl) ? item.iconUrl : resolveStoreUrl(item.iconUrl)) : undefined}
+            icon={item.icon}
+            bordered={false}
+            textSize="text-2xl"
+            rounded="rounded-xl"
+            className="size-14 shrink-0 transition-transform duration-200 group-hover:scale-110"
+          />
+          <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
             <p className={cx('text-sm font-medium truncate', hasCover && 'text-white drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]')}>{item.name}</p>
-            {status === 'installed' && (
-              <Chip variant="caption" color="lime" className="shrink-0 gap-1">
-                <Check className="size-3" />
-                {t('store.installed')}
-              </Chip>
-            )}
+            <p className={cx('text-xs line-clamp-1', hasCover ? 'text-white/80 drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]' : 'text-muted-foreground')}>
+              {item.description || '—'}
+            </p>
           </div>
-          <p className={cx('text-xs line-clamp-1', hasCover ? 'text-white/80 drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]' : 'text-muted-foreground')}>
-            {item.description || '—'}
-          </p>
         </div>
         <Button
           variant="default"
           size="sm"
-          className="h-7 shrink-0"
+          className="h-7 w-full"
           onClick={(e) => {
             e.stopPropagation();
             onOpenDetail(item);
